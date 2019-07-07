@@ -5,16 +5,17 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:GameInterface.Controls"
              mc:Ignorable="d" 
-             d:DesignHeight="196.688" d:DesignWidth="231.788">
+             d:DesignHeight="258.952" d:DesignWidth="247.869">
     <UserControl.Resources>
         <ResourceDictionary Source="/Styles/UserOrderPanelStyle.xaml"/>
     </UserControl.Resources>
     <Viewbox>
-        <Grid Width="120" Height="120">
+        <Grid Width="120" Height="150">
             <Grid.RowDefinitions>
                 <RowDefinition Height="1*"/>
                 <RowDefinition Height="1*"/>
                 <RowDefinition Height="1*"/>
+                <RowDefinition Height="30"/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="1*"/>
@@ -48,6 +49,7 @@
             <ToggleButton Grid.Row="2" Grid.Column="2" IsChecked="{Binding IsDownRight}">
                 <Path StrokeThickness="2" Data="M4,14 14,14 14,4 M0,0 14,14" Stroke="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ToggleButton}}, Path=Foreground}"/>
             </ToggleButton>
+            <ToggleButton Grid.Row="3" Grid.ColumnSpan="3" Content="タイル除去モード" IsChecked="{Binding IsRemoveMode}"/>
         </Grid>
     </Viewbox>
 </UserControl>

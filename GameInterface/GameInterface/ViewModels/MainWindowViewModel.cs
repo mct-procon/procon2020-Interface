@@ -58,11 +58,7 @@ namespace GameInterface
                 RaisePropertyChanged();
             }
         }
-        private bool[] isRemoveMode =new bool[4];
-        public bool[] IsRemoveMode {
-            get => isRemoveMode;
-            set => isRemoveMode = value;
-        }
+
         private string turnStr;
         public string TurnStr
         {
@@ -102,36 +98,9 @@ namespace GameInterface
             set => RaisePropertyChanged(ref decisions2PSelectedIndex, value);
         }
 
-        //---------------------------------------
-        //ボタン等を押された時の関数
-        public DelegateCommand<Order> OrderToAgentCommand { get; private set; }
-        public DelegateCommand<Point> ChangeColorCommand { get; private set; }
-
         public MainWindowViewModel()
         {
             agentViewModels = Enumerable.Range(0,4).Select(x => new ViewModels.UserOrderPanelViewModel(new Agent())).ToArray();
-            InitCommands();
-        }
-        private void InitCommands()
-        {
-            OrderToAgentCommand = new DelegateCommand<Order>(
-                OrderToAgentFromVM
-            );
-            ChangeColorCommand = new DelegateCommand<Point>
-            (
-                ChangeColor
-            );
-        }
-
-        private void OrderToAgentFromVM(Order order)
-        {
-            if (isRemoveMode[order.agentNum]) order.state = AgentState.RemoveTile;
-            gameManager.OrderToAgent(order);
-        }
-
-        private void ChangeColor(Point point)
-        {
-            gameManager.ChangeCellToNextColor(point);
         }
     }
 }

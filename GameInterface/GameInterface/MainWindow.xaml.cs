@@ -88,7 +88,7 @@ namespace GameInterface
                 Grid.SetRow(orderButtonUserControl, 2);
                 var orderButtonUserControl2 = new Controls.UserOrderPanel() { DataContext = viewModel.AgentViewModels[i * 2 + 1] };
                 currentGrid.Children.Add(orderButtonUserControl2);
-                Grid.SetRow(orderButtonUserControl2, 5);
+                Grid.SetRow(orderButtonUserControl2, 4);
             }
         }
 

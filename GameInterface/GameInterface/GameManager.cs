@@ -194,7 +194,7 @@ namespace GameInterface
 
                 TeamColor nextAreaState = Data.CellData[nextP.X, nextP.Y].AreaState_;
                 ActionAgentToNextP(id, agent, nextP, nextAreaState);
-                viewModel.IsRemoveMode[id] = false;
+                agent.State = AgentState.Move;
             }
 
             // Reset Agent Location's data to cells.
