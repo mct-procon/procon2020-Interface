@@ -7,6 +7,8 @@ using System.Windows.Threading;
 using MCTProcon29Protocol.Methods;
 using System.Linq;
 using GameInterface.GameManagement;
+using MCTProcon29Protocol;
+using Point = MCTProcon29Protocol.Point;
 
 namespace GameInterface
 {
@@ -98,9 +100,17 @@ namespace GameInterface
             set => RaisePropertyChanged(ref decisions2PSelectedIndex, value);
         }
 
+        public DelegateCommand<Point> ChangeColorCommand { get; private set; }
+
         public MainWindowViewModel()
         {
             agentViewModels = Enumerable.Range(0,4).Select(x => new ViewModels.UserOrderPanelViewModel(new Agent())).ToArray();
+            ChangeColorCommand = new DelegateCommand<Point>(ChangeColor);
+        }
+
+        private void ChangeColor(Point point)
+        {
+            gameManager.ChangeCellToNextColor(point);
         }
     }
 }
