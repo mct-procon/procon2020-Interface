@@ -1,6 +1,6 @@
 ﻿namespace GameInterface.GameManagement
 {
-    public enum Direction : uint {
+    public enum AgentDirection : uint {
         None = 0,
         Up = 0b0100,
         UpRight = 0b0101,
@@ -14,19 +14,19 @@
 
     public static class DirectionExtensions
     {
-        static public Direction CastPointToDir(Point p)
+        static public AgentDirection CastPointToDir(Point p)
         {
             int x = p.X, y = p.Y;
             uint result = 0;
             if (x == 1)
-                result = (uint)Direction.Right;
+                result = (uint)AgentDirection.Right;
             else if (x == -1)
-                result = (uint)Direction.Left;
+                result = (uint)AgentDirection.Left;
             if (y == 1)
-                result |= (uint)Direction.Down;
+                result |= (uint)AgentDirection.Down;
             else if (y == -1)
-                result |= (uint)Direction.Up;
-            return (Direction)result;
+                result |= (uint)AgentDirection.Up;
+            return (AgentDirection)result;
         }
     }
 }

@@ -398,7 +398,7 @@ namespace GameInterface
                 default:
                     break;
             }
-            agent.AgentDirection = Direction.None;
+            agent.AgentDirection = AgentDirection.None;
             agent.State = AgentState.Move;
         }
 
@@ -421,7 +421,7 @@ namespace GameInterface
                 viewModel.Decisions2PSelectedIndex = 0;
             }
             var decided = decideds[0];
-            Direction dir = DirectionExtensions.CastPointToDir(new Point(decided.MeAgent1.X, decided.MeAgent1.Y));
+            AgentDirection dir = DirectionExtensions.CastPointToDir(new Point(decided.MeAgent1.X, decided.MeAgent1.Y));
             OrderToAgent(new Order(index * 2, dir, AgentState.Move));
             dir = DirectionExtensions.CastPointToDir(new Point(decided.MeAgent2.X, decided.MeAgent2.Y));
             OrderToAgent(new Order(index * 2 + 1, dir, AgentState.Move));
@@ -443,7 +443,7 @@ namespace GameInterface
         {
             foreach (var agent in Data.Agents)
             {
-                agent.AgentDirection = Direction.None;
+                agent.AgentDirection = AgentDirection.None;
                 agent.State = AgentState.Move;
             }
         }

@@ -10,9 +10,9 @@ namespace GameInterface
     public class Order
     {
         public int agentNum; //1,2,3,4
-        public Direction direction;
+        public AgentDirection direction;
         public AgentState state;
-        public Order(int agentNum_, Direction direction_, AgentState state_)
+        public Order(int agentNum_, AgentDirection direction_, AgentState state_)
         {
             agentNum = agentNum_;
             direction = direction_;

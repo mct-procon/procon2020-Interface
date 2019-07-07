@@ -26,47 +26,47 @@ namespace GameInterface.ViewModels
         }
 
         public bool IsUpLeft {
-            get => Data.AgentDirection == Direction.UpLeft;
-            set => Data.AgentDirection = Direction.UpLeft;
+            get => Data.AgentDirection == AgentDirection.UpLeft;
+            set => Data.AgentDirection = AgentDirection.UpLeft;
         }
 
         public bool IsLeft {
-            get => Data.AgentDirection == Direction.Left;
-            set => Data.AgentDirection = Direction.Left;
+            get => Data.AgentDirection == AgentDirection.Left;
+            set => Data.AgentDirection = AgentDirection.Left;
         }
         public bool IsDownLeft {
-            get => Data.AgentDirection == Direction.DownLeft;
-            set => Data.AgentDirection = Direction.DownLeft;
+            get => Data.AgentDirection == AgentDirection.DownLeft;
+            set => Data.AgentDirection = AgentDirection.DownLeft;
         }
 
         public bool IsUp {
-            get => Data.AgentDirection == Direction.Up;
-            set => Data.AgentDirection = Direction.Up;
+            get => Data.AgentDirection == AgentDirection.Up;
+            set => Data.AgentDirection = AgentDirection.Up;
         }
 
         public bool IsNone {
-            get => Data.AgentDirection == Direction.None;
-            set => Data.AgentDirection = Direction.None;
+            get => Data.AgentDirection == AgentDirection.None;
+            set => Data.AgentDirection = AgentDirection.None;
         }
 
         public bool IsDown {
-            get => Data.AgentDirection == Direction.Down;
-            set => Data.AgentDirection = Direction.Down;
+            get => Data.AgentDirection == AgentDirection.Down;
+            set => Data.AgentDirection = AgentDirection.Down;
         }
 
         public bool IsUpRight {
-            get => Data.AgentDirection == Direction.UpRight;
-            set => Data.AgentDirection = Direction.UpRight;
+            get => Data.AgentDirection == AgentDirection.UpRight;
+            set => Data.AgentDirection = AgentDirection.UpRight;
         }
 
         public bool IsRight {
-            get => Data.AgentDirection == Direction.Right;
-            set => Data.AgentDirection = Direction.Right;
+            get => Data.AgentDirection == AgentDirection.Right;
+            set => Data.AgentDirection = AgentDirection.Right;
         }
 
         public bool IsDownRight {
-            get => Data.AgentDirection == Direction.DownRight;
-            set => Data.AgentDirection = Direction.DownRight;
+            get => Data.AgentDirection == AgentDirection.DownRight;
+            set => Data.AgentDirection = AgentDirection.DownRight;
         }
 
         private void RaiseAll()

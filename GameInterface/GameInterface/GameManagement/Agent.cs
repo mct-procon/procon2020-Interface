@@ -14,8 +14,8 @@ namespace GameInterface.GameManagement
             get => point;
             set => RaisePropertyChanged(ref point, value);
         }
-        private Direction agentDirection;
-        public Direction AgentDirection
+        private AgentDirection agentDirection;
+        public AgentDirection AgentDirection
         {
             get => agentDirection;
             set => RaisePropertyChanged(ref agentDirection, value);
@@ -30,26 +30,26 @@ namespace GameInterface.GameManagement
         public Point GetNextPoint()
         {
             int x = this.Point.X, y = this.Point.Y;
-            switch((Direction)((uint)AgentDirection & 0b11))
+            switch((AgentDirection)((uint)AgentDirection & 0b11))
             {
-                case Direction.Right:
+                case AgentDirection.Right:
                     x += 1;
                     break;
-                case Direction.Left:
+                case AgentDirection.Left:
                     x -= 1;
                     break;
                 default:
                     break;
             }
-            switch ((Direction)((uint)AgentDirection & 0b1100))
+            switch ((AgentDirection)((uint)AgentDirection & 0b1100))
             {
-                case Direction.Up:
+                case AgentDirection.Up:
                     y -= 1;
                     break;
-                case Direction.Down:
+                case AgentDirection.Down:
                     y += 1;
                     break;
-                case Direction.None:
+                case AgentDirection.None:
                     break;
             }
             return new Point(x, y);

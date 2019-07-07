@@ -156,7 +156,7 @@ namespace GameInterface
         {
             var decided = (MCTProcon29Protocol.Methods.Decided)((ListBox)sender).SelectedItem;
             if (decided == null) return;
-            Direction dir = DirectionExtensions.CastPointToDir(new Point(decided.MeAgent1.X, decided.MeAgent1.Y));
+            AgentDirection dir = DirectionExtensions.CastPointToDir(new Point(decided.MeAgent1.X, decided.MeAgent1.Y));
             gameManager.OrderToAgent(new Order(0, dir, AgentState.Move));
             dir = DirectionExtensions.CastPointToDir(new Point(decided.MeAgent2.X, decided.MeAgent2.Y));
             gameManager.OrderToAgent(new Order(1, dir, AgentState.Move));
@@ -166,7 +166,7 @@ namespace GameInterface
         {
             var decided = (MCTProcon29Protocol.Methods.Decided)((ListBox)sender).SelectedItem;
             if (decided == null) return;
-            Direction dir = DirectionExtensions.CastPointToDir(new Point(decided.MeAgent1.X, decided.MeAgent1.Y));
+            AgentDirection dir = DirectionExtensions.CastPointToDir(new Point(decided.MeAgent1.X, decided.MeAgent1.Y));
             gameManager.OrderToAgent(new Order(2, dir, AgentState.Move));
             dir = DirectionExtensions.CastPointToDir(new Point(decided.MeAgent2.X, decided.MeAgent2.Y));
             gameManager.OrderToAgent(new Order(3, dir, AgentState.Move));
