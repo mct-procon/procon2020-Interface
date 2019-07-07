@@ -1,14 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.IO;
-using System.Windows;
 using System.Windows.Threading;
-using System.Windows.Controls;
-using System.Windows.Markup;
 using MCTProcon29Protocol.Methods;
+using GameInterface.GameManagement;
 
 namespace GameInterface
 {
@@ -403,7 +398,7 @@ namespace GameInterface
                 default:
                     break;
             }
-            agent.AgentDirection = Agent.Direction.NONE;
+            agent.AgentDirection = Direction.None;
             agent.AgentState = Agent.State.MOVE;
         }
 
@@ -426,9 +421,9 @@ namespace GameInterface
                 viewModel.Decisions2PSelectedIndex = 0;
             }
             var decided = decideds[0];
-            Agent.Direction dir = Agent.CastPointToDir(new Point(decided.MeAgent1.X, decided.MeAgent1.Y));
+            Direction dir = DirectionExtensions.CastPointToDir(new Point(decided.MeAgent1.X, decided.MeAgent1.Y));
             OrderToAgent(new Order(index * 2, dir, Agent.State.MOVE));
-            dir = Agent.CastPointToDir(new Point(decided.MeAgent2.X, decided.MeAgent2.Y));
+            dir = DirectionExtensions.CastPointToDir(new Point(decided.MeAgent2.X, decided.MeAgent2.Y));
             OrderToAgent(new Order(index * 2 + 1, dir, Agent.State.MOVE));
         }
 
@@ -448,7 +443,7 @@ namespace GameInterface
         {
             foreach (var agent in Data.Agents)
             {
-                agent.AgentDirection = Agent.Direction.NONE;
+                agent.AgentDirection = Direction.None;
                 agent.AgentState = Agent.State.MOVE;
             }
         }

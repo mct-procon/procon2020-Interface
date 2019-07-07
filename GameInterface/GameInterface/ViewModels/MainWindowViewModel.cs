@@ -6,6 +6,7 @@ using GameInterface.Cells;
 using System.Windows.Threading;
 using MCTProcon29Protocol.Methods;
 using System.Linq;
+using GameInterface.GameManagement;
 
 namespace GameInterface
 {

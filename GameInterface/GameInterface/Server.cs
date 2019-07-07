@@ -2,12 +2,12 @@
 using System.Windows;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using MCTProcon29Protocol.Methods;
 using MCTProcon29Protocol;
 using System.Threading;
 using System.Diagnostics;
+using GameInterface.GameManagement;
 
 namespace GameInterface
 {
@@ -57,9 +57,9 @@ namespace GameInterface
         private void decidedMethod()
         {
             var decided = _decided;
-            Agent.Direction dir = Agent.CastPointToDir(new Point(decided.MeAgent1.X, decided.MeAgent1.Y));
+            Direction dir = DirectionExtensions.CastPointToDir(new Point(decided.MeAgent1.X, decided.MeAgent1.Y));
             gameManager.OrderToAgent(new Order(managerNum * 2, dir, Agent.State.MOVE));
-            dir = Agent.CastPointToDir(new Point(decided.MeAgent2.X, decided.MeAgent2.Y));
+            dir = DirectionExtensions.CastPointToDir(new Point(decided.MeAgent2.X, decided.MeAgent2.Y));
             gameManager.OrderToAgent(new Order(managerNum * 2 + 1, dir, Agent.State.MOVE));
         }
 

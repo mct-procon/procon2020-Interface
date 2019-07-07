@@ -103,6 +103,7 @@
     <Compile Include="Controls\UserOrderPanel.xaml.cs">
       <DependentUpon>UserOrderPanel.xaml</DependentUpon>
     </Compile>
+    <Compile Include="GameManagement\Direction.cs" />
     <Compile Include="GameSettings\GameSettingDialog.xaml.cs">
       <DependentUpon>GameSettingDialog.xaml</DependentUpon>
     </Compile>
@@ -160,7 +161,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Compile Include="Agent.cs" />
+    <Compile Include="GameManagement\Agent.cs" />
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>

@@ -8,6 +8,7 @@ using GameInterface.Cells;
 using System.Collections.Generic;
 using System.Windows.Media.Imaging;
 using System.Windows.Media;
+using GameInterface.GameManagement;
 
 namespace GameInterface
 {
@@ -155,9 +156,9 @@ namespace GameInterface
         {
             var decided = (MCTProcon29Protocol.Methods.Decided)((ListBox)sender).SelectedItem;
             if (decided == null) return;
-            Agent.Direction dir = Agent.CastPointToDir(new Point(decided.MeAgent1.X, decided.MeAgent1.Y));
+            Direction dir = DirectionExtensions.CastPointToDir(new Point(decided.MeAgent1.X, decided.MeAgent1.Y));
             gameManager.OrderToAgent(new Order(0, dir, Agent.State.MOVE));
-            dir = Agent.CastPointToDir(new Point(decided.MeAgent2.X, decided.MeAgent2.Y));
+            dir = DirectionExtensions.CastPointToDir(new Point(decided.MeAgent2.X, decided.MeAgent2.Y));
             gameManager.OrderToAgent(new Order(1, dir, Agent.State.MOVE));
         }
 
@@ -165,9 +166,9 @@ namespace GameInterface
         {
             var decided = (MCTProcon29Protocol.Methods.Decided)((ListBox)sender).SelectedItem;
             if (decided == null) return;
-            Agent.Direction dir = Agent.CastPointToDir(new Point(decided.MeAgent1.X, decided.MeAgent1.Y));
+            Direction dir = DirectionExtensions.CastPointToDir(new Point(decided.MeAgent1.X, decided.MeAgent1.Y));
             gameManager.OrderToAgent(new Order(2, dir, Agent.State.MOVE));
-            dir = Agent.CastPointToDir(new Point(decided.MeAgent2.X, decided.MeAgent2.Y));
+            dir = DirectionExtensions.CastPointToDir(new Point(decided.MeAgent2.X, decided.MeAgent2.Y));
             gameManager.OrderToAgent(new Order(3, dir, Agent.State.MOVE));
         }
     }

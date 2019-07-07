@@ -2,8 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using GameInterface.GameManagement;
 
 namespace GameInterface.ViewModels
 {
@@ -17,15 +16,7 @@ namespace GameInterface.ViewModels
                     data.PropertyChanged -= DataPropertyChanged;
                 RaisePropertyChanged(ref data, value);
                 data.PropertyChanged += DataPropertyChanged;
-                RaisePropertyChanged(nameof(IsUpLeft));
-                RaisePropertyChanged(nameof(IsLeft));
-                RaisePropertyChanged(nameof(IsDownLeft));
-                RaisePropertyChanged(nameof(IsUp));
-                RaisePropertyChanged(nameof(IsNone));
-                RaisePropertyChanged(nameof(IsDown));
-                RaisePropertyChanged(nameof(IsUpRight));
-                RaisePropertyChanged(nameof(IsRight));
-                RaisePropertyChanged(nameof(IsDownRight));
+                RaiseAll();
             }
         }
         public UserOrderPanelViewModel(Agent agent)
@@ -35,63 +26,66 @@ namespace GameInterface.ViewModels
         }
 
         public bool IsUpLeft {
-            get => Data.AgentDirection == Agent.Direction.UP_LEFT;
-            set => Data.AgentDirection = Agent.Direction.UP_LEFT;
+            get => Data.AgentDirection == Direction.UpLeft;
+            set => Data.AgentDirection = Direction.UpLeft;
         }
 
         public bool IsLeft {
-            get => Data.AgentDirection == Agent.Direction.LEFT;
-            set => Data.AgentDirection = Agent.Direction.LEFT;
+            get => Data.AgentDirection == Direction.Left;
+            set => Data.AgentDirection = Direction.Left;
         }
         public bool IsDownLeft {
-            get => Data.AgentDirection == Agent.Direction.DOWN_LEFT;
-            set => Data.AgentDirection = Agent.Direction.DOWN_LEFT;
+            get => Data.AgentDirection == Direction.DownLeft;
+            set => Data.AgentDirection = Direction.DownLeft;
         }
 
         public bool IsUp {
-            get => Data.AgentDirection == Agent.Direction.UP;
-            set => Data.AgentDirection = Agent.Direction.UP;
+            get => Data.AgentDirection == Direction.Up;
+            set => Data.AgentDirection = Direction.Up;
         }
 
         public bool IsNone {
-            get => Data.AgentDirection == Agent.Direction.NONE;
-            set => Data.AgentDirection = Agent.Direction.NONE;
+            get => Data.AgentDirection == Direction.None;
+            set => Data.AgentDirection = Direction.None;
         }
 
         public bool IsDown {
-            get => Data.AgentDirection == Agent.Direction.DOWN;
-            set => Data.AgentDirection = Agent.Direction.DOWN;
+            get => Data.AgentDirection == Direction.Down;
+            set => Data.AgentDirection = Direction.Down;
         }
 
         public bool IsUpRight {
-            get => Data.AgentDirection == Agent.Direction.UP_RIGHT;
-            set => Data.AgentDirection = Agent.Direction.UP_RIGHT;
+            get => Data.AgentDirection == Direction.UpRight;
+            set => Data.AgentDirection = Direction.UpRight;
         }
 
         public bool IsRight {
-            get => Data.AgentDirection == Agent.Direction.RIGHT;
-            set => Data.AgentDirection = Agent.Direction.RIGHT;
+            get => Data.AgentDirection == Direction.Right;
+            set => Data.AgentDirection = Direction.Right;
         }
 
         public bool IsDownRight {
-            get => Data.AgentDirection == Agent.Direction.DOWN_RIGHT;
-            set => Data.AgentDirection = Agent.Direction.DOWN_RIGHT;
+            get => Data.AgentDirection == Direction.DownRight;
+            set => Data.AgentDirection = Direction.DownRight;
+        }
+
+        private void RaiseAll()
+        {
+            RaisePropertyChanged(nameof(IsUpLeft));
+            RaisePropertyChanged(nameof(IsLeft));
+            RaisePropertyChanged(nameof(IsDownLeft));
+            RaisePropertyChanged(nameof(IsUp));
+            RaisePropertyChanged(nameof(IsNone));
+            RaisePropertyChanged(nameof(IsDown));
+            RaisePropertyChanged(nameof(IsUpRight));
+            RaisePropertyChanged(nameof(IsRight));
+            RaisePropertyChanged(nameof(IsDownRight));
         }
 
         private void DataPropertyChanged(object sender, PropertyChangedEventArgs args)
         {
-            if(args.PropertyName == nameof(data.AgentDirection))
-            {
-                RaisePropertyChanged(nameof(IsUpLeft));
-                RaisePropertyChanged(nameof(IsLeft));
-                RaisePropertyChanged(nameof(IsDownLeft));
-                RaisePropertyChanged(nameof(IsUp));
-                RaisePropertyChanged(nameof(IsNone));
-                RaisePropertyChanged(nameof(IsDown));
-                RaisePropertyChanged(nameof(IsUpRight));
-                RaisePropertyChanged(nameof(IsRight));
-                RaisePropertyChanged(nameof(IsDownRight));
-            }
+            if (args.PropertyName == nameof(data.AgentDirection))
+                RaiseAll();
         }
 
         ~UserOrderPanelViewModel()

@@ -90,26 +90,26 @@
                 </Style>
             </Grid.Resources>
             <Border HorizontalAlignment="Left" VerticalAlignment="Top" BorderBrush="Gray" BorderThickness="1"
-                Grid.Column="{Binding Agents[0].Point.X}" Margin="1,1,0,0"
-                Grid.Row="{Binding Agents[0].Point.Y}"  Grid.ZIndex="1" Background="White" Width="{Binding RelativeSource={RelativeSource Self}, Path=ActualHeight}" >
+                Grid.Column="{Binding AgentViewModels[0].Data.Point.X}" Margin="1,1,0,0"
+                Grid.Row="{Binding AgentViewModels[0].Data.Point.Y}"  Grid.ZIndex="1" Background="White" Width="{Binding RelativeSource={RelativeSource Self}, Path=ActualHeight}" >
                 <TextBlock Text="1" FontSize="15" FontWeight="Bold" Foreground="Blue" TextAlignment="Center"/>
             </Border>
 
             <Border HorizontalAlignment="Left" VerticalAlignment="Top" BorderBrush="Gray" BorderThickness="1"
-                Grid.Column="{Binding Agents[1].Point.X}" Margin="1,1,0,0"
-                Grid.Row="{Binding Agents[1].Point.Y}"  Grid.ZIndex="1" Background="White" Width="{Binding RelativeSource={RelativeSource Self}, Path=ActualHeight}">
+                Grid.Column="{Binding AgentViewModels[1].Data.Point.X}" Margin="1,1,0,0"
+                Grid.Row="{Binding AgentViewModels[1].Data.Point.Y}"  Grid.ZIndex="1" Background="White" Width="{Binding RelativeSource={RelativeSource Self}, Path=ActualHeight}">
                 <TextBlock Text="2" FontSize="15" FontWeight="Bold" Foreground="Blue" TextAlignment="Center" />
             </Border>
 
             <Border HorizontalAlignment="Left" VerticalAlignment="Top" BorderBrush="Gray" BorderThickness="1"
-                Grid.Column="{Binding Agents[2].Point.X}" Margin="1,1,0,0"
-                Grid.Row="{Binding Agents[2].Point.Y}"  Grid.ZIndex="1" Background="White" Width="{Binding RelativeSource={RelativeSource Self}, Path=ActualHeight}">
+                Grid.Column="{Binding AgentViewModels[2].Data.Point.X}" Margin="1,1,0,0"
+                Grid.Row="{Binding AgentViewModels[2].Data.Point.Y}"  Grid.ZIndex="1" Background="White" Width="{Binding RelativeSource={RelativeSource Self}, Path=ActualHeight}">
                 <TextBlock Text="1" FontSize="15" FontWeight="Bold" Foreground="Red" TextAlignment="Center" />
             </Border>
 
             <Border HorizontalAlignment="Left" VerticalAlignment="Top" BorderBrush="Gray" BorderThickness="1"
-                Grid.Column="{Binding Agents[3].Point.X}" Margin="1,1,0,0"
-                Grid.Row="{Binding Agents[3].Point.Y}"  Grid.ZIndex="1" Background="White" Width="{Binding RelativeSource={RelativeSource Self}, Path=ActualHeight}">
+                Grid.Column="{Binding AgentViewModels[3].Data.Point.X}" Margin="1,1,0,0"
+                Grid.Row="{Binding AgentViewModels[3].Data.Point.Y}"  Grid.ZIndex="1" Background="White" Width="{Binding RelativeSource={RelativeSource Self}, Path=ActualHeight}">
                 <TextBlock Text="2" FontSize="15" FontWeight="Bold" Foreground="Red" TextAlignment="Center"/>
             </Border>
         </Grid>
