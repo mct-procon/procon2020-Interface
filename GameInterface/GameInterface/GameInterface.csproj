@@ -99,6 +99,9 @@
     <Compile Include="Cells\ChangeColorUserCtrl.xaml.cs">
       <DependentUpon>ChangeColorUserCtrl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\UserOrderPanel.xaml.cs">
+      <DependentUpon>UserOrderPanel.xaml</DependentUpon>
+    </Compile>
     <Compile Include="GameSettings\GameSettingDialog.xaml.cs">
       <DependentUpon>GameSettingDialog.xaml</DependentUpon>
     </Compile>
@@ -126,12 +129,17 @@
     <Compile Include="TeamColor.cs" />
     <Compile Include="ValueConvertes\BooleanNotConverter.cs" />
     <Compile Include="ViewModels\NotifyDataErrorInfoViewModel.cs" />
+    <Compile Include="ViewModels\UserOrderPanelViewModel.cs" />
     <Compile Include="ViewModels\ViewModelBase.cs" />
     <Page Include="Cells\CellUserControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Cells\ChangeColorUserCtrl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\UserOrderPanel.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -181,6 +189,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Styles.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Styles\UserOrderPanelStyle.xaml">
+      <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>

@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace GameInterface
 {
-    public class Agent
+    public class Agent : ViewModels.ViewModelBase
     {
         public int playerNum; //0,1
         public Point Point { get; set; }
@@ -14,11 +14,8 @@ namespace GameInterface
         private Direction agentDirection;
         public Direction AgentDirection
         {
-            get => agentDirection; 
-            set
-            {
-                agentDirection = value;
-            }
+            get => agentDirection;
+            set => RaisePropertyChanged(ref agentDirection, value);
         }
 
         //UP_LEFT は左上だから 0 というように、
