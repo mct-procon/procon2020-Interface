@@ -180,7 +180,6 @@ namespace GameInterface
                 agent.playerNum == 0 ? TeamColor.Area1P : TeamColor.Area2P;
             Data.CellData[point.X, point.Y].AreaState_ = nextPointColor;
             Data.CellData[point.X, point.Y].AgentState = nextPointColor;
-            viewModel.Agents = Data.Agents;
             return;
         }
 
@@ -202,7 +201,6 @@ namespace GameInterface
                 ActionAgentToNextP(id, agent, nextP, nextAreaState);
                 viewModel.IsRemoveMode[id] = false;
             }
-            viewModel.Agents = Data.Agents;
 
             // Reset Agent Location's data to cells.
             for (int id = 0; id < Data.Agents.Length; ++id)
@@ -444,7 +442,6 @@ namespace GameInterface
         {
             Data.Agents[order.agentNum].AgentState = order.state;
             Data.Agents[order.agentNum].AgentDirection = order.direction;
-            viewModel.Agents = Data.Agents;
         }
 
         private void ResetOrder()
@@ -454,7 +451,6 @@ namespace GameInterface
                 agent.AgentDirection = Agent.Direction.NONE;
                 agent.AgentState = Agent.State.MOVE;
             }
-            viewModel.Agents = Data.Agents;
         }
 
         private bool CheckIsPointInBoard(Point p)

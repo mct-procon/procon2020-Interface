@@ -24,10 +24,5 @@ namespace GameInterface.Controls
         {
             InitializeComponent();
         }
-
-        public UserOrderPanel(Agent agent) : this()
-        {
-            this.DataContext = new ViewModels.UserOrderPanelViewModel(agent);
-        }
     }
 }

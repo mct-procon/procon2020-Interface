@@ -176,10 +176,6 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="OrderButtonUserControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="QRCodeReader\EnemyAgentSelectDialog.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -200,9 +196,6 @@
   <ItemGroup>
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
     <Compile Include="Cells\Cell.cs" />
-    <Compile Include="OrderButtonUserControl.xaml.cs">
-      <DependentUpon>OrderButtonUserControl.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Point.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>

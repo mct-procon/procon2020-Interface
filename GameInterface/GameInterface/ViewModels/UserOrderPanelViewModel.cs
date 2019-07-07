@@ -9,7 +9,25 @@ namespace GameInterface.ViewModels
 {
     public class UserOrderPanelViewModel : ViewModels.ViewModelBase
     {
-        private Agent Data { get; set; }
+        private Agent data;
+        public Agent Data {
+            get => data;
+            set {
+                if (!(data is null))
+                    data.PropertyChanged -= DataPropertyChanged;
+                RaisePropertyChanged(ref data, value);
+                data.PropertyChanged += DataPropertyChanged;
+                RaisePropertyChanged(nameof(IsUpLeft));
+                RaisePropertyChanged(nameof(IsLeft));
+                RaisePropertyChanged(nameof(IsDownLeft));
+                RaisePropertyChanged(nameof(IsUp));
+                RaisePropertyChanged(nameof(IsNone));
+                RaisePropertyChanged(nameof(IsDown));
+                RaisePropertyChanged(nameof(IsUpRight));
+                RaisePropertyChanged(nameof(IsRight));
+                RaisePropertyChanged(nameof(IsDownRight));
+            }
+        }
         public UserOrderPanelViewModel(Agent agent)
         {
             Data = agent;
@@ -62,7 +80,7 @@ namespace GameInterface.ViewModels
 
         private void DataPropertyChanged(object sender, PropertyChangedEventArgs args)
         {
-            if(args.PropertyName == nameof(Data.AgentDirection))
+            if(args.PropertyName == nameof(data.AgentDirection))
             {
                 RaisePropertyChanged(nameof(IsUpLeft));
                 RaisePropertyChanged(nameof(IsLeft));
@@ -78,8 +96,8 @@ namespace GameInterface.ViewModels
 
         ~UserOrderPanelViewModel()
         {
-            if (!(Data is null))
-                Data.PropertyChanged -= DataPropertyChanged;
+            if (!(data is null))
+                data.PropertyChanged -= DataPropertyChanged;
         }
     }
 }

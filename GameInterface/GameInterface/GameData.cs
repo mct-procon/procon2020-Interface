@@ -28,10 +28,17 @@ namespace GameInterface
                 viewModel.CellData = value;
             }
         }
+        private Agent[] agents;
         public Agent[] Agents
         {
-            get => viewModel.Agents;
-            set => viewModel.Agents = value;
+            get => agents;
+            set {
+                agents = value;
+                for (int i = 0; i < agents.Length; ++i)
+                {
+                    viewModel.AgentViewModels[i].Data = agents[i];
+                }
+            }
         }
         private int[] playerScores = new int[2];
         public int[] PlayerScores
@@ -61,6 +68,7 @@ namespace GameInterface
         public GameData(MainWindowViewModel _viewModel)
         {
             viewModel = _viewModel;
+            agents = _viewModel.AgentViewModels.Select(x => x.Data).ToArray();
         }
 
         public void InitGameData(GameSettings.SettingStructure settings)

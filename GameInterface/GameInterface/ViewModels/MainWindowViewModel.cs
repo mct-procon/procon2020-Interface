@@ -5,6 +5,7 @@ using System.Windows;
 using GameInterface.Cells;
 using System.Windows.Threading;
 using MCTProcon29Protocol.Methods;
+using System.Linq;
 
 namespace GameInterface
 {
@@ -40,21 +41,12 @@ namespace GameInterface
             }
         }
 
-        private Agent[] agents = new Agent[]{
-            new Agent(),new Agent(),new Agent(),new Agent()
-        };
-        public Agent[] Agents
-        {
-            get => agents; 
-            set
-            {
-                agents = value;
-                UpdateOrderButton();
-                RaisePropertyChanged();
-                RaisePropertyChanged("Point");
-            }
+        private ViewModels.UserOrderPanelViewModel[] agentViewModels;
+        public ViewModels.UserOrderPanelViewModel[] AgentViewModels {
+            get => agentViewModels;
+            set => RaisePropertyChanged(ref agentViewModels, value);
         }
-        public OrderButtonUserControl[,] orderButtonUserControls = new OrderButtonUserControl[4, 9];
+
         private int[] playerScores = new int[2];
         public int[] PlayerScores
         {
@@ -116,6 +108,7 @@ namespace GameInterface
 
         public MainWindowViewModel()
         {
+            agentViewModels = Enumerable.Range(0,4).Select(x => new ViewModels.UserOrderPanelViewModel(new Agent())).ToArray();
             InitCommands();
         }
         private void InitCommands()
@@ -138,18 +131,6 @@ namespace GameInterface
         private void ChangeColor(Point point)
         {
             gameManager.ChangeCellToNextColor(point);
-        }
-
-        private void UpdateOrderButton()
-        {
-            for (int i = 0; i < Constants.AgentsNum; i++)
-            {
-                for (int j = 0; j < Constants.OrderButtonsNum; j++)
-                {
-                    orderButtonUserControls[i, j].IsEnabled = true;
-                }
-                orderButtonUserControls[i, agents[i].GetDirectionIdFromDirection()].IsEnabled = false;
-            }
         }
     }
 }

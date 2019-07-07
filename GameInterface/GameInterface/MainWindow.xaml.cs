@@ -78,41 +78,17 @@ namespace GameInterface
         
         void CreateOrderButtonsOnPlayerGrid()
         {
-            OrderButtonUserControl.Viewmodel = viewModel;
-            for (int i = 0; i < Constants.AgentsNum; i++)
+            for (int i = 0; i < 2; i++)
             {
-                var currentGrid = i < 2 ? player1Grid : player2Grid;
-                var currentStyle = (Style)(i < 2 ? this.FindResource("BlueButton") : this.FindResource("RedButton"));
+                var currentGrid = i == 0 ? player1Grid : player2Grid;
 
-                for (int j = 0; j < Constants.OrderButtonsNum; j++)
-                {
-                    var orderButtonUserControl = new OrderButtonUserControl(i, j);
-                    ((FrameworkElement)orderButtonUserControl.Content).Style = currentStyle;
-                    currentGrid.Children.Add(orderButtonUserControl);
-                    Grid.SetRow(orderButtonUserControl, GetButtonSpaceRow(i, j));
-                    Grid.SetColumn(orderButtonUserControl, GetButtonSpaceColumn(j));
-                    viewModel.orderButtonUserControls[i, j] = orderButtonUserControl;
-                }
+                var orderButtonUserControl = new Controls.UserOrderPanel() { DataContext = viewModel.AgentViewModels[i * 2 + 0] };
+                currentGrid.Children.Add(orderButtonUserControl);
+                Grid.SetRow(orderButtonUserControl, 2);
+                var orderButtonUserControl2 = new Controls.UserOrderPanel() { DataContext = viewModel.AgentViewModels[i * 2 + 1] };
+                currentGrid.Children.Add(orderButtonUserControl2);
+                Grid.SetRow(orderButtonUserControl2, 5);
             }
-            viewModel.Agents = gameManager.Data.Agents;
-        }
-
-        int GetButtonSpaceRow(int agentNum, int buttonId)
-        {
-            const int BUTTON_MARGIN_TOP = 2;
-            const int BUTTON_MARGIN_MIDDLE = 1;
-            const int BUTTON_SPACE_RANGE = 3;
-            int row = buttonId / BUTTON_SPACE_RANGE + BUTTON_MARGIN_TOP;
-            if (agentNum % 2 == 1) row += BUTTON_SPACE_RANGE + BUTTON_MARGIN_MIDDLE;
-            return row;
-        }
-
-        int GetButtonSpaceColumn(int buttonId)
-        {
-            const int BUTTON_MARGIN_LEFT = 1;
-            const int BUTTON_SPACE_RANGE = 3;
-            int column = buttonId % BUTTON_SPACE_RANGE + BUTTON_MARGIN_LEFT;
-            return column;
         }
 
         private void MenuButton_Click(object sender, RoutedEventArgs e)
