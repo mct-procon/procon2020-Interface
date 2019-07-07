@@ -125,7 +125,7 @@ namespace GameInterface
 
         private void OrderToAgentFromVM(Order order)
         {
-            if (isRemoveMode[order.agentNum]) order.state = Agent.State.REMOVE_TILE;
+            if (isRemoveMode[order.agentNum]) order.state = AgentState.RemoveTile;
             gameManager.OrderToAgent(order);
         }
 

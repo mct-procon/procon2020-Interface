@@ -363,9 +363,9 @@ namespace GameInterface
 
         private void ActionAgentToNextP(int i, Agent agent, Point nextP, TeamColor nextAreaState)
         {
-            switch (agent.AgentState)
+            switch (agent.State)
             {
-                case Agent.State.MOVE:
+                case AgentState.Move:
                     switch (agent.playerNum)
                     {
                         case 0:
@@ -392,14 +392,14 @@ namespace GameInterface
                             break;
                     }
                     break;
-                case Agent.State.REMOVE_TILE:
+                case AgentState.RemoveTile:
                     Data.CellData[nextP.X, nextP.Y].AreaState_ = TeamColor.Free;
                     break;
                 default:
                     break;
             }
             agent.AgentDirection = Direction.None;
-            agent.AgentState = Agent.State.MOVE;
+            agent.State = AgentState.Move;
         }
 
         public void ClearDecisions(int index)
@@ -422,9 +422,9 @@ namespace GameInterface
             }
             var decided = decideds[0];
             Direction dir = DirectionExtensions.CastPointToDir(new Point(decided.MeAgent1.X, decided.MeAgent1.Y));
-            OrderToAgent(new Order(index * 2, dir, Agent.State.MOVE));
+            OrderToAgent(new Order(index * 2, dir, AgentState.Move));
             dir = DirectionExtensions.CastPointToDir(new Point(decided.MeAgent2.X, decided.MeAgent2.Y));
-            OrderToAgent(new Order(index * 2 + 1, dir, Agent.State.MOVE));
+            OrderToAgent(new Order(index * 2 + 1, dir, AgentState.Move));
         }
 
         private void Draw()
@@ -435,7 +435,7 @@ namespace GameInterface
 
         public void OrderToAgent(Order order)
         {
-            Data.Agents[order.agentNum].AgentState = order.state;
+            Data.Agents[order.agentNum].State = order.state;
             Data.Agents[order.agentNum].AgentDirection = order.direction;
         }
 
@@ -444,7 +444,7 @@ namespace GameInterface
             foreach (var agent in Data.Agents)
             {
                 agent.AgentDirection = Direction.None;
-                agent.AgentState = Agent.State.MOVE;
+                agent.State = AgentState.Move;
             }
         }
 

@@ -103,6 +103,7 @@
     <Compile Include="Controls\UserOrderPanel.xaml.cs">
       <DependentUpon>UserOrderPanel.xaml</DependentUpon>
     </Compile>
+    <Compile Include="GameManagement\AgentState.cs" />
     <Compile Include="GameManagement\Direction.cs" />
     <Compile Include="GameSettings\GameSettingDialog.xaml.cs">
       <DependentUpon>GameSettingDialog.xaml</DependentUpon>

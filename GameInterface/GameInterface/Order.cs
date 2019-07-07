@@ -11,8 +11,8 @@ namespace GameInterface
     {
         public int agentNum; //1,2,3,4
         public Direction direction;
-        public Agent.State state;
-        public Order(int agentNum_, Direction direction_, Agent.State state_)
+        public AgentState state;
+        public Order(int agentNum_, Direction direction_, AgentState state_)
         {
             agentNum = agentNum_;
             direction = direction_;

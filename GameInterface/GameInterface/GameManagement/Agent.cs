@@ -21,31 +21,11 @@ namespace GameInterface.GameManagement
             set => RaisePropertyChanged(ref agentDirection, value);
         }
 
-        //UP_LEFT は左上だから 0 というように、
-        //0 1 2                                 
-        //3 4 5                                  
-        //6 7 8
-        //となるようなIDを定める(viewmodel内のボタンの処理をわかりやすくするため)
-        readonly int[] directionId = new int[]
+        private AgentState state;
+        public AgentState State
         {
-            4,1,2,
-            5,8,7,
-            6,3,0,
-        };
-        public int GetDirectionIdFromDirection()
-        {
-            return directionId[(int)this.AgentDirection];
-        }
-
-        public enum State { MOVE, REMOVE_TILE };
-        private State agentState;
-        public State AgentState
-        {
-            get => agentState; 
-            set
-            {
-                agentState = value;
-            }
+            get => state;
+            set => RaisePropertyChanged(ref state, value);
         }
         public Point GetNextPoint()
         {

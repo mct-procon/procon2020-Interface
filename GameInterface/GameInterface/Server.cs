@@ -58,9 +58,9 @@ namespace GameInterface
         {
             var decided = _decided;
             Direction dir = DirectionExtensions.CastPointToDir(new Point(decided.MeAgent1.X, decided.MeAgent1.Y));
-            gameManager.OrderToAgent(new Order(managerNum * 2, dir, Agent.State.MOVE));
+            gameManager.OrderToAgent(new Order(managerNum * 2, dir, AgentState.Move));
             dir = DirectionExtensions.CastPointToDir(new Point(decided.MeAgent2.X, decided.MeAgent2.Y));
-            gameManager.OrderToAgent(new Order(managerNum * 2 + 1, dir, Agent.State.MOVE));
+            gameManager.OrderToAgent(new Order(managerNum * 2 + 1, dir, AgentState.Move));
         }
 
         public void OnInterrupt(Interrupt interrupt)
