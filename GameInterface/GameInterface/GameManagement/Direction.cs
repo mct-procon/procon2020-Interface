@@ -1,4 +1,6 @@
-﻿namespace GameInterface.GameManagement
+﻿using MCTProcon29Protocol;
+
+namespace GameInterface.GameManagement
 {
     public enum AgentDirection : uint {
         None = 0,
@@ -14,7 +16,7 @@
 
     public static class DirectionExtensions
     {
-        static public AgentDirection CastPointToDir(Point p)
+        static public AgentDirection CastPointToDir(VelocityPoint p)
         {
             int x = p.X, y = p.Y;
             uint result = 0;

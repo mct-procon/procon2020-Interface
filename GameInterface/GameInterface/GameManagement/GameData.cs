@@ -5,10 +5,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows;
-using GameInterface.GameManagement;
+using MCTProcon29Protocol;
 
-namespace GameInterface
+namespace GameInterface.GameManagement
 {
     public class GameData
     {
@@ -157,7 +156,7 @@ namespace GameInterface
                 for (int i = 0; i < Constants.AgentsNum; i++)
                 {
                     Agents[i].playerNum = (i / Constants.PlayersNum);
-                    Agents[i].Point = new Point(agentsX[i], agentsY[i]);
+                    Agents[i].Point = new Point((uint)agentsX[i], (uint)agentsY[i]);
                     CellData[agentsX[i], agentsY[i]].AreaState_ =
                         i / Constants.PlayersNum == 0 ? TeamColor.Area1P : TeamColor.Area2P;
 
@@ -176,12 +175,12 @@ namespace GameInterface
                 switch(posState)
                 {
                     case QRCodeReader.AgentPositioningState.Horizontal:
-                        _Agents[2].Point = new Point(_Agents[0].Point.X, settings.BoardHeight - 1 - _Agents[0].Point.Y);
-                        _Agents[3].Point = new Point(_Agents[1].Point.X, settings.BoardHeight - 1 - _Agents[1].Point.Y);
+                        _Agents[2].Point = new Point(_Agents[0].Point.X, (uint)settings.BoardHeight - 1 - _Agents[0].Point.Y);
+                        _Agents[3].Point = new Point(_Agents[1].Point.X, (uint)settings.BoardHeight - 1 - _Agents[1].Point.Y);
                         break;
                     case QRCodeReader.AgentPositioningState.Vertical:
-                        _Agents[2].Point = new Point(settings.BoardWidth - 1 - _Agents[0].Point.X, _Agents[0].Point.Y);
-                        _Agents[3].Point = new Point(settings.BoardWidth - 1 - _Agents[1].Point.X, _Agents[1].Point.Y);
+                        _Agents[2].Point = new Point((uint)settings.BoardWidth - 1 - _Agents[0].Point.X, _Agents[0].Point.Y);
+                        _Agents[3].Point = new Point((uint)settings.BoardWidth - 1 - _Agents[1].Point.X, _Agents[1].Point.Y);
                         break;
                 }
                 Agents = _Agents;

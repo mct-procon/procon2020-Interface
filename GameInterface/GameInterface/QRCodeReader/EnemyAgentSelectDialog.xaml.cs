@@ -13,6 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using GameInterface.GameManagement;
+using Point = MCTProcon29Protocol.Point;
 
 namespace GameInterface.QRCodeReader
 {
@@ -80,11 +81,11 @@ namespace GameInterface.QRCodeReader
         public void Init(int BoardWidth, int BoardHeight, Agent[] Agents)
         {
             // Horizontal
-            var enemy1 = new Point(Agents[0].Point.X, BoardHeight - Agents[0].Point.Y - 1);
-            var enemy2 = new Point(Agents[1].Point.X, BoardHeight - Agents[1].Point.Y - 1);
+            var enemy1 = new Point(Agents[0].Point.X, (uint)BoardHeight - Agents[0].Point.Y - 1);
+            var enemy2 = new Point(Agents[1].Point.X, (uint)BoardHeight - Agents[1].Point.Y - 1);
             HorizontalResultBitmap = Draw(BoardWidth, BoardHeight, new[] { Agents[0].Point, Agents[1].Point, enemy1, enemy2 });
-            enemy1 = new Point(BoardWidth - Agents[0].Point.X - 1, Agents[0].Point.Y);
-            enemy2 = new Point(BoardWidth - Agents[1].Point.X - 1, Agents[1].Point.Y);
+            enemy1 = new Point((uint)BoardWidth - Agents[0].Point.X - 1, Agents[0].Point.Y);
+            enemy2 = new Point((uint)BoardWidth - Agents[1].Point.X - 1, Agents[1].Point.Y);
             VerticalResultBitmap = Draw(BoardWidth, BoardHeight, new[] { Agents[0].Point, Agents[1].Point, enemy1, enemy2 });
         }
 
@@ -98,14 +99,12 @@ namespace GameInterface.QRCodeReader
 
             for(int x = 0; x < BoardWidth; ++x)
                 for(int y = 0; y < BoardHeight; ++y)
-                {
                     Result.DrawRectangle(offsetX + (CellSize * x), offsetY + (CellSize * y), offsetX + (CellSize * x) + CellSize, offsetY + (CellSize * y) + CellSize, Colors.DarkGray);
-                }
 
-            Result.DrawRectangle(offsetX + (CellSize * Agents[0].X), offsetY + (CellSize * Agents[0].Y), offsetX + (CellSize * Agents[0].X) + CellSize, offsetY + (CellSize * Agents[0].Y) + CellSize, Colors.Blue);
-            Result.DrawRectangle(offsetX + (CellSize * Agents[1].X), offsetY + (CellSize * Agents[1].Y), offsetX + (CellSize * Agents[1].X) + CellSize, offsetY + (CellSize * Agents[1].Y) + CellSize, Colors.Blue);
-            Result.DrawRectangle(offsetX + (CellSize * Agents[2].X), offsetY + (CellSize * Agents[2].Y), offsetX + (CellSize * Agents[2].X) + CellSize, offsetY + (CellSize * Agents[2].Y) + CellSize, Colors.Red);
-            Result.DrawRectangle(offsetX + (CellSize * Agents[3].X), offsetY + (CellSize * Agents[3].Y), offsetX + (CellSize * Agents[3].X) + CellSize, offsetY + (CellSize * Agents[3].Y) + CellSize, Colors.Red);
+            Result.DrawRectangle(offsetX + (CellSize * (int)Agents[0].X), offsetY + (CellSize * (int)Agents[0].Y), offsetX + (CellSize * (int)Agents[0].X) + CellSize, offsetY + (CellSize * (int)Agents[0].Y) + CellSize, Colors.Blue);
+            Result.DrawRectangle(offsetX + (CellSize * (int)Agents[1].X), offsetY + (CellSize * (int)Agents[1].Y), offsetX + (CellSize * (int)Agents[1].X) + CellSize, offsetY + (CellSize * (int)Agents[1].Y) + CellSize, Colors.Blue);
+            Result.DrawRectangle(offsetX + (CellSize * (int)Agents[2].X), offsetY + (CellSize * (int)Agents[2].Y), offsetX + (CellSize * (int)Agents[2].X) + CellSize, offsetY + (CellSize * (int)Agents[2].Y) + CellSize, Colors.Red);
+            Result.DrawRectangle(offsetX + (CellSize * (int)Agents[3].X), offsetY + (CellSize * (int)Agents[3].Y), offsetX + (CellSize * (int)Agents[3].X) + CellSize, offsetY + (CellSize * (int)Agents[3].Y) + CellSize, Colors.Red);
 
             return Result;
         }

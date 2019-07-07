@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using GameInterface.Cells;
 using MCTProcon29Protocol;
 
-namespace GameInterface
+namespace GameInterface.GameManagement
 {
     static class ScoreCalculator
     {

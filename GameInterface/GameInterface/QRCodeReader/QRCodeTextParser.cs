@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using GameInterface.GameManagement;
+using MCTProcon29Protocol;
 
 namespace GameInterface.QRCodeReader
 {
@@ -70,7 +71,7 @@ namespace GameInterface.QRCodeReader
             itr++;
             startItr = itr;
             AgentResult = new Agent[4];
-            var nums = input.Substring(startItr).Split(new[] { ':', ' ' }, StringSplitOptions.RemoveEmptyEntries).Select(x => int.Parse(x)).ToArray();
+            var nums = input.Substring(startItr).Split(new[] { ':', ' ' }, StringSplitOptions.RemoveEmptyEntries).Select(x => uint.Parse(x)).ToArray();
             AgentResult[0] = new Agent();
             AgentResult[1] = new Agent();
             AgentResult[0].Point = new Point(nums[1] - 1, nums[0] - 1);

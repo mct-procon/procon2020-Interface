@@ -57,9 +57,9 @@ namespace GameInterface
         private void decidedMethod()
         {
             var decided = _decided;
-            AgentDirection dir = DirectionExtensions.CastPointToDir(new Point(decided.MeAgent1.X, decided.MeAgent1.Y));
+            AgentDirection dir = DirectionExtensions.CastPointToDir(new VelocityPoint(decided.MeAgent1.X, decided.MeAgent1.Y));
             gameManager.OrderToAgent(new Order(managerNum * 2, dir, AgentState.Move));
-            dir = DirectionExtensions.CastPointToDir(new Point(decided.MeAgent2.X, decided.MeAgent2.Y));
+            dir = DirectionExtensions.CastPointToDir(new VelocityPoint(decided.MeAgent2.X, decided.MeAgent2.Y));
             gameManager.OrderToAgent(new Order(managerNum * 2 + 1, dir, AgentState.Move));
         }
 

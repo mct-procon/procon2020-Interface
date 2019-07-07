@@ -4,6 +4,7 @@ using System.Linq;
 using System.Windows.Threading;
 using MCTProcon29Protocol.Methods;
 using GameInterface.GameManagement;
+using MCTProcon29Protocol;
 
 namespace GameInterface
 {
@@ -243,7 +244,7 @@ namespace GameInterface
                 {
                     var agent2 = Data.Agents[j];
                     var nextP2 = agent2.GetNextPoint();
-                    if (nextP1.CompareTo(nextP2) == 0)
+                    if (nextP1 == nextP2)
                     {
                         canMove[i] = false;
                         canMove[j] = false;
@@ -268,7 +269,7 @@ namespace GameInterface
                         if (canMove[j] == true) { continue; }
                         var agent2 = Data.Agents[j];
                         var nextP2 = agent2.Point;
-                        if (nextP1.CompareTo(nextP2) == 0)
+                        if (nextP1 == nextP2)
                         {
                             canMove[i] = false;
                             updateFlag = true;
@@ -300,7 +301,7 @@ namespace GameInterface
                 {
                     var agent2 = Data.Agents[j];
                     var nextP2 = agent2.GetNextPoint();
-                    if (nextP1.CompareTo(nextP2) == 0)
+                    if (nextP1 == nextP2)
                     {
                         canAction[i] = false;
                         canAction[j] = false;
@@ -323,7 +324,7 @@ namespace GameInterface
                     var agent2 = Data.Agents[j];
                     var nextP2 = agent2.Point;
 
-                    if (nextP1.CompareTo(nextP2) == 0)
+                    if (nextP1 == nextP2)
                     {
                         canAction[i] = false;
                         break;
@@ -340,15 +341,6 @@ namespace GameInterface
                 //else { MessageBox.Show(i.ToString()); }
             }
             return ret;
-        }
-
-        private bool CheckContain(Point[] points, Point checkPoint)
-        {
-            foreach (var point in points)
-            {
-                if (point.CompareTo(checkPoint) == 0) return true;
-            }
-            return false;
         }
 
         private void GetScore()
@@ -421,9 +413,9 @@ namespace GameInterface
                 viewModel.Decisions2PSelectedIndex = 0;
             }
             var decided = decideds[0];
-            AgentDirection dir = DirectionExtensions.CastPointToDir(new Point(decided.MeAgent1.X, decided.MeAgent1.Y));
+            AgentDirection dir = DirectionExtensions.CastPointToDir(decided.MeAgent1);
             OrderToAgent(new Order(index * 2, dir, AgentState.Move));
-            dir = DirectionExtensions.CastPointToDir(new Point(decided.MeAgent2.X, decided.MeAgent2.Y));
+            dir = DirectionExtensions.CastPointToDir(decided.MeAgent2);
             OrderToAgent(new Order(index * 2 + 1, dir, AgentState.Move));
         }
 

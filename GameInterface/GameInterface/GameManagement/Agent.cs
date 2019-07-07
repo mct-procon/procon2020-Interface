@@ -1,8 +1,8 @@
-using System.Windows;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using MCTProcon29Protocol;
 
 namespace GameInterface.GameManagement
 {
@@ -29,7 +29,7 @@ namespace GameInterface.GameManagement
         }
         public Point GetNextPoint()
         {
-            int x = this.Point.X, y = this.Point.Y;
+            uint x = this.Point.X, y = this.Point.Y;
             switch((AgentDirection)((uint)AgentDirection & 0b11))
             {
                 case AgentDirection.Right:

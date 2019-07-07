@@ -43,8 +43,8 @@
     <Reference Include="MCTProcon29Protocol">
       <HintPath>..\libs\MCTProcon29Protocol.dll</HintPath>
     </Reference>
-    <Reference Include="MessagePack, Version=1.7.3.7, Culture=neutral, PublicKeyToken=b4a0369545f0a1be, processorArchitecture=MSIL">
-      <HintPath>..\packages\MessagePack.1.7.3.7\lib\net47\MessagePack.dll</HintPath>
+    <Reference Include="MessagePack, Version=1.7.3.4, Culture=neutral, PublicKeyToken=b4a0369545f0a1be, processorArchitecture=MSIL">
+      <HintPath>..\packages\MessagePack.1.7.3.4\lib\net47\MessagePack.dll</HintPath>
     </Reference>
     <Reference Include="OpenCvSharp, Version=1.0.0.0, Culture=neutral, PublicKeyToken=6adad1e807fea099, processorArchitecture=MSIL">
       <HintPath>..\packages\OpenCvSharp3-AnyCPU.4.0.0.20181129\lib\net461\OpenCvSharp.dll</HintPath>
@@ -115,7 +115,7 @@
     <Compile Include="GameSettings\WaitForAIDialog.xaml.cs">
       <DependentUpon>WaitForAIDialog.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Order.cs" />
+    <Compile Include="GameManagement\Order.cs" />
     <Compile Include="QRCodeReader\BitmapSourceLuminanceSourceEx.cs" />
     <Compile Include="QRCodeReader\EnemyAgentSelectDialog.xaml.cs">
       <DependentUpon>EnemyAgentSelectDialog.xaml</DependentUpon>
@@ -127,9 +127,9 @@
       <DependentUpon>QRCodeReaderDialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="QRCodeReader\QRCodeTextParser.cs" />
-    <Compile Include="ScoreCalculator.cs" />
+    <Compile Include="GameManagement\ScoreCalculator.cs" />
     <Compile Include="Server.cs" />
-    <Compile Include="TeamColor.cs" />
+    <Compile Include="GameManagement\TeamColor.cs" />
     <Compile Include="ValueConvertes\BooleanNotConverter.cs" />
     <Compile Include="ViewModels\NotifyDataErrorInfoViewModel.cs" />
     <Compile Include="ViewModels\UserOrderPanelViewModel.cs" />
@@ -172,8 +172,8 @@
     </Compile>
     <Compile Include="Constants.cs" />
     <Compile Include="DelegateCommand.cs" />
-    <Compile Include="GameData.cs" />
-    <Compile Include="GameManager.cs" />
+    <Compile Include="GameManagement\GameData.cs" />
+    <Compile Include="GameManagement\GameManager.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -198,7 +198,6 @@
   <ItemGroup>
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
     <Compile Include="Cells\Cell.cs" />
-    <Compile Include="Point.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
