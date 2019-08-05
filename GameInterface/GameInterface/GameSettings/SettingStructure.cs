@@ -67,7 +67,7 @@ namespace GameInterface.GameSettings
             set => RaisePropertyChanged(ref boardCreationState, value);
         }
 
-        internal BoardCreation BoardCreation => _BoardCreationState == 0 ? BoardCreation.Random : BoardCreation.QRCode;
+        internal BoardCreation BoardCreation => _BoardCreationState == 0 ? BoardCreation.Random : BoardCreation.JsonFile;
 
         internal Cells.Cell[,] QCCell { get; set; }
         internal Agent[] QCAgent { get; set; }
@@ -174,6 +174,6 @@ namespace GameInterface.GameSettings
 
     public enum BoardCreation : byte
     {
-        Random = 0, QRCode = 1
+        Random = 0, JsonFile = 1
     }
 }

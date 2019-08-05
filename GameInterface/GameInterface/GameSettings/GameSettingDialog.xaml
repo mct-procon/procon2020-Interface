@@ -60,18 +60,6 @@
                     <Button Content="ランダム" x:Name="HeightBox_RandomButton" Grid.Row="4" Grid.Column="4" Margin="2" HorizontalAlignment="Right" Click="HeightBox_RandomButton_Click"/>
                 </Grid>
             </TabItem>
-            <TabItem Header="QRコード（画像ファイル）">
-                <Grid>
-                    <Button Content="参照" VerticalAlignment="Top" HorizontalAlignment="Left" Width="60" Height="30" Margin="5,5,0,0" Click="ShowQRImage_Click"/>
-                    <TextBox Height="60" Margin="5,40,5,5" IsReadOnly="True" Text="{Binding QCIMGText}"/>
-                </Grid>
-            </TabItem>
-            <TabItem Header="QRコード（カメラ）">
-                <Grid>
-                    <Button Content="撮影" VerticalAlignment="Top" HorizontalAlignment="Left" Width="60" Height="30" Margin="5,5,0,0" Click="ShowQRCamera_Click"/>
-                    <TextBox Height="60" Margin="5,40,5,5" IsReadOnly="True" Text="{Binding QCCAMText}"/>
-                </Grid>
-            </TabItem>
             <!--<TabItem Header="保存した盤面から">
 
             </TabItem>-->

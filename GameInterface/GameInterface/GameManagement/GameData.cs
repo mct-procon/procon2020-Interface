@@ -80,7 +80,7 @@ namespace GameInterface.GameManagement
             TimeLimitSeconds = settings.LimitTime;
             IsAutoSkipTurn = settings.IsAutoSkip;
 
-            if(settings.BoardCreation == GameSettings.BoardCreation.QRCode)
+            if(settings.BoardCreation == GameSettings.BoardCreation.JsonFile)
             {
                 settings.BoardWidth = (byte)settings.QCCell.GetLength(0);
                 settings.BoardHeight = (byte)settings.QCCell.GetLength(1);
@@ -140,56 +140,26 @@ namespace GameInterface.GameManagement
 
         void InitAgents(GameSettings.SettingStructure settings)
         {
-            if (settings.BoardCreation == GameSettings.BoardCreation.Random)
+            /*
+            配置は
+            0 2
+            3 1
+            */
+            int[] agentsX = new int[4];
+            int[] agentsY = new int[4];
+            agentsX[0] = agentsX[3] = rand.Next(1, BoardWidth / 2 - 1);
+            agentsY[0] = agentsY[2] = rand.Next(1, BoardHeight / 2 - 1);
+            agentsX[2] = agentsX[1] = BoardWidth - 1 - agentsX[0];
+            agentsY[3] = agentsY[1] = BoardHeight - 1 - agentsY[0];
+            for (int i = 0; i < Constants.AgentsNum; i++)
             {
-                /*
-                配置は
-                0 2
-                3 1
-                */
-                int[] agentsX = new int[4];
-                int[] agentsY = new int[4];
-                agentsX[0] = agentsX[3] = rand.Next(1, BoardWidth / 2 - 1);
-                agentsY[0] = agentsY[2] = rand.Next(1, BoardHeight / 2 - 1);
-                agentsX[2] = agentsX[1] = BoardWidth - 1 - agentsX[0];
-                agentsY[3] = agentsY[1] = BoardHeight - 1 - agentsY[0];
-                for (int i = 0; i < Constants.AgentsNum; i++)
-                {
-                    Agents[i].playerNum = (i / Constants.PlayersNum);
-                    Agents[i].Point = new Point((uint)agentsX[i], (uint)agentsY[i]);
-                    CellData[agentsX[i], agentsY[i]].AreaState_ =
-                        i / Constants.PlayersNum == 0 ? TeamColor.Area1P : TeamColor.Area2P;
+                Agents[i].playerNum = (i / Constants.PlayersNum);
+                Agents[i].Point = new Point((uint)agentsX[i], (uint)agentsY[i]);
+                CellData[agentsX[i], agentsY[i]].AreaState_ =
+                    i / Constants.PlayersNum == 0 ? TeamColor.Area1P : TeamColor.Area2P;
 
-                    CellData[agentsX[i], agentsY[i]].AgentState =
-                        i / Constants.PlayersNum == 0 ? TeamColor.Area1P : TeamColor.Area2P;
-                }
-            }
-            else
-            {
-                var _Agents = settings.QCAgent;
-                var posState = QRCodeReader.AgentPositioningState.Horizontal;
-                if (QRCodeReader.EnemyAgentSelectDialog.ShowDialog(out QRCodeReader.AgentPositioningState result, settings) == true)
-                    posState = result;
-                _Agents[2] = new Agent();
-                _Agents[3] = new Agent();
-                switch(posState)
-                {
-                    case QRCodeReader.AgentPositioningState.Horizontal:
-                        _Agents[2].Point = new Point(_Agents[0].Point.X, (uint)settings.BoardHeight - 1 - _Agents[0].Point.Y);
-                        _Agents[3].Point = new Point(_Agents[1].Point.X, (uint)settings.BoardHeight - 1 - _Agents[1].Point.Y);
-                        break;
-                    case QRCodeReader.AgentPositioningState.Vertical:
-                        _Agents[2].Point = new Point((uint)settings.BoardWidth - 1 - _Agents[0].Point.X, _Agents[0].Point.Y);
-                        _Agents[3].Point = new Point((uint)settings.BoardWidth - 1 - _Agents[1].Point.X, _Agents[1].Point.Y);
-                        break;
-                }
-                Agents = _Agents;
-                for (int i = 0; i < Agents.Length; ++i)
-                {
-                    Agents[i].playerNum = i / Constants.PlayersNum;
-                    CellData[Agents[i].Point.X, Agents[i].Point.Y].AreaState_ =
-                        i / Constants.PlayersNum == 0 ? TeamColor.Area1P : TeamColor.Area2P;
-                }
+                CellData[agentsX[i], agentsY[i]].AgentState =
+                    i / Constants.PlayersNum == 0 ? TeamColor.Area1P : TeamColor.Area2P;
             }
         }
     }
