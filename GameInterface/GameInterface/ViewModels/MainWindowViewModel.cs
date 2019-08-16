@@ -4,11 +4,11 @@ using System.Collections.Generic;
 using System.Windows;
 using GameInterface.Cells;
 using System.Windows.Threading;
-using MCTProcon29Protocol.Methods;
+using MCTProcon30Protocol.Methods;
 using System.Linq;
 using GameInterface.GameManagement;
-using MCTProcon29Protocol;
-using Point = MCTProcon29Protocol.Point;
+using MCTProcon30Protocol;
+using Point = MCTProcon30Protocol.Point;
 
 namespace GameInterface
 {
@@ -73,7 +73,7 @@ namespace GameInterface
             RaisePropertyChanged("Decisions1P");
             RaisePropertyChanged("Decisions2P");
         }
-        public List<Decided> Decisions1P {
+        public List<Decision> Decisions1P {
             get => gameManager.Data.Decisions[0];
             set {
                 gameManager.Data.Decisions[0] = value;
@@ -87,7 +87,7 @@ namespace GameInterface
             set => RaisePropertyChanged(ref decisions1PSelectedIndex, value);
         }
 
-        public List<Decided> Decisions2P {
+        public List<Decision> Decisions2P {
             get => gameManager.Data.Decisions[1];
             set {
                 gameManager.Data.Decisions[1] = value;

@@ -9,8 +9,8 @@ using System.Collections.Generic;
 using System.Windows.Media.Imaging;
 using System.Windows.Media;
 using GameInterface.GameManagement;
-using Point = MCTProcon29Protocol.Point;
-using MCTProcon29Protocol;
+using Point = MCTProcon30Protocol.Point;
+using MCTProcon30Protocol;
 
 namespace GameInterface
 {
@@ -71,7 +71,7 @@ namespace GameInterface
                     Grid.SetColumn(cellUserControl, i);
                     Grid.SetRow(cellUserControl, j);
 
-                    var changeColorUserCtrl = new ChangeColorUserCtrl(new Point((uint)i, (uint)j));
+                    var changeColorUserCtrl = new ChangeColorUserCtrl(new Point((byte)i, (byte)j));
                     cellGrid.Children.Add(changeColorUserCtrl);
                     Grid.SetColumn(changeColorUserCtrl, i);
                     Grid.SetRow(changeColorUserCtrl, j);
@@ -156,21 +156,21 @@ namespace GameInterface
 
         private void Decisions1P_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            var decided = (MCTProcon29Protocol.Methods.Decided)((ListBox)sender).SelectedItem;
+            var decided = (Decision)((ListBox)sender).SelectedItem;
             if (decided == null) return;
-            AgentDirection dir = DirectionExtensions.CastPointToDir(new VelocityPoint(decided.MeAgent1.X, decided.MeAgent1.Y));
+            AgentDirection dir = DirectionExtensions.CastPointToDir(decided.Agents[0]);
             gameManager.OrderToAgent(new Order(0, dir, AgentState.Move));
-            dir = DirectionExtensions.CastPointToDir(new VelocityPoint(decided.MeAgent2.X, decided.MeAgent2.Y));
+            dir = DirectionExtensions.CastPointToDir(decided.Agents[1]);
             gameManager.OrderToAgent(new Order(1, dir, AgentState.Move));
         }
 
         private void Decisions2P_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            var decided = (MCTProcon29Protocol.Methods.Decided)((ListBox)sender).SelectedItem;
+            var decided = (Decision)((ListBox)sender).SelectedItem;
             if (decided == null) return;
-            AgentDirection dir = DirectionExtensions.CastPointToDir(new VelocityPoint(decided.MeAgent1.X, decided.MeAgent1.Y));
+            AgentDirection dir = DirectionExtensions.CastPointToDir(decided.Agents[0]);
             gameManager.OrderToAgent(new Order(2, dir, AgentState.Move));
-            dir = DirectionExtensions.CastPointToDir(new VelocityPoint(decided.MeAgent2.X, decided.MeAgent2.Y));
+            dir = DirectionExtensions.CastPointToDir(decided.Agents[1]);
             gameManager.OrderToAgent(new Order(3, dir, AgentState.Move));
         }
     }

@@ -4,18 +4,18 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using GameInterface.Cells;
-using MCTProcon29Protocol;
+using MCTProcon30Protocol;
 
 namespace GameInterface.GameManagement
 {
     static class ScoreCalculator
     {
-        private static uint height;
-        private static uint width;
+        private static byte height;
+        private static byte width;
         private static readonly int[] DirectionX = new int[] { 1, 0, -1, 0 };
         private static readonly int[] DirectionY = new int[] { 0, 1, 0, -1 };
 
-        public static void Init(uint height_, uint width_)
+        public static void Init(byte height_, byte width_)
         {
             height = height_;
             width = width_;
@@ -49,41 +49,41 @@ namespace GameInterface.GameManagement
         }
 
         //uint[] myStack = new uint[1024];	//x, yの順で入れる. y, xの順で取り出す. width * height以上のサイズにする.
-        public static unsafe void BadSpaceFill(ref ColoredBoardSmallBigger Checker, uint width, uint height)
+        public static unsafe void BadSpaceFill(ref ColoredBoardSmallBigger Checker, byte width, byte height)
         {
             unchecked
             {
-                MCTProcon29Protocol.Point* myStack = stackalloc MCTProcon29Protocol.Point[12 * 12];
+                MCTProcon30Protocol.Point* myStack = stackalloc MCTProcon30Protocol.Point[20 * 20];
 
-                MCTProcon29Protocol.Point point;
-                uint x, y, searchTo = 0, myStackSize = 0;
+                MCTProcon30Protocol.Point point;
+                byte x, y, searchTo = 0, myStackSize = 0;
 
-                searchTo = height - 1;
+                searchTo = (byte)(height - 1);
                 for (x = 0; x < width; x++)
                 {
                     if (!Checker[x, 0])
                     {
-                        myStack[myStackSize++] = new MCTProcon29Protocol.Point(x, 0);
+                        myStack[myStackSize++] = new MCTProcon30Protocol.Point(x, 0);
                         Checker[x, 0] = true;
                     }
                     if (!Checker[x, searchTo])
                     {
-                        myStack[myStackSize++] = new MCTProcon29Protocol.Point(x, searchTo);
+                        myStack[myStackSize++] = new MCTProcon30Protocol.Point(x, searchTo);
                         Checker[x, searchTo] = true;
                     }
                 }
 
-                searchTo = width - 1;
+                searchTo = (byte)(width - 1);
                 for (y = 0; y < height; y++)
                 {
                     if (!Checker[0, y])
                     {
-                        myStack[myStackSize++] = new MCTProcon29Protocol.Point(0, y);
+                        myStack[myStackSize++] = new MCTProcon30Protocol.Point(0, y);
                         Checker[0, y] = true;
                     }
                     if (!Checker[searchTo, y])
                     {
-                        myStack[myStackSize++] = new MCTProcon29Protocol.Point(searchTo, y);
+                        myStack[myStackSize++] = new MCTProcon30Protocol.Point(searchTo, y);
                         Checker[searchTo, y] = true;
                     }
                 }
@@ -95,34 +95,34 @@ namespace GameInterface.GameManagement
                     y = point.Y;
 
                     //左方向
-                    searchTo = x - 1;
+                    searchTo = (byte)(x - 1);
                     if (searchTo < width && !Checker[searchTo, y])
                     {
-                        myStack[myStackSize++] = new MCTProcon29Protocol.Point(searchTo, y);
+                        myStack[myStackSize++] = new MCTProcon30Protocol.Point(searchTo, y);
                         Checker[searchTo, y] = true;
                     }
 
                     //下方向
-                    searchTo = y + 1;
+                    searchTo = (byte)(y + 1);
                     if (searchTo < height && !Checker[x, searchTo])
                     {
-                        myStack[myStackSize++] = new MCTProcon29Protocol.Point(x, searchTo);
+                        myStack[myStackSize++] = new MCTProcon30Protocol.Point(x, searchTo);
                         Checker[x, searchTo] = true;
                     }
 
                     //右方向
-                    searchTo = x + 1;
+                    searchTo = (byte)(x + 1);
                     if (searchTo < width && !Checker[searchTo, y])
                     {
-                        myStack[myStackSize++] = new MCTProcon29Protocol.Point(searchTo, y);
+                        myStack[myStackSize++] = new MCTProcon30Protocol.Point(searchTo, y);
                         Checker[searchTo, y] = true;
                     }
 
                     //上方向
-                    searchTo = y - 1;
+                    searchTo = (byte)(y - 1);
                     if (searchTo < height && !Checker[x, searchTo])
                     {
-                        myStack[myStackSize++] = new MCTProcon29Protocol.Point(x, searchTo);
+                        myStack[myStackSize++] = new MCTProcon30Protocol.Point(x, searchTo);
                         Checker[x, searchTo] = true;
                     }
                 }

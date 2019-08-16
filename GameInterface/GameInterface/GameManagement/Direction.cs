@@ -1,4 +1,4 @@
-﻿using MCTProcon29Protocol;
+﻿using MCTProcon30Protocol;
 
 namespace GameInterface.GameManagement
 {

@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Threading;
-using MCTProcon29Protocol.Methods;
+using MCTProcon30Protocol.Methods;
 using GameInterface.GameManagement;
-using MCTProcon29Protocol;
+using MCTProcon30Protocol;
 
 namespace GameInterface
 {
@@ -28,7 +28,7 @@ namespace GameInterface
             Server.SendGameInit();
             InitDispatcherTimer();
             ResetOrder();
-            ScoreCalculator.Init((uint)Data.BoardHeight, (uint)Data.BoardWidth);
+            ScoreCalculator.Init((byte)Data.BoardHeight, (byte)Data.BoardWidth);
             StartTurn();
             GetScore();
             Data.IsGameStarted = true;
@@ -400,7 +400,7 @@ namespace GameInterface
             viewModel.RaiseDecisionsChanged();
         }
 
-        public void SetDecisions(int index, DecidedEx decideds)
+        public void SetDecisions(int index, Decided decideds)
         {
             if (index == 0)
             {
@@ -413,9 +413,9 @@ namespace GameInterface
                 viewModel.Decisions2PSelectedIndex = 0;
             }
             var decided = decideds[0];
-            AgentDirection dir = DirectionExtensions.CastPointToDir(decided.MeAgent1);
+            AgentDirection dir = DirectionExtensions.CastPointToDir(decided.Agents[0]);
             OrderToAgent(new Order(index * 2, dir, AgentState.Move));
-            dir = DirectionExtensions.CastPointToDir(decided.MeAgent2);
+            dir = DirectionExtensions.CastPointToDir(decided.Agents[1]);
             OrderToAgent(new Order(index * 2 + 1, dir, AgentState.Move));
         }
 

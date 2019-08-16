@@ -1,11 +1,11 @@
 ﻿using GameInterface.Cells;
-using MCTProcon29Protocol.Methods;
+using MCTProcon30Protocol.Methods;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using MCTProcon29Protocol;
+using MCTProcon30Protocol;
 
 namespace GameInterface.GameManagement
 {
@@ -63,7 +63,7 @@ namespace GameInterface.GameManagement
 
         public GameSettings.SettingStructure CurrentGameSettings { get; set; }
 
-        public List<Decided>[] Decisions = new List<Decided>[2];
+        public List<Decision>[] Decisions = new List<Decision>[2];
         
         public GameData(MainWindowViewModel _viewModel)
         {
@@ -154,7 +154,7 @@ namespace GameInterface.GameManagement
             for (int i = 0; i < Constants.AgentsNum; i++)
             {
                 Agents[i].playerNum = (i / Constants.PlayersNum);
-                Agents[i].Point = new Point((uint)agentsX[i], (uint)agentsY[i]);
+                Agents[i].Point = new Point((byte)agentsX[i], (byte)agentsY[i]);
                 CellData[agentsX[i], agentsY[i]].AreaState_ =
                     i / Constants.PlayersNum == 0 ? TeamColor.Area1P : TeamColor.Area2P;
 

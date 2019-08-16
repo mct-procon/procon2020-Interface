@@ -3,8 +3,8 @@ using System.Windows;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using MCTProcon29Protocol.Methods;
-using MCTProcon29Protocol;
+using MCTProcon30Protocol.Methods;
+using MCTProcon30Protocol;
 using System.Threading;
 using System.Diagnostics;
 using GameInterface.GameManagement;
@@ -39,13 +39,6 @@ namespace GameInterface
 
         public void OnDecided(Decided decided)
         {
-            gameManager.ClearDecisions(managerNum);
-            _decided = decided;
-            gameManager.viewModel.MainWindowDispatcher.Invoke(decidedMethod);
-        }
-
-        public void OnDecidedEx(DecidedEx decided)
-        {
             gameManager.viewModel.MainWindowDispatcher.Invoke(() =>
             {
                 gameManager.SetDecisions(managerNum, decided);
@@ -54,14 +47,14 @@ namespace GameInterface
             //gameManager.viewModel.MainWindowDispatcher.Invoke(decidedMethod);
         }
 
-        private void decidedMethod()
-        {
-            var decided = _decided;
-            AgentDirection dir = DirectionExtensions.CastPointToDir(new VelocityPoint(decided.MeAgent1.X, decided.MeAgent1.Y));
-            gameManager.OrderToAgent(new Order(managerNum * 2, dir, AgentState.Move));
-            dir = DirectionExtensions.CastPointToDir(new VelocityPoint(decided.MeAgent2.X, decided.MeAgent2.Y));
-            gameManager.OrderToAgent(new Order(managerNum * 2 + 1, dir, AgentState.Move));
-        }
+        //private void decidedMethod()
+        //{
+        //    var decided = _decided;
+        //    AgentDirection dir = DirectionExtensions.CastPointToDir(new VelocityPoint(decided.MeAgent1.X, decided.MeAgent1.Y));
+        //    gameManager.OrderToAgent(new Order(managerNum * 2, dir, AgentState.Move));
+        //    dir = DirectionExtensions.CastPointToDir(new VelocityPoint(decided.MeAgent2.X, decided.MeAgent2.Y));
+        //    gameManager.OrderToAgent(new Order(managerNum * 2 + 1, dir, AgentState.Move));
+        //}
 
         public void OnInterrupt(Interrupt interrupt)
         {
@@ -221,11 +214,9 @@ namespace GameInterface
                     board[i, j] = (sbyte)data.CellData[i, j].Score;
                 }
             }
-            managers[playerNum].Write(DataKind.GameInit, new GameInit((byte)data.BoardHeight, (byte)data.BoardWidth, board,
-                new MCTProcon29Protocol.Point((uint)data.Agents[0 + playerNum * 2].Point.X, (uint)data.Agents[0 + playerNum * 2].Point.Y),
-                new MCTProcon29Protocol.Point((uint)data.Agents[1 + playerNum * 2].Point.X, (uint)data.Agents[1 + playerNum * 2].Point.Y),
-                new MCTProcon29Protocol.Point((uint)data.Agents[2 - playerNum * 2].Point.X, (uint)data.Agents[2 - playerNum * 2].Point.Y),
-                new MCTProcon29Protocol.Point((uint)data.Agents[3 - playerNum * 2].Point.X, (uint)data.Agents[3 - playerNum * 2].Point.Y),
+            managers[playerNum].Write(DataKind.GameInit, new GameInit((byte)data.BoardHeight, (byte)data.BoardWidth, board, 2,
+                Unsafe8Array<MCTProcon30Protocol.Point>.Create(data.Agents[0 + playerNum * 2].Point, data.Agents[1 + playerNum * 2].Point),
+                Unsafe8Array<MCTProcon30Protocol.Point>.Create(data.Agents[2 - playerNum * 2].Point, data.Agents[3 - playerNum * 2].Point),
                 data.FinishTurn));
         }
 
@@ -255,14 +246,12 @@ namespace GameInterface
             }
             if (playerNum == 1) Swap(ref colorBoardMe, ref colorBoardEnemy);
             managers[playerNum].Write(DataKind.TurnStart, new TurnStart((byte)data.NowTurn, data.TimeLimitSeconds * 1000,
-                new MCTProcon29Protocol.Point((uint)data.Agents[0 + playerNum * 2].Point.X, (uint)data.Agents[0 + playerNum * 2].Point.Y),
-                new MCTProcon29Protocol.Point((uint)data.Agents[1 + playerNum * 2].Point.X, (uint)data.Agents[1 + playerNum * 2].Point.Y),
-                new MCTProcon29Protocol.Point((uint)data.Agents[2 - playerNum * 2].Point.X, (uint)data.Agents[2 - playerNum * 2].Point.Y),
-                new MCTProcon29Protocol.Point((uint)data.Agents[3 - playerNum * 2].Point.X, (uint)data.Agents[3 - playerNum * 2].Point.Y),
+                Unsafe8Array<MCTProcon30Protocol.Point>.Create(data.Agents[0 + playerNum * 2].Point, data.Agents[1 + playerNum * 2].Point),
+                Unsafe8Array<MCTProcon30Protocol.Point>.Create(data.Agents[2 - playerNum * 2].Point, data.Agents[3 - playerNum * 2].Point),
                 colorBoardMe,
                 colorBoardEnemy,
-                isAgent1Moved,
-                isAgent2Moved));
+                Unsafe8Array<bool>.Create(isAgent1Moved,isAgent2Moved)
+                ));
         }
 
         public void SendTurnEnd()
