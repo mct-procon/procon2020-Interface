@@ -122,23 +122,23 @@ namespace GameInterface.GameSettings
 
         private void OkButton_Click(object sender, RoutedEventArgs e)
         {
-            switch(DataContext._BoardCreationState)
-            {
-                case 1:
-                    if (string.IsNullOrEmpty(DataContext.QCIMGText))
-                    {
-                        MessageBox.Show("画像ファイルを参照してQRコードを読み込んでください．", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
-                        return;
-                    }
-                    break;
-                case 2:
-                    if (string.IsNullOrEmpty(DataContext.QCCAMText))
-                    {
-                        MessageBox.Show("カメラで撮影してQRコードを読み込んでください．", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
-                        return;
-                    }
-                    break;
-            }
+            //switch(DataContext._BoardCreationState)
+            //{
+            //    case 1:
+            //        if (string.IsNullOrEmpty(DataContext.QCIMGText))
+            //        {
+            //            MessageBox.Show("画像ファイルを参照してQRコードを読み込んでください．", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+            //            return;
+            //        }
+            //        break;
+            //    case 2:
+            //        if (string.IsNullOrEmpty(DataContext.QCCAMText))
+            //        {
+            //            MessageBox.Show("カメラで撮影してQRコードを読み込んでください．", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+            //            return;
+            //        }
+            //        break;
+            //}
             DialogResult = true;
             Close();
         }

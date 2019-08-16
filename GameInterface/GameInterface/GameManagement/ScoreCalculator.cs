@@ -23,7 +23,7 @@ namespace GameInterface.GameManagement
 
         public static int CalcScore(int playerNum, Cell[,] cells)
         {
-            ColoredBoardSmallBigger checker = new ColoredBoardSmallBigger(width, height);
+            ColoredBoardNormalSmaller checker = new ColoredBoardNormalSmaller(width, height);
             int result = 0;
             var state = playerNum == 0 ? TeamColor.Area1P : TeamColor.Area2P;
 
@@ -49,7 +49,7 @@ namespace GameInterface.GameManagement
         }
 
         //uint[] myStack = new uint[1024];	//x, yの順で入れる. y, xの順で取り出す. width * height以上のサイズにする.
-        public static unsafe void BadSpaceFill(ref ColoredBoardSmallBigger Checker, byte width, byte height)
+        public static unsafe void BadSpaceFill(ref ColoredBoardNormalSmaller Checker, byte width, byte height)
         {
             unchecked
             {

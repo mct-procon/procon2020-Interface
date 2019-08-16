@@ -82,8 +82,8 @@ namespace GameInterface.GameManagement
 
             if(settings.BoardCreation == GameSettings.BoardCreation.JsonFile)
             {
-                settings.BoardWidth = (byte)settings.QCCell.GetLength(0);
-                settings.BoardHeight = (byte)settings.QCCell.GetLength(1);
+                settings.BoardWidth = (byte)settings.JsonCell.GetLength(0);
+                settings.BoardHeight = (byte)settings.JsonCell.GetLength(1);
             }
 
             InitCellData(settings);
@@ -132,7 +132,7 @@ namespace GameInterface.GameManagement
             }
             else
             {
-                CellData = settings.QCCell;
+                CellData = settings.JsonCell;
                 BoardWidth = CellData.GetLength(0);
                 BoardHeight = CellData.GetLength(1);
             }

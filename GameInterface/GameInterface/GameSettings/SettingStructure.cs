@@ -69,26 +69,8 @@ namespace GameInterface.GameSettings
 
         internal BoardCreation BoardCreation => _BoardCreationState == 0 ? BoardCreation.Random : BoardCreation.JsonFile;
 
-        internal Cells.Cell[,] QCCell { get; set; }
-        internal Agent[] QCAgent { get; set; }
-
-        private string _QCCAMText = "";
-        /// <summary>
-        /// QR Code Text from Camera.
-        /// </summary>
-        public string QCCAMText {
-            get => _QCCAMText;
-            set => RaisePropertyChanged(ref _QCCAMText, value);
-        }
-
-        private string _QCIMGText = "";
-        /// <summary>
-        /// QR Code Text from Image.
-        /// </summary>
-        public string QCIMGText {
-            get => _QCIMGText;
-            set => RaisePropertyChanged(ref _QCIMGText, value);
-        }
+        internal Cells.Cell[,] JsonCell { get; set; }
+        internal Agent[] JsonAgent { get; set; }
 
         private byte turns = 60;
 
@@ -114,10 +96,10 @@ namespace GameInterface.GameSettings
             get => boardWidth;
             set {
                 ResetError();
-                if (value <= 3)
-                    AddError("フィールドの幅は4以上でなければなりません");
-                if(value > 12)
-                    AddError("フィールドの幅は12以下でなければなりません");
+                if (value < 10)
+                    AddError("フィールドの幅は10以上でなければなりません");
+                if(value > 20)
+                    AddError("フィールドの幅は20以下でなければなりません");
                 RaisePropertyChanged(ref boardWidth, value);
             }
         }
@@ -131,10 +113,10 @@ namespace GameInterface.GameSettings
             get => boardHeight;
             set {
                 ResetError();
-                if(value <= 3)
-                    AddError("フィールドの高さは4以上でなければなりません");
-                if (value > 12)
-                    AddError("フィールドの高さは12以下でなければなりません");
+                if(value < 10)
+                    AddError("フィールドの高さは10以上でなければなりません");
+                if (value > 20)
+                    AddError("フィールドの高さは20以下でなければなりません");
                 RaisePropertyChanged(ref boardHeight, value);
             }
         }

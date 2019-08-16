@@ -231,8 +231,8 @@ namespace GameInterface
             IsDecidedReceived[playerNum] = false;
             if (!isConnected[playerNum]) return;
 
-            ColoredBoardSmallBigger colorBoardMe = new ColoredBoardSmallBigger((uint)data.BoardWidth, (uint)data.BoardHeight);
-            ColoredBoardSmallBigger colorBoardEnemy = new ColoredBoardSmallBigger((uint)data.BoardWidth, (uint)data.BoardHeight);
+            ColoredBoardNormalSmaller colorBoardMe = new ColoredBoardNormalSmaller((uint)data.BoardWidth, (uint)data.BoardHeight);
+            ColoredBoardNormalSmaller colorBoardEnemy = new ColoredBoardNormalSmaller((uint)data.BoardWidth, (uint)data.BoardHeight);
 
             for (int i = 0; i < data.BoardWidth; i++)
             {
