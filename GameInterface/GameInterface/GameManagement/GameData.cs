@@ -155,13 +155,13 @@ namespace GameInterface.GameManagement
             agentsY[3] = agentsY[1] = BoardHeight - 1 - agentsY[0];
             for (int i = 0; i < App.PlayersCount; i++)
             {
-                Agents[i].playerNum = i;
+                Agents[i].playerNum = i / App.PlayersCount;
                 Agents[i].Point = new Point((byte)agentsX[i], (byte)agentsY[i]);
                 CellData[agentsX[i], agentsY[i]].AreaState_ =
-                    i == 0 ? TeamColor.Area1P : TeamColor.Area2P;
+                    i / App.PlayersCount == 0 ? TeamColor.Area1P : TeamColor.Area2P;
 
                 CellData[agentsX[i], agentsY[i]].AgentState =
-                    i == 0 ? TeamColor.Area1P : TeamColor.Area2P;
+                    i / App.PlayersCount == 0 ? TeamColor.Area1P : TeamColor.Area2P;
             }
         }
     }
