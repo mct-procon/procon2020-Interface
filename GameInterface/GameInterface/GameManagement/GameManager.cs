@@ -28,7 +28,6 @@ namespace GameInterface
             Server.SendGameInit();
             InitDispatcherTimer();
             ResetOrder();
-            ScoreCalculator.Init((byte)Data.BoardHeight, (byte)Data.BoardWidth);
             StartTurn();
             GetScore();
             Data.IsGameStarted = true;
