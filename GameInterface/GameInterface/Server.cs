@@ -35,8 +35,6 @@ namespace GameInterface
                 server.IsConnected2P = true;
         }
 
-        private Decided _decided = null;
-
         public void OnDecided(Decided decided)
         {
             gameManager.viewModel.MainWindowDispatcher.Invoke(() =>
@@ -270,7 +268,7 @@ namespace GameInterface
         public void SendGameEnd()
         {
             int score = data.PlayerScores[0], enemyScore = data.PlayerScores[1];
-            for (int i = 0; i < Constants.PlayersNum; i++)
+            for (int i = 0; i < App.PlayersCount; i++)
             {
                 if (!isConnected[i]) continue;
                 managers[i].Write(DataKind.GameEnd, new GameEnd(score, enemyScore));

@@ -137,7 +137,6 @@
     <Compile Include="Cells\CellUserControl.xaml.cs">
       <DependentUpon>CellUserControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Constants.cs" />
     <Compile Include="DelegateCommand.cs" />
     <Compile Include="GameManagement\GameData.cs" />
     <Compile Include="GameManagement\GameManager.cs" />

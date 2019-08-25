@@ -61,6 +61,8 @@ namespace GameInterface.GameManagement
         public int BoardWidth { get; private set; }
         public int SelectPosAgent { get; set; }
 
+        public int AgentsCount { get; set; } = 2;
+
         public GameSettings.SettingStructure CurrentGameSettings { get; set; }
 
         public List<Decision>[] Decisions = new List<Decision>[2];
@@ -151,15 +153,15 @@ namespace GameInterface.GameManagement
             agentsY[0] = agentsY[2] = rand.Next(1, BoardHeight / 2 - 1);
             agentsX[2] = agentsX[1] = BoardWidth - 1 - agentsX[0];
             agentsY[3] = agentsY[1] = BoardHeight - 1 - agentsY[0];
-            for (int i = 0; i < Constants.AgentsNum; i++)
+            for (int i = 0; i < App.PlayersCount; i++)
             {
-                Agents[i].playerNum = (i / Constants.PlayersNum);
+                Agents[i].playerNum = i;
                 Agents[i].Point = new Point((byte)agentsX[i], (byte)agentsY[i]);
                 CellData[agentsX[i], agentsY[i]].AreaState_ =
-                    i / Constants.PlayersNum == 0 ? TeamColor.Area1P : TeamColor.Area2P;
+                    i == 0 ? TeamColor.Area1P : TeamColor.Area2P;
 
                 CellData[agentsX[i], agentsY[i]].AgentState =
-                    i / Constants.PlayersNum == 0 ? TeamColor.Area1P : TeamColor.Area2P;
+                    i == 0 ? TeamColor.Area1P : TeamColor.Area2P;
             }
         }
     }

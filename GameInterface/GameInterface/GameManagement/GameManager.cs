@@ -138,7 +138,7 @@ namespace GameInterface
             }
             else
             {
-                for (int i = 0; i < Constants.AgentsNum; i++)
+                for (int i = 0; i < Data.AgentsCount; i++)
                 {
                     if (Data.SelectPosAgent == i)
                     {
@@ -156,7 +156,7 @@ namespace GameInterface
 
         private int IsOnAgent(Point point)
         {
-            for (int i = 0; i < Constants.AgentsNum; i++)
+            for (int i = 0; i < Data.AgentsCount; i++)
             {
                 var agentPoint = Data.Agents[i].Point;
                 if (agentPoint.X == point.X && agentPoint.Y == point.Y)
@@ -201,7 +201,7 @@ namespace GameInterface
             for (int id = 0; id < Data.Agents.Length; ++id)
             {
                 var a = Data.Agents[id].Point;
-                Data.CellData[a.X, a.Y].AgentState = id / Constants.PlayersNum == 0 ? TeamColor.Area1P : TeamColor.Area2P;
+                Data.CellData[a.X, a.Y].AgentState = id / App.PlayersCount == 0 ? TeamColor.Area1P : TeamColor.Area2P;
             }
 
             bool[] movableResult = new bool[4];
@@ -216,14 +216,14 @@ namespace GameInterface
         private List<int> GetActionableAgentsId()
         {
             int i, j;
-            bool[] canMove = new bool[Constants.AgentsNum];     //canMove[i] = エージェントiは移動するか？
-            bool[] canAction = new bool[Constants.AgentsNum];   //canAction[i] = エージェントiは移動またはタイル除去をするか？
+            bool[] canMove = new bool[Data.AgentsCount];     //canMove[i] = エージェントiは移動するか？
+            bool[] canAction = new bool[Data.AgentsCount];   //canAction[i] = エージェントiは移動またはタイル除去をするか？
 
             //まずは、各エージェントの移動先を知りたいので、canMoveを求める。
             //最初, canMove[i] = trueとしておき、移動不可なエージェントを振るい落とす方式を取る。このループでは以下の2点をチェックする。
             //・相手陣を指しているエージェントはタイル除去なので、移動しない
             //・範囲外を指しているエージェントは移動できない。
-            for (i = 0; i < Constants.AgentsNum; i++)
+            for (i = 0; i < Data.AgentsCount; i++)
             {
                 canMove[i] = true;
                 var agent = Data.Agents[i];
@@ -235,11 +235,11 @@ namespace GameInterface
             }
 
             //次に、「指示先(agent.GetNextPoint()の位置)が被っているエージェントは移動不可」とする。
-            for (i = 0; i < Constants.AgentsNum; i++)
+            for (i = 0; i < Data.AgentsCount; i++)
             {
                 var agent1 = Data.Agents[i];
                 var nextP1 = agent1.GetNextPoint();
-                for (j = i + 1; j < Constants.AgentsNum; j++)
+                for (j = i + 1; j < Data.AgentsCount; j++)
                 {
                     var agent2 = Data.Agents[j];
                     var nextP2 = agent2.GetNextPoint();
@@ -257,12 +257,12 @@ namespace GameInterface
             {
                 bool updateFlag = false;
 
-                for (i = 0; i < Constants.AgentsNum; i++)
+                for (i = 0; i < Data.AgentsCount; i++)
                 {
                     if (canMove[i] == false) { continue; }
                     var agent1 = Data.Agents[i];
                     var nextP1 = agent1.GetNextPoint();
-                    for (j = 0; j < Constants.AgentsNum; j++)
+                    for (j = 0; j < Data.AgentsCount; j++)
                     {
                         if (i == j) { continue; }
                         if (canMove[j] == true) { continue; }
@@ -283,7 +283,7 @@ namespace GameInterface
             //次は、行動(移動またはタイル除去)が可能なエージェントを求める。
             //最初, canAction[i] = trueとしておき、行動不可なエージェントを振るい落とす方式を取る。このループでは以下の1点をチェックする。
             //・範囲外を指しているエージェントは移動できない。
-            for (i = 0; i < Constants.AgentsNum; i++)
+            for (i = 0; i < Data.AgentsCount; i++)
             {
                 canAction[i] = true;
                 var agent = Data.Agents[i];
@@ -292,11 +292,11 @@ namespace GameInterface
             }
 
             //次に、「指示先(agent.GetNextPoint()の位置)が被っているエージェントは行動不可」とする。
-            for (i = 0; i < Constants.AgentsNum; i++)
+            for (i = 0; i < Data.AgentsCount; i++)
             {
                 var agent1 = Data.Agents[i];
                 var nextP1 = agent1.GetNextPoint();
-                for (j = i + 1; j < Constants.AgentsNum; j++)
+                for (j = i + 1; j < Data.AgentsCount; j++)
                 {
                     var agent2 = Data.Agents[j];
                     var nextP2 = agent2.GetNextPoint();
@@ -310,13 +310,13 @@ namespace GameInterface
 
             //次に、「指示先に移動不可な(orタイル除去をする)エージェントがいる場合、行動不可」とする。
             //このチェックは, 先ほどのように何回もwhileループで回す必要がない。
-            for (i = 0; i < Constants.AgentsNum; i++)
+            for (i = 0; i < Data.AgentsCount; i++)
             {
                 if (canAction[i] == false) { continue; }
                 var agent1 = Data.Agents[i];
                 var nextP1 = agent1.GetNextPoint();
 
-                for (j = 0; j < Constants.AgentsNum; j++)
+                for (j = 0; j < Data.AgentsCount; j++)
                 {
                     if (i == j) { continue; }
                     if (canMove[j] == true) { continue; }
@@ -334,7 +334,7 @@ namespace GameInterface
             //この時点でcanAction[i] == trueならば、エージェントiは行動可能である
             //よって、行動可能なエージェントの番号を返すことができる
             List<int> ret = new List<int>();
-            for (i = 0; i < Constants.AgentsNum; i++)
+            for (i = 0; i < Data.AgentsCount; i++)
             {
                 if (canAction[i]) { ret.Add(i); }
                 //else { MessageBox.Show(i.ToString()); }
@@ -347,7 +347,7 @@ namespace GameInterface
             for (int x = 0; x < Data.CellData.GetLength(0); ++x)
                 for (int y = 0; y < Data.CellData.GetLength(1); ++y)
                     Data.CellData[x, y].SurroundedState = TeamColor.Free;
-            for (int i = 0; i < Constants.PlayersNum; i++)
+            for (int i = 0; i < App.PlayersCount; i++)
                 Data.PlayerScores[i] = ScoreCalculator.CalcScore(i, Data.CellData);
             viewModel.PlayerScores = Data.PlayerScores;
         }

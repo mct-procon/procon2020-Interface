@@ -13,5 +13,6 @@ namespace GameInterface
     /// </summary>
     public partial class App : Application
     {
+        public const int PlayersCount = 2;
     }
 }
