@@ -74,6 +74,18 @@ namespace GameInterface.GameSettings
 
         private byte turns = 60;
 
+        private int agentsCount = 2;
+        public int AgentsCount {
+            get => agentsCount;
+            set {
+                if (value < 2)
+                    AddError("エージェントの数は2以上でなければなりません．");
+                if (value > 8)
+                    AddError("エージェントの数は8以下でなければなりません．");
+                RaisePropertyChanged(ref agentsCount, value);
+            }
+        }
+
         /// <summary>
         /// Turn Counts
         /// </summary>

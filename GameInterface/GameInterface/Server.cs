@@ -213,8 +213,8 @@ namespace GameInterface
                 }
             }
             managers[playerNum].Write(DataKind.GameInit, new GameInit((byte)data.BoardHeight, (byte)data.BoardWidth, board, 2,
-                Unsafe8Array<MCTProcon30Protocol.Point>.Create(data.Agents[0 + playerNum * 2].Point, data.Agents[1 + playerNum * 2].Point),
-                Unsafe8Array<MCTProcon30Protocol.Point>.Create(data.Agents[2 - playerNum * 2].Point, data.Agents[3 - playerNum * 2].Point),
+                Unsafe8Array<MCTProcon30Protocol.Point>.Create(data.Players[0].Agents.Select(item => item.Point).ToArray()),
+                Unsafe8Array<MCTProcon30Protocol.Point>.Create(data.Players[1].Agents.Select(item => item.Point).ToArray()),
                 data.FinishTurn));
         }
 
@@ -233,19 +233,17 @@ namespace GameInterface
             ColoredBoardNormalSmaller colorBoardEnemy = new ColoredBoardNormalSmaller((uint)data.BoardWidth, (uint)data.BoardHeight);
 
             for (int i = 0; i < data.BoardWidth; i++)
-            {
                 for (int j = 0; j < data.BoardHeight; j++)
                 {
-                    if (data.CellData[i, j].AreaState_ == TeamColor.Area1P)
+                    if (data.CellData[i, j].AreaState == TeamColor.Area1P)
                         colorBoardMe[(uint)i, (uint)j] = true;
-                    else if (data.CellData[i, j].AreaState_ == TeamColor.Area2P)
+                    else if (data.CellData[i, j].AreaState == TeamColor.Area2P)
                         colorBoardEnemy[(uint)i, (uint)j] = true;
                 }
-            }
             if (playerNum == 1) Swap(ref colorBoardMe, ref colorBoardEnemy);
             managers[playerNum].Write(DataKind.TurnStart, new TurnStart((byte)data.NowTurn, data.TimeLimitSeconds * 1000,
-                Unsafe8Array<MCTProcon30Protocol.Point>.Create(data.Agents[0 + playerNum * 2].Point, data.Agents[1 + playerNum * 2].Point),
-                Unsafe8Array<MCTProcon30Protocol.Point>.Create(data.Agents[2 - playerNum * 2].Point, data.Agents[3 - playerNum * 2].Point),
+                Unsafe8Array<MCTProcon30Protocol.Point>.Create(data.Players[0].Agents.Select(item => item.Point).ToArray()),
+                Unsafe8Array<MCTProcon30Protocol.Point>.Create(data.Players[1].Agents.Select(item => item.Point).ToArray()),
                 colorBoardMe,
                 colorBoardEnemy,
                 Unsafe8Array<bool>.Create(isAgent1Moved,isAgent2Moved)
@@ -267,7 +265,7 @@ namespace GameInterface
 
         public void SendGameEnd()
         {
-            int score = data.PlayerScores[0], enemyScore = data.PlayerScores[1];
+            int score = data.Players[0].Score, enemyScore = data.Players[1].Score;
             for (int i = 0; i < App.PlayersCount; i++)
             {
                 if (!isConnected[i]) continue;

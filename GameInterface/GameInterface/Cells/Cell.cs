@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using GameInterface.GameManagement;
 
 namespace GameInterface.Cells
@@ -17,7 +18,7 @@ namespace GameInterface.Cells
         }
 
         private TeamColor areaState = TeamColor.Free;
-        public TeamColor AreaState_
+        public TeamColor AreaState 
         {
             get => areaState;
             set => RaisePropertyChanged(ref areaState, value);
@@ -34,6 +35,19 @@ namespace GameInterface.Cells
         public TeamColor SurroundedState {
             get => surroundedState;
             set => RaisePropertyChanged(ref surroundedState, value);
+        }
+
+        private int agentNum = -1;
+        public int AgentNum {
+            get => agentNum;
+            set {
+                RaisePropertyChanged(ref agentNum, value);
+                RaisePropertyChanged(nameof(AgentNumVisibility));
+            }
+        }
+
+        public Visibility AgentNumVisibility {
+            get => agentNum < 0 ? Visibility.Hidden : Visibility.Visible;
         }
 
         public Cell() { }

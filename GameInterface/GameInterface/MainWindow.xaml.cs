@@ -11,6 +11,7 @@ using System.Windows.Media;
 using GameInterface.GameManagement;
 using Point = MCTProcon30Protocol.Point;
 using MCTProcon30Protocol;
+using GameInterface.ViewModels;
 
 namespace GameInterface
 {
@@ -29,13 +30,13 @@ namespace GameInterface
             this.DataContext = this.viewModel;
             this.gameManager = new GameManager(viewModel,this);
             this.viewModel.gameManager = this.gameManager;
-            CreateOrderButtonsOnPlayerGrid();
         }
 
         public void InitGame(GameSettings.SettingStructure settings)
         {
             gameManager.InitGameData(settings);
             CreateCellOnCellGrid(gameManager.Data.BoardWidth, gameManager.Data.BoardHeight);
+            CreateOrderButtonsOnPlayerGrid();
         }
 
         void CreateCellOnCellGrid(int boardWidth, int boardHeight)
@@ -81,14 +82,29 @@ namespace GameInterface
         
         void CreateOrderButtonsOnPlayerGrid()
         {
-            for (int i = 0; i < 2; i++)
+            List<Controls.UserOrderPanel> removes = new List<Controls.UserOrderPanel>();
+            foreach(var a in player1Grid.Children)
+            {
+                if (a is Controls.UserOrderPanel)
+                    removes.Add((Controls.UserOrderPanel)a);
+            }
+            foreach (var rem in removes)
+                player1Grid.Children.Remove(rem);
+            removes.Clear();
+            foreach (var a in player2Grid.Children)
+            {
+                if (a is Controls.UserOrderPanel)
+                    removes.Add((Controls.UserOrderPanel)a);
+            }
+            foreach (var rem in removes)
+                player2Grid.Children.Remove(rem);
+            for (int i = 0; i < App.PlayersCount; i++)
             {
                 var currentGrid = i == 0 ? player1Grid : player2Grid;
-
-                var orderButtonUserControl = new Controls.UserOrderPanel() { DataContext = viewModel.AgentViewModels[i * 2 + 0] };
+                var orderButtonUserControl = new Controls.UserOrderPanel() { DataContext = viewModel.Players[i].AgentViewModels[0] };
                 currentGrid.Children.Add(orderButtonUserControl);
                 Grid.SetRow(orderButtonUserControl, 2);
-                var orderButtonUserControl2 = new Controls.UserOrderPanel() { DataContext = viewModel.AgentViewModels[i * 2 + 1] };
+                var orderButtonUserControl2 = new Controls.UserOrderPanel() { DataContext = viewModel.Players[i].AgentViewModels[1] };
                 currentGrid.Children.Add(orderButtonUserControl2);
                 Grid.SetRow(orderButtonUserControl2, 4);
             }
@@ -158,20 +174,14 @@ namespace GameInterface
         {
             var decided = (Decision)((ListBox)sender).SelectedItem;
             if (decided == null) return;
-            AgentDirection dir = DirectionExtensions.CastPointToDir(decided.Agents[0]);
-            gameManager.OrderToAgent(new Order(0, dir, AgentState.Move));
-            dir = DirectionExtensions.CastPointToDir(decided.Agents[1]);
-            gameManager.OrderToAgent(new Order(1, dir, AgentState.Move));
+            gameManager.SetDecision(0, decided);
         }
 
         private void Decisions2P_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             var decided = (Decision)((ListBox)sender).SelectedItem;
             if (decided == null) return;
-            AgentDirection dir = DirectionExtensions.CastPointToDir(decided.Agents[0]);
-            gameManager.OrderToAgent(new Order(2, dir, AgentState.Move));
-            dir = DirectionExtensions.CastPointToDir(decided.Agents[1]);
-            gameManager.OrderToAgent(new Order(3, dir, AgentState.Move));
+            gameManager.SetDecision(1, decided);
         }
     }
 }

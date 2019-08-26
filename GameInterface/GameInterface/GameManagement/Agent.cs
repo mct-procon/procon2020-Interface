@@ -8,7 +8,9 @@ namespace GameInterface.GameManagement
 {
     public class Agent : ViewModels.ViewModelBase
     {
-        public int playerNum; //0,1
+        public int PlayerNum { get; set; } //0,1
+        public int AgentNum { get; set; }
+
         private Point point;
         public Point Point {
             get => point;
@@ -27,6 +29,9 @@ namespace GameInterface.GameManagement
             get => state;
             set => RaisePropertyChanged(ref state, value);
         }
+
+        public bool IsMoved { get; set; } = false;
+
         public Point GetNextPoint()
         {
             byte x = this.Point.X, y = this.Point.Y;
@@ -54,5 +59,6 @@ namespace GameInterface.GameManagement
             }
             return new Point(x, y);
         }
+
     }
 }

@@ -83,6 +83,7 @@
     </Compile>
     <Compile Include="GameManagement\AgentState.cs" />
     <Compile Include="GameManagement\Direction.cs" />
+    <Compile Include="GameManagement\Player.cs" />
     <Compile Include="GameSettings\GameSettingDialog.xaml.cs">
       <DependentUpon>GameSettingDialog.xaml</DependentUpon>
     </Compile>
@@ -93,12 +94,13 @@
     <Compile Include="GameSettings\WaitForAIDialog.xaml.cs">
       <DependentUpon>WaitForAIDialog.xaml</DependentUpon>
     </Compile>
-    <Compile Include="GameManagement\Order.cs" />
     <Compile Include="GameManagement\ScoreCalculator.cs" />
     <Compile Include="Server.cs" />
     <Compile Include="GameManagement\TeamColor.cs" />
+    <Compile Include="ValueConvertes\VisibilityBooleanConverter.cs" />
     <Compile Include="ValueConvertes\BooleanNotConverter.cs" />
     <Compile Include="ViewModels\NotifyDataErrorInfoViewModel.cs" />
+    <Compile Include="ViewModels\PlayerWindowViewModel.cs" />
     <Compile Include="ViewModels\UserOrderPanelViewModel.cs" />
     <Compile Include="ViewModels\ViewModelBase.cs" />
     <Page Include="Cells\CellUserControl.xaml">

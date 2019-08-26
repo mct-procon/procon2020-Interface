@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Threading;
 using MCTProcon30Protocol.Methods;
-using GameInterface.GameManagement;
 using MCTProcon30Protocol;
+using GameInterface.ViewModels;
 
-namespace GameInterface
+namespace GameInterface.GameManagement
 {
     public class GameManager
     {
@@ -27,7 +27,12 @@ namespace GameInterface
         {
             Server.SendGameInit();
             InitDispatcherTimer();
-            ResetOrder();
+            for (int p = 0; p < viewModel.Players.Length; ++p)
+                for (int i = 0; i < viewModel.Players[p].AgentViewModels.Length; ++i)
+                {
+                    viewModel.Players[p].AgentViewModels[i].Data.AgentDirection = AgentDirection.None;
+                    viewModel.Players[p].AgentViewModels[i].Data.State = AgentState.Move;
+                }
             StartTurn();
             GetScore();
             Data.IsGameStarted = true;
@@ -130,202 +135,236 @@ namespace GameInterface
         public void ChangeCellToNextColor(Point point)
         {
             //エージェントがいる場合、エージェントの移動処理へ
-            int onAgnetNum = IsOnAgent(point);
-            if (onAgnetNum != -1)
+            Agent onAgent = GetOnAgent(point);
+            if (onAgent != null)
             {
-                Data.SelectPosAgent = onAgnetNum;
+                if(Data.SelectedAgent != null)
+                {
+                    ExchangeAgent(Data.SelectedAgent, onAgent);
+                }
+                else
+                    Data.SelectedAgent = onAgent;
                 return;
             }
-            else
+            if (Data.SelectedAgent != null)
             {
+                WarpAgent(Data.SelectedAgent, point);
+                Data.SelectedAgent = null;
+                return;
+            }
+            var color = Data.CellData[point.X, point.Y].AreaState;
+            var nextColor = (TeamColor)(((int)color + 1) % 3);
+            Data.CellData[point.X, point.Y].AreaState = nextColor;
+        }
+
+        private Agent GetOnAgent(Point point)
+        {
+            for(int m = 0; m < App.PlayersCount; ++m)
                 for (int i = 0; i < Data.AgentsCount; i++)
                 {
-                    if (Data.SelectPosAgent == i)
-                    {
-                        Data.SelectPosAgent = -1;
-                        WarpAgent(Data.Agents[i], point);
-                        return;
-                    }
+                    var agent = Data.Players[m].Agents[i];
+                    if (agent.Point == point)
+                        return agent;
                 }
-            }
-
-            var color = Data.CellData[point.X, point.Y].AreaState_;
-            var nextColor = (TeamColor)(((int)color + 1) % 3);
-            Data.CellData[point.X, point.Y].AreaState_ = nextColor;
+            return null;
         }
 
-        private int IsOnAgent(Point point)
-        {
-            for (int i = 0; i < Data.AgentsCount; i++)
-            {
-                var agentPoint = Data.Agents[i].Point;
-                if (agentPoint.X == point.X && agentPoint.Y == point.Y)
-                {
-                    return i;
-                }
-            }
-            return -1;
-        }
-
-        private void WarpAgent(Agent agent, Point point)
+        private void WarpAgent(Agent agent, Point dest)
         {
             Data.CellData[agent.Point.X, agent.Point.Y].AgentState = TeamColor.Free;
-            agent.Point = point;
+            agent.Point = dest;
             var nextPointColor =
-                agent.playerNum == 0 ? TeamColor.Area1P : TeamColor.Area2P;
-            Data.CellData[point.X, point.Y].AreaState_ = nextPointColor;
-            Data.CellData[point.X, point.Y].AgentState = nextPointColor;
+                agent.PlayerNum == 0 ? TeamColor.Area1P : TeamColor.Area2P;
+            Data.CellData[dest.X, dest.Y].AreaState = nextPointColor;
+            Data.CellData[dest.X, dest.Y].AgentState = nextPointColor;
             return;
+        }
+
+        private void ExchangeAgent(Agent agent0, Agent agent1)
+        {
+            if(agent0.PlayerNum != agent1.PlayerNum)
+            {
+                Data.CellData[agent0.Point.X, agent0.Point.Y].AgentState = agent1.PlayerNum == 0 ? TeamColor.Area1P : TeamColor.Area2P;
+                Data.CellData[agent1.Point.X, agent1.Point.Y].AgentState = agent0.PlayerNum == 0 ? TeamColor.Area1P : TeamColor.Area2P;
+                Data.CellData[agent0.Point.X, agent0.Point.Y].AreaState = agent1.PlayerNum == 0 ? TeamColor.Area1P : TeamColor.Area2P;
+                Data.CellData[agent1.Point.X, agent1.Point.Y].AreaState = agent0.PlayerNum == 0 ? TeamColor.Area1P : TeamColor.Area2P;
+            }
+            var swp = agent0.Point;
+            agent0.Point = agent1.Point;
+            agent1.Point = swp;
+
         }
 
         private bool[] MoveAgents()
         {
-            List<int> ActionableAgentsId = GetActionableAgentsId();
+            List<Agent> ActionableAgents = GetActionableAgents();
 
             // Erase Agent Location's data from cells.
-            foreach (var a in Data.Agents)
-                Data.CellData[a.Point.X, a.Point.Y].AgentState = TeamColor.Free;
+            foreach (var p in Data.Players)
+                foreach (var a in p.Agents)
+                {
+                    Data.CellData[a.Point.X, a.Point.Y].AgentState = TeamColor.Free;
+                    Data.CellData[a.Point.X, a.Point.Y].AgentNum = -1;
+                    a.IsMoved = false;
+                }
 
-            for (int i = 0; i < ActionableAgentsId.Count; i++)
+            foreach(var a in ActionableAgents)
             {
-                int id = ActionableAgentsId[i];
-                var agent = Data.Agents[id];
-                var nextP = agent.GetNextPoint();
+                var nextP = a.GetNextPoint();
 
-                TeamColor nextAreaState = Data.CellData[nextP.X, nextP.Y].AreaState_;
-                ActionAgentToNextP(id, agent, nextP, nextAreaState);
-                agent.State = AgentState.Move;
+                TeamColor nextAreaState = Data.CellData[nextP.X, nextP.Y].AreaState;
+                ActionAgentToNextP(a, nextP, nextAreaState);
+                a.State = AgentState.Move;
+                a.IsMoved = true;
             }
 
             // Reset Agent Location's data to cells.
-            for (int id = 0; id < Data.Agents.Length; ++id)
+            foreach(var p in Data.Players) foreach(var a in p.Agents)
             {
-                var a = Data.Agents[id].Point;
-                Data.CellData[a.X, a.Y].AgentState = id / App.PlayersCount == 0 ? TeamColor.Area1P : TeamColor.Area2P;
+                Data.CellData[a.Point.X, a.Point.Y].AgentState = a.PlayerNum == 0 ? TeamColor.Area1P : TeamColor.Area2P;
+                Data.CellData[a.Point.X, a.Point.Y].AreaState = a.PlayerNum == 0 ? TeamColor.Area1P : TeamColor.Area2P;
+                Data.CellData[a.Point.X, a.Point.Y].AgentNum = a.AgentNum;
             }
 
-            bool[] movableResult = new bool[4];
-            for (int i = 0; i < movableResult.Length; ++i)
-                movableResult[i] = false;
-            foreach (var a in ActionableAgentsId)
-                movableResult[a] = true;
-            return movableResult;
+            bool[] retVal = new bool[App.PlayersCount * Data.AgentsCount];
+            for (int p = 0; p < Data.Players.Length; ++p)
+                for (int i = 0; i < Data.Players[p].Agents.Length; ++i)
+                    retVal[p * Data.AgentsCount + i] = Data.Players[p].Agents[i].IsMoved;
+            return retVal;
         }
 
         //naotti: 行動可能なエージェントのId(1p{0,1}, 2p{2,3})を返す。
-        private List<int> GetActionableAgentsId()
+        private List<Agent> GetActionableAgents()
         {
-            int i, j;
-            bool[] canMove = new bool[Data.AgentsCount];     //canMove[i] = エージェントiは移動するか？
-            bool[] canAction = new bool[Data.AgentsCount];   //canAction[i] = エージェントiは移動またはタイル除去をするか？
+            bool[] canMove = new bool[Data.AgentsCount * App.PlayersCount];     //canMove[i] = エージェントiは移動するか？
+            bool[] canAction = new bool[canMove.Length];   //canAction[i] = エージェントiは移動またはタイル除去をするか？
 
             //まずは、各エージェントの移動先を知りたいので、canMoveを求める。
             //最初, canMove[i] = trueとしておき、移動不可なエージェントを振るい落とす方式を取る。このループでは以下の2点をチェックする。
             //・相手陣を指しているエージェントはタイル除去なので、移動しない
             //・範囲外を指しているエージェントは移動できない。
-            for (i = 0; i < Data.AgentsCount; i++)
-            {
-                canMove[i] = true;
-                var agent = Data.Agents[i];
-                var nextP = agent.GetNextPoint();
-                if (CheckIsPointInBoard(nextP) == false) { canMove[i] = false; continue; }
-                TeamColor nextAreaState = Data.CellData[nextP.X, nextP.Y].AreaState_;
-                if (agent.playerNum == 0 && nextAreaState == TeamColor.Area2P) { canMove[i] = false; }
-                if (agent.playerNum == 1 && nextAreaState == TeamColor.Area1P) { canMove[i] = false; }
-            }
+            for(int p = 0; p < Data.Players.Length; ++p)
+                for (int i = 0; i < Data.Players[p].Agents.Length; i++)
+                {
+                    canMove[p * Data.AgentsCount + i] = true;
+                    var agent = Data.Players[p].Agents[i];
+                    var nextP = agent.GetNextPoint();
+                    if (CheckIsPointInBoard(nextP) == false) { canMove[p * Data.AgentsCount + i] = false; continue; }
+                    TeamColor nextAreaState = Data.CellData[nextP.X, nextP.Y].AreaState;
+                    if ((agent.PlayerNum == 0 && nextAreaState == TeamColor.Area2P) || (agent.PlayerNum == 1 && nextAreaState == TeamColor.Area1P))
+                        canMove[p * Data.AgentsCount + i] = false;
+                }
 
             //次に、「指示先(agent.GetNextPoint()の位置)が被っているエージェントは移動不可」とする。
-            for (i = 0; i < Data.AgentsCount; i++)
-            {
-                var agent1 = Data.Agents[i];
-                var nextP1 = agent1.GetNextPoint();
-                for (j = i + 1; j < Data.AgentsCount; j++)
+            for (int p = 0; p < Data.Players.Length; ++p)
+                for (int i = 0; i < Data.Players[p].Agents.Length; i++)
                 {
-                    var agent2 = Data.Agents[j];
-                    var nextP2 = agent2.GetNextPoint();
-                    if (nextP1 == nextP2)
+                    var agent1 = Data.Players[p].Agents[i];
+                    var nextP1 = agent1.GetNextPoint();
+                    int j = i + 1;
+                    for (int q = p; q < Data.Players.Length; ++q)
                     {
-                        canMove[i] = false;
-                        canMove[j] = false;
+                        for (; j < Data.Players[q].Agents.Length; j++)
+                        {
+                            var agent2 = Data.Players[q].Agents[j];
+                            var nextP2 = agent2.GetNextPoint();
+                            if (nextP1 == nextP2)
+                            {
+                                canMove[p * Data.AgentsCount + i] = false;
+                                canMove[q * Data.AgentsCount + j] = false;
+                            }
+                        }
+                        j = 0;
                     }
                 }
-            }
 
             //次に、canMove[]の更新が起きなくなるまで、以下を繰り返す
             //・移動先に移動不可な(orタイル除去をする)エージェントがいる場合、移動不可とする
-            while (true)
+            bool updateFlag;
+            do
             {
-                bool updateFlag = false;
-
-                for (i = 0; i < Data.AgentsCount; i++)
+                updateFlag = false;
+                for(int p = 0; p < Data.Players.Length; ++p)
+                for (int i = 0; i < Data.Players[p].Agents.Length; i++)
                 {
-                    if (canMove[i] == false) { continue; }
-                    var agent1 = Data.Agents[i];
+                    if (canMove[p * Data.AgentsCount + i] == false) { continue; }
+                    var agent1 = Data.Players[p].Agents[i];
                     var nextP1 = agent1.GetNextPoint();
-                    for (j = 0; j < Data.AgentsCount; j++)
+                    for(int q = 0; q  <Data.Players.Length; ++q)
+                    for (int j = 0; j < Data.Players[q].Agents.Length; j++)
                     {
-                        if (i == j) { continue; }
-                        if (canMove[j] == true) { continue; }
-                        var agent2 = Data.Agents[j];
+                        if (p * Data.AgentsCount + i == q * Data.AgentsCount + j) { continue; }
+                        if (canMove[ q * Data.AgentsCount + j] == true) { continue; }
+                        var agent2 = Data.Players[q].Agents[j];
                         var nextP2 = agent2.Point;
                         if (nextP1 == nextP2)
                         {
-                            canMove[i] = false;
+                            canMove[p * Data.AgentsCount + i] = false;
                             updateFlag = true;
                             break;
                         }
                     }
                 }
-                if (updateFlag == false) { break; }
             }
+            while (updateFlag) ;
 
             //この時点でcanMove[i] == trueならば、エージェントiは移動することになる。
             //次は、行動(移動またはタイル除去)が可能なエージェントを求める。
             //最初, canAction[i] = trueとしておき、行動不可なエージェントを振るい落とす方式を取る。このループでは以下の1点をチェックする。
             //・範囲外を指しているエージェントは移動できない。
-            for (i = 0; i < Data.AgentsCount; i++)
+            for (int p = 0; p < Data.Players.Length; ++p)
+            for (int i = 0; i < Data.Players[p].Agents.Length; i++)
             {
-                canAction[i] = true;
-                var agent = Data.Agents[i];
+                canAction[p * Data.AgentsCount + i] = true;
+                var agent = Data.Players[p].Agents[i];
                 var nextP = agent.GetNextPoint();
-                if (CheckIsPointInBoard(nextP) == false) { canAction[i] = false; }
+                if (CheckIsPointInBoard(nextP) == false)
+                    canAction[p * Data.AgentsCount + i] = false;
             }
 
             //次に、「指示先(agent.GetNextPoint()の位置)が被っているエージェントは行動不可」とする。
-            for (i = 0; i < Data.AgentsCount; i++)
+            for(int p = 0; p < Data.Players.Length; ++p)
+            for (int i = 0; i < Data.Players[p].Agents.Length; i++)
             {
-                var agent1 = Data.Agents[i];
+                var agent1 = Data.Players[p].Agents[i];
                 var nextP1 = agent1.GetNextPoint();
-                for (j = i + 1; j < Data.AgentsCount; j++)
-                {
-                    var agent2 = Data.Agents[j];
-                    var nextP2 = agent2.GetNextPoint();
-                    if (nextP1 == nextP2)
+                int j = i + 1;
+                    for (int q = p; q < Data.Players.Length; ++q)
                     {
-                        canAction[i] = false;
-                        canAction[j] = false;
+                        for (; j < Data.Players[q].Agents.Length; j++)
+                        {
+                            var agent2 = Data.Players[q].Agents[j];
+                            var nextP2 = agent2.GetNextPoint();
+                            if (nextP1 == nextP2)
+                            {
+                                canAction[p * Data.AgentsCount + i] = false;
+                                canAction[q * Data.AgentsCount + j] = false;
+                            }
+                        }
+                        j = 0;
                     }
-                }
             }
 
             //次に、「指示先に移動不可な(orタイル除去をする)エージェントがいる場合、行動不可」とする。
             //このチェックは, 先ほどのように何回もwhileループで回す必要がない。
-            for (i = 0; i < Data.AgentsCount; i++)
+            for(int p = 0; p < Data.Players.Length; ++p)
+            for (int i = 0; i < Data.AgentsCount; i++)
             {
-                if (canAction[i] == false) { continue; }
-                var agent1 = Data.Agents[i];
+                if (canAction[p * Data.AgentsCount + i] == false) { continue; }
+                var agent1 = Data.Players[p].Agents[i];
                 var nextP1 = agent1.GetNextPoint();
 
-                for (j = 0; j < Data.AgentsCount; j++)
+                for(int q = 0; q < Data.Players.Length; ++q)
+                for (int j = 0; j < Data.Players[q].Agents.Length; j++)
                 {
-                    if (i == j) { continue; }
-                    if (canMove[j] == true) { continue; }
-                    var agent2 = Data.Agents[j];
+                    if (p * Data.AgentsCount + i == q * Data.AgentsCount + j) { continue; }
+                    if (canMove[q * Data.AgentsCount + j] == true) { continue; }
+                    var agent2 = Data.Players[q].Agents[j];
                     var nextP2 = agent2.Point;
 
                     if (nextP1 == nextP2)
                     {
-                        canAction[i] = false;
+                        canAction[p * Data.AgentsCount + i] = false;
                         break;
                     }
                 }
@@ -333,12 +372,11 @@ namespace GameInterface
 
             //この時点でcanAction[i] == trueならば、エージェントiは行動可能である
             //よって、行動可能なエージェントの番号を返すことができる
-            List<int> ret = new List<int>();
-            for (i = 0; i < Data.AgentsCount; i++)
-            {
-                if (canAction[i]) { ret.Add(i); }
-                //else { MessageBox.Show(i.ToString()); }
-            }
+            List<Agent> ret = new List<Agent>();
+            for(int p = 0; p < Data.Players.Length; ++p)
+            for (int i = 0; i < Data.Players[p].Agents.Length; i++)
+                if (canAction[p * Data.AgentsCount + i])
+                        ret.Add(Data.Players[p].Agents[i]);
             return ret;
         }
 
@@ -348,43 +386,42 @@ namespace GameInterface
                 for (int y = 0; y < Data.CellData.GetLength(1); ++y)
                     Data.CellData[x, y].SurroundedState = TeamColor.Free;
             for (int i = 0; i < App.PlayersCount; i++)
-                Data.PlayerScores[i] = ScoreCalculator.CalcScore(i, Data.CellData);
-            viewModel.PlayerScores = Data.PlayerScores;
+                viewModel.Players[i].Score = ScoreCalculator.CalcScore(i, Data.CellData);
         }
 
-        private void ActionAgentToNextP(int i, Agent agent, Point nextP, TeamColor nextAreaState)
+        private void ActionAgentToNextP(Agent agent, Point nextP, TeamColor nextAreaState)
         {
             switch (agent.State)
             {
                 case AgentState.Move:
-                    switch (agent.playerNum)
+                    switch (agent.PlayerNum)
                     {
                         case 0:
                             if (nextAreaState != TeamColor.Area2P)
                             {
-                                Data.Agents[i].Point = nextP;
-                                Data.CellData[nextP.X, nextP.Y].AreaState_ = TeamColor.Area1P;
+                                agent.Point = nextP;
+                                Data.CellData[nextP.X, nextP.Y].AreaState = TeamColor.Area1P;
                             }
                             else
                             {
-                                Data.CellData[nextP.X, nextP.Y].AreaState_ = TeamColor.Free;
+                                Data.CellData[nextP.X, nextP.Y].AreaState = TeamColor.Free;
                             }
                             break;
                         case 1:
                             if (nextAreaState != TeamColor.Area1P)
                             {
-                                Data.Agents[i].Point = nextP;
-                                Data.CellData[nextP.X, nextP.Y].AreaState_ = TeamColor.Area2P;
+                                agent.Point = nextP;
+                                Data.CellData[nextP.X, nextP.Y].AreaState = TeamColor.Area2P;
                             }
                             else
                             {
-                                Data.CellData[nextP.X, nextP.Y].AreaState_ = TeamColor.Free;
+                                Data.CellData[nextP.X, nextP.Y].AreaState = TeamColor.Free;
                             }
                             break;
                     }
                     break;
                 case AgentState.RemoveTile:
-                    Data.CellData[nextP.X, nextP.Y].AreaState_ = TeamColor.Free;
+                    Data.CellData[nextP.X, nextP.Y].AreaState = TeamColor.Free;
                     break;
                 default:
                     break;
@@ -395,48 +432,32 @@ namespace GameInterface
 
         public void ClearDecisions(int index)
         {
-            Data.Decisions[index]?.Clear();
-            viewModel.RaiseDecisionsChanged();
+            viewModel?.Players[index]?.Decisions.Clear();
+            viewModel?.Players[index]?.RaiseDecisionsChanged();
         }
 
         public void SetDecisions(int index, Decided decideds)
         {
-            if (index == 0)
-            {
-                viewModel.Decisions1P = decideds.Data;
-                viewModel.Decisions1PSelectedIndex = 0;
-            }
-            else
-            {
-                viewModel.Decisions2P = decideds.Data;
-                viewModel.Decisions2PSelectedIndex = 0;
-            }
+            viewModel.Players[index].Decisions = decideds.Data;
+            viewModel.Players[index].DecisionsSelectedIndex = 0;
             var decided = decideds[0];
-            AgentDirection dir = DirectionExtensions.CastPointToDir(decided.Agents[0]);
-            OrderToAgent(new Order(index * 2, dir, AgentState.Move));
-            dir = DirectionExtensions.CastPointToDir(decided.Agents[1]);
-            OrderToAgent(new Order(index * 2 + 1, dir, AgentState.Move));
+            SetDecision(index, decided);
+        }
+
+        public void SetDecision(int index, Decision decide)
+        {
+            for (int i = 0; i < Data.AgentsCount; ++i)
+            {
+                AgentDirection dir = DirectionExtensions.CastPointToDir(decide.Agents[i]);
+                viewModel.Players[index].AgentViewModels[i].Data.AgentDirection = dir;
+                viewModel.Players[index].AgentViewModels[i].Data.State = AgentState.Move;
+            }
         }
 
         private void Draw()
         {
             viewModel.TimerStr = $"TIME:{Data.SecondCount}/{Data.TimeLimitSeconds}";
             viewModel.TurnStr = $"TURN:{Data.NowTurn}/{Data.FinishTurn}";
-        }
-
-        public void OrderToAgent(Order order)
-        {
-            Data.Agents[order.agentNum].State = order.state;
-            Data.Agents[order.agentNum].AgentDirection = order.direction;
-        }
-
-        private void ResetOrder()
-        {
-            foreach (var agent in Data.Agents)
-            {
-                agent.AgentDirection = AgentDirection.None;
-                agent.State = AgentState.Move;
-            }
         }
 
         private bool CheckIsPointInBoard(Point p)

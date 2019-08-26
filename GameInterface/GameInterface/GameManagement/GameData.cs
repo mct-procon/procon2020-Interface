@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MCTProcon30Protocol;
+using GameInterface.ViewModels;
 
 namespace GameInterface.GameManagement
 {
@@ -28,28 +29,8 @@ namespace GameInterface.GameManagement
                 viewModel.CellData = value;
             }
         }
-        private Agent[] agents;
-        public Agent[] Agents
-        {
-            get => agents;
-            set {
-                agents = value;
-                for (int i = 0; i < agents.Length; ++i)
-                {
-                    viewModel.AgentViewModels[i].Data = agents[i];
-                }
-            }
-        }
-        private int[] playerScores = new int[2];
-        public int[] PlayerScores
-        {
-            get => playerScores;
-            set
-            {
-                playerScores = value;
-                viewModel.PlayerScores = value;
-            }
-        }
+        public Player[] Players { get; private set; } = null;
+
         //----------------------------------------
         public int SecondCount { get; set; }
         public bool IsGameStarted { get; set; } = false;
@@ -59,18 +40,17 @@ namespace GameInterface.GameManagement
         public int NowTurn { get; set; }
         public int BoardHeight { get; private set; }
         public int BoardWidth { get; private set; }
-        public int SelectPosAgent { get; set; }
+        public Agent SelectedAgent { get; set; }
 
-        public int AgentsCount { get; set; } = 2;
+        public int AgentsCount { get; set; } = 0;
 
         public GameSettings.SettingStructure CurrentGameSettings { get; set; }
 
-        public List<Decision>[] Decisions = new List<Decision>[2];
-        
         public GameData(MainWindowViewModel _viewModel)
         {
             viewModel = _viewModel;
-            agents = _viewModel.AgentViewModels.Select(x => x.Data).ToArray();
+            Players = new Player[App.PlayersCount];
+            viewModel.Players = new PlayerWindowViewModel[Players.Length];
         }
 
         public void InitGameData(GameSettings.SettingStructure settings)
@@ -87,6 +67,11 @@ namespace GameInterface.GameManagement
                 settings.BoardWidth = (byte)settings.JsonCell.GetLength(0);
                 settings.BoardHeight = (byte)settings.JsonCell.GetLength(1);
             }
+            Players[0] = new Player();
+            Players[1] = new Player();
+
+            for (int i = 0; i < Players.Length; ++i)
+                viewModel.Players[i] = new PlayerWindowViewModel(Players[i]);
 
             InitCellData(settings);
             InitAgents(settings);
@@ -142,26 +127,24 @@ namespace GameInterface.GameManagement
 
         void InitAgents(GameSettings.SettingStructure settings)
         {
-            /*
-            配置は
-            0 2
-            3 1
-            */
-            int[] agentsX = new int[4];
-            int[] agentsY = new int[4];
-            agentsX[0] = agentsX[3] = rand.Next(1, BoardWidth / 2 - 1);
-            agentsY[0] = agentsY[2] = rand.Next(1, BoardHeight / 2 - 1);
-            agentsX[2] = agentsX[1] = BoardWidth - 1 - agentsX[0];
-            agentsY[3] = agentsY[1] = BoardHeight - 1 - agentsY[0];
-            for (int i = 0; i < App.PlayersCount; i++)
+            AgentsCount = settings.AgentsCount;
+            Players[0].Agents = new Agent[settings.AgentsCount];
+            Players[1].Agents = new Agent[settings.AgentsCount];
+            viewModel.Players[0].AgentViewModels = new UserOrderPanelViewModel[settings.AgentsCount];
+            viewModel.Players[1].AgentViewModels = new UserOrderPanelViewModel[settings.AgentsCount];
+            for (int i = 0; i < Players[0].Agents.Length; ++i)
             {
-                Agents[i].playerNum = i / App.PlayersCount;
-                Agents[i].Point = new Point((byte)agentsX[i], (byte)agentsY[i]);
-                CellData[agentsX[i], agentsY[i]].AreaState_ =
-                    i / App.PlayersCount == 0 ? TeamColor.Area1P : TeamColor.Area2P;
+                var a0 = new Point((byte)rand.Next(0, BoardWidth / 2), (byte)rand.Next(0, BoardWidth / 2));
+                var a1 = new Point((byte)(BoardWidth - a0.X - 1), (byte)(BoardHeight - a0.Y - 1));
+                Players[0].Agents[i] = new Agent() { Point = a0, PlayerNum = 0, AgentNum = i };
+                Players[1].Agents[i] = new Agent() { Point = a1, PlayerNum = 1, AgentNum = i };
+                CellData[a0.X, a0.Y].AreaState = TeamColor.Area1P;
+                CellData[a0.X, a0.Y].AgentState = TeamColor.Area1P;
+                CellData[a1.X, a1.Y].AreaState = TeamColor.Area2P;
+                CellData[a1.X, a1.Y].AgentState = TeamColor.Area2P;
 
-                CellData[agentsX[i], agentsY[i]].AgentState =
-                    i / App.PlayersCount == 0 ? TeamColor.Area1P : TeamColor.Area2P;
+                viewModel.Players[0].AgentViewModels[i] = new UserOrderPanelViewModel(Players[0].Agents[i]);
+                viewModel.Players[1].AgentViewModels[i] = new UserOrderPanelViewModel(Players[1].Agents[i]);
             }
         }
     }

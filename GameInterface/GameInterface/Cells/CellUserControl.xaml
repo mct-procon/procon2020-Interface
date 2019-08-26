@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:GameInterface.GameManagement"
+             xmlns:conv="clr-namespace:GameInterface.ValueConvertes"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
@@ -11,10 +12,10 @@
             <Setter Property="BorderBrush" Value="LightGray" />
             <Setter Property="Background" Value="White"/>
             <Style.Triggers>
-                <DataTrigger Binding="{Binding AreaState_}" Value="{x:Static local:TeamColor.Area1P}">
+                <DataTrigger Binding="{Binding AreaState}" Value="{x:Static local:TeamColor.Area1P}">
                     <Setter Property="BorderBrush" Value="Blue" />
                 </DataTrigger>
-                <DataTrigger Binding="{Binding AreaState_}" Value="{x:Static local:TeamColor.Area2P}">
+                <DataTrigger Binding="{Binding AreaState}" Value="{x:Static local:TeamColor.Area2P}">
                     <Setter Property="BorderBrush" Value="Red" />
                 </DataTrigger>
                 <DataTrigger Binding="{Binding AgentState}" Value="{x:Static local:TeamColor.Area1P}">
@@ -44,8 +45,9 @@
         </Style>
     </UserControl.Resources>
     <Border BorderThickness="8">
-        <Viewbox>
+        <Grid>
             <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding Score}" FontSize="18"/>
-        </Viewbox>
+            <TextBlock HorizontalAlignment="Left" VerticalAlignment="Top" Text="{Binding AgentNum}" Visibility="{Binding AgentNumVisibility}" FontSize="12"/>
+        </Grid>
     </Border>
 </UserControl>

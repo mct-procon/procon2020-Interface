@@ -20,7 +20,7 @@ namespace GameInterface.GameManagement
             for (uint x = 0; x < width; ++x)
                 for (uint y = 0; y < height; ++y)
                 {
-                    if (cells[x, y].AreaState_ == state)
+                    if (cells[x, y].AreaState == state)
                     {
                         result += cells[x, y].Score;
                         checker[x, y] = true;

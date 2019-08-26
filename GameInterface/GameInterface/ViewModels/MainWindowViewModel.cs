@@ -10,7 +10,7 @@ using GameInterface.GameManagement;
 using MCTProcon30Protocol;
 using Point = MCTProcon30Protocol.Point;
 
-namespace GameInterface
+namespace GameInterface.ViewModels
 {
     public class MainWindowViewModel : ViewModels.ViewModelBase
     {
@@ -30,33 +30,12 @@ namespace GameInterface
         public string TimerStr
         {
             get => timerStr; 
-            set
-            {
-                timerStr = value;
-                RaisePropertyChanged("TimerStr");
-            }
+            set => RaisePropertyChanged(ref timerStr, value);
         }
         public int TimeLimitSeconds {
             get => gameManager.Data.TimeLimitSeconds;
             set {
                 gameManager.Data.TimeLimitSeconds = value;
-                RaisePropertyChanged();
-            }
-        }
-
-        private ViewModels.UserOrderPanelViewModel[] agentViewModels;
-        public ViewModels.UserOrderPanelViewModel[] AgentViewModels {
-            get => agentViewModels;
-            set => RaisePropertyChanged(ref agentViewModels, value);
-        }
-
-        private int[] playerScores = new int[2];
-        public int[] PlayerScores
-        {
-            get => playerScores;
-            set
-            {
-                playerScores = value;
                 RaisePropertyChanged();
             }
         }
@@ -68,43 +47,18 @@ namespace GameInterface
             set => RaisePropertyChanged(ref turnStr, value);
         }
 
-        public void RaiseDecisionsChanged()
+        private PlayerWindowViewModel[] players;
+        public PlayerWindowViewModel[] Players
         {
-            RaisePropertyChanged("Decisions1P");
-            RaisePropertyChanged("Decisions2P");
-        }
-        public List<Decision> Decisions1P {
-            get => gameManager.Data.Decisions[0];
-            set {
-                gameManager.Data.Decisions[0] = value;
-                RaisePropertyChanged();
-            }
+            get => players;
+            set => RaisePropertyChanged(ref players, value);
         }
 
-        private int decisions1PSelectedIndex = -1;
-        public int Decisions1PSelectedIndex {
-            get => decisions1PSelectedIndex;
-            set => RaisePropertyChanged(ref decisions1PSelectedIndex, value);
-        }
-
-        public List<Decision> Decisions2P {
-            get => gameManager.Data.Decisions[1];
-            set {
-                gameManager.Data.Decisions[1] = value;
-                RaisePropertyChanged();
-            }
-        }
-        private int decisions2PSelectedIndex = -1;
-        public int Decisions2PSelectedIndex {
-            get => decisions2PSelectedIndex;
-            set => RaisePropertyChanged(ref decisions2PSelectedIndex, value);
-        }
 
         public DelegateCommand<Point> ChangeColorCommand { get; private set; }
 
         public MainWindowViewModel()
         {
-            agentViewModels = Enumerable.Range(0,4).Select(x => new ViewModels.UserOrderPanelViewModel(new Agent())).ToArray();
             ChangeColorCommand = new DelegateCommand<Point>(ChangeColor);
         }
 

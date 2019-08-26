@@ -54,11 +54,11 @@
                     </Style>
                 </StackPanel.Resources>
                 <TextBlock Text="1P  "/>
-                <TextBlock Text="{Binding PlayerScores[0]}"/>
+                <TextBlock Text="{Binding Players[0].Score}"/>
                 <TextBlock Text=" pts."/>
             </StackPanel>
-            <TextBlock Text="1p.エージェント1" Grid.Row="1" Foreground="White"/>
-            <TextBlock Text="1p.エージェント2" Grid.Row="3" Foreground="White"/>
+            <TextBlock Text="1p.エージェント0" Grid.Row="1" Foreground="White"/>
+            <TextBlock Text="1p.エージェント1" Grid.Row="3" Foreground="White"/>
 
             <ListBox x:Name="Decisions1P" Grid.Row="8" ItemsSource="{Binding Decisions1P}" SelectionChanged="Decisions1P_SelectionChanged" SelectedIndex="{Binding Decisions1PSelectedIndex}">
                 <ListBox.ItemTemplate>
@@ -85,29 +85,6 @@
                     <Setter Property="Margin" Value="1"/>
                 </Style>
             </Grid.Resources>
-            <Border HorizontalAlignment="Left" VerticalAlignment="Top" BorderBrush="Gray" BorderThickness="1"
-                Grid.Column="{Binding AgentViewModels[0].Data.Point.X}" Margin="1,1,0,0"
-                Grid.Row="{Binding AgentViewModels[0].Data.Point.Y}"  Grid.ZIndex="1" Background="White" Width="{Binding RelativeSource={RelativeSource Self}, Path=ActualHeight}" >
-                <TextBlock Text="1" FontSize="15" FontWeight="Bold" Foreground="Blue" TextAlignment="Center"/>
-            </Border>
-
-            <Border HorizontalAlignment="Left" VerticalAlignment="Top" BorderBrush="Gray" BorderThickness="1"
-                Grid.Column="{Binding AgentViewModels[1].Data.Point.X}" Margin="1,1,0,0"
-                Grid.Row="{Binding AgentViewModels[1].Data.Point.Y}"  Grid.ZIndex="1" Background="White" Width="{Binding RelativeSource={RelativeSource Self}, Path=ActualHeight}">
-                <TextBlock Text="2" FontSize="15" FontWeight="Bold" Foreground="Blue" TextAlignment="Center" />
-            </Border>
-
-            <Border HorizontalAlignment="Left" VerticalAlignment="Top" BorderBrush="Gray" BorderThickness="1"
-                Grid.Column="{Binding AgentViewModels[2].Data.Point.X}" Margin="1,1,0,0"
-                Grid.Row="{Binding AgentViewModels[2].Data.Point.Y}"  Grid.ZIndex="1" Background="White" Width="{Binding RelativeSource={RelativeSource Self}, Path=ActualHeight}">
-                <TextBlock Text="1" FontSize="15" FontWeight="Bold" Foreground="Red" TextAlignment="Center" />
-            </Border>
-
-            <Border HorizontalAlignment="Left" VerticalAlignment="Top" BorderBrush="Gray" BorderThickness="1"
-                Grid.Column="{Binding AgentViewModels[3].Data.Point.X}" Margin="1,1,0,0"
-                Grid.Row="{Binding AgentViewModels[3].Data.Point.Y}"  Grid.ZIndex="1" Background="White" Width="{Binding RelativeSource={RelativeSource Self}, Path=ActualHeight}">
-                <TextBlock Text="2" FontSize="15" FontWeight="Bold" Foreground="Red" TextAlignment="Center"/>
-            </Border>
         </Grid>
 
         <Grid x:Name="player2Grid" Grid.Row="1" Grid.Column="3" Background="Crimson">
@@ -128,11 +105,11 @@
                     </Style>
                 </StackPanel.Resources>
                 <TextBlock Text="2P  "/>
-                <TextBlock Text="{Binding PlayerScores[1]}"/>
+                <TextBlock Text="{Binding Players[1].Score}"/>
                 <TextBlock Text=" pts."/>
             </StackPanel>
-            <TextBlock Text="2p.エージェント1" Grid.Row="1" Foreground="White"/>
-            <TextBlock Text="2p.エージェント2" Grid.Row="3" Foreground="White"/>
+            <TextBlock Text="2p.エージェント0" Grid.Row="1" Foreground="White"/>
+            <TextBlock Text="2p.エージェント1" Grid.Row="3" Foreground="White"/>
             <ListBox x:Name="Decisions2P" Grid.Row="6" ItemsSource="{Binding Decisions2P}" SelectionChanged="Decisions2P_SelectionChanged" SelectedIndex="{Binding Decisions2PSelectedIndex}">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
