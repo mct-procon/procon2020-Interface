@@ -12,6 +12,7 @@
     <Viewbox>
         <Grid Width="120" Height="150">
             <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="1*"/>
                 <RowDefinition Height="1*"/>
                 <RowDefinition Height="1*"/>
@@ -22,34 +23,44 @@
                 <ColumnDefinition Width="1*"/>
                 <ColumnDefinition Width="1*"/>
             </Grid.ColumnDefinitions>
-            <ToggleButton Grid.Row="0" Grid.Column="0" IsChecked="{Binding IsUpLeft}">
+            <StackPanel Orientation="Horizontal" Grid.ColumnSpan="3">
+                <StackPanel.Resources>
+                    <Style TargetType="TextBlock">
+                        <Setter Property="Foreground" Value="White"/>
+                    </Style>
+                </StackPanel.Resources>
+                <TextBlock Text="Agent  "/>
+                <TextBlock Text="{Binding Data.AgentNum}"/>
+                <TextBlock Margin="10,0,0,0"  Text="{Binding Data.Point}"/>
+            </StackPanel>
+            <ToggleButton Grid.Row="1" Grid.Column="0" IsChecked="{Binding IsUpLeft}">
                 <Path StrokeThickness="2" Data="M0,10 0,0 10,0 M0,0 14,14" Stroke="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ToggleButton}}, Path=Foreground}"/>
             </ToggleButton>
-            <ToggleButton Grid.Row="1" Grid.Column="0" IsChecked="{Binding IsLeft}">
+            <ToggleButton Grid.Row="2" Grid.Column="0" IsChecked="{Binding IsLeft}">
                 <Path StrokeThickness="2" Data="M8,16 0,8 8,0 M0,8 16,8" Stroke="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ToggleButton}}, Path=Foreground}"/>
             </ToggleButton>
-            <ToggleButton Grid.Row="2" Grid.Column="0" IsChecked="{Binding IsDownLeft}">
+            <ToggleButton Grid.Row="3" Grid.Column="0" IsChecked="{Binding IsDownLeft}">
                 <Path StrokeThickness="2" Data="M0,4 0,14 10,14 10,14 M14,0 0,14" Stroke="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ToggleButton}}, Path=Foreground}"/>
             </ToggleButton>
-            <ToggleButton Grid.Row="0" Grid.Column="1" IsChecked="{Binding IsUp}">
+            <ToggleButton Grid.Row="1" Grid.Column="1" IsChecked="{Binding IsUp}">
                 <Path StrokeThickness="2" Data="M16,8 8,0 0,8 M8,0 8,16" Stroke="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ToggleButton}}, Path=Foreground}"/>
             </ToggleButton>
-            <ToggleButton Grid.Row="1" Grid.Column="1" IsChecked="{Binding IsNone}">
+            <ToggleButton Grid.Row="2" Grid.Column="1" IsChecked="{Binding IsNone}">
                 <Ellipse Width="10" Height="10" StrokeThickness="2" Stroke="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ToggleButton}}, Path=Foreground}"/>
             </ToggleButton>
-            <ToggleButton Grid.Row="2" Grid.Column="1" IsChecked="{Binding IsDown}">
+            <ToggleButton Grid.Row="3" Grid.Column="1" IsChecked="{Binding IsDown}">
                 <Path StrokeThickness="2" Data="M16,8 8,16 0,8 M8,0 8,16" Stroke="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ToggleButton}}, Path=Foreground}"/>
             </ToggleButton>
-            <ToggleButton Grid.Row="0" Grid.Column="2" IsChecked="{Binding IsUpRight}">
+            <ToggleButton Grid.Row="1" Grid.Column="2" IsChecked="{Binding IsUpRight}">
                 <Path StrokeThickness="2" Data="M14,10 14,0 4,0 M14,0 0,14" Stroke="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ToggleButton}}, Path=Foreground}"/>
             </ToggleButton>
-            <ToggleButton Grid.Row="1" Grid.Column="2" IsChecked="{Binding IsRight}">
+            <ToggleButton Grid.Row="2" Grid.Column="2" IsChecked="{Binding IsRight}">
                 <Path StrokeThickness="2" Data="M8,0 16,8 8,16 M0,8 16,8" Stroke="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ToggleButton}}, Path=Foreground}"/>
             </ToggleButton>
-            <ToggleButton Grid.Row="2" Grid.Column="2" IsChecked="{Binding IsDownRight}">
+            <ToggleButton Grid.Row="3" Grid.Column="2" IsChecked="{Binding IsDownRight}">
                 <Path StrokeThickness="2" Data="M4,14 14,14 14,4 M0,0 14,14" Stroke="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ToggleButton}}, Path=Foreground}"/>
             </ToggleButton>
-            <ToggleButton Grid.Row="3" Grid.ColumnSpan="3" Content="タイル除去モード" IsChecked="{Binding IsRemoveMode}"/>
+            <ToggleButton Grid.Row="4" Grid.ColumnSpan="3" Content="タイル除去モード" IsChecked="{Binding IsRemoveMode}"/>
         </Grid>
     </Viewbox>
 </UserControl>

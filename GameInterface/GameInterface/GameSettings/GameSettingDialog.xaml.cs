@@ -152,5 +152,10 @@ namespace GameInterface.GameSettings
         {
             DataContext.BoardHeight = (byte)randomer.Next(4, 13);
         }
+
+        private void AgentBox_RandomButton_Click(object sender, RoutedEventArgs e)
+        {
+            DataContext.AgentsCount = randomer.Next(2, 8);
+        }
     }
 }

@@ -71,7 +71,7 @@ namespace GameInterface.GameManagement
             Players[1] = new Player();
 
             for (int i = 0; i < Players.Length; ++i)
-                viewModel.Players[i] = new PlayerWindowViewModel(Players[i]);
+                viewModel.Players[i] = new PlayerWindowViewModel(Players[i], i+1);
 
             InitCellData(settings);
             InitAgents(settings);
@@ -132,9 +132,18 @@ namespace GameInterface.GameManagement
             Players[1].Agents = new Agent[settings.AgentsCount];
             viewModel.Players[0].AgentViewModels = new UserOrderPanelViewModel[settings.AgentsCount];
             viewModel.Players[1].AgentViewModels = new UserOrderPanelViewModel[settings.AgentsCount];
+            Point[] points = new Point[AgentsCount];
+            for(int i = 0; i < points.Length; ++i)
+            {
+                repeat:
+                points[i] = new Point((byte)rand.Next(0, BoardWidth / 2), (byte)rand.Next(0, BoardWidth / 2));
+                for(int j = 0; j < i; ++j)
+                    if (points[i] == points[j])
+                        goto repeat;
+            }
             for (int i = 0; i < Players[0].Agents.Length; ++i)
             {
-                var a0 = new Point((byte)rand.Next(0, BoardWidth / 2), (byte)rand.Next(0, BoardWidth / 2));
+                var a0 = points[i];
                 var a1 = new Point((byte)(BoardWidth - a0.X - 1), (byte)(BoardHeight - a0.Y - 1));
                 Players[0].Agents[i] = new Agent() { Point = a0, PlayerNum = 0, AgentNum = i };
                 Players[1].Agents[i] = new Agent() { Point = a1, PlayerNum = 1, AgentNum = i };

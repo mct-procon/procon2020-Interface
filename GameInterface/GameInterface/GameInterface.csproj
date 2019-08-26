@@ -95,6 +95,9 @@
       <DependentUpon>WaitForAIDialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="GameManagement\ScoreCalculator.cs" />
+    <Compile Include="PlayerControlPanel.xaml.cs">
+      <DependentUpon>PlayerControlPanel.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Server.cs" />
     <Compile Include="GameManagement\TeamColor.cs" />
     <Compile Include="ValueConvertes\VisibilityBooleanConverter.cs" />
@@ -146,6 +149,10 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="PlayerControlPanel.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Styles.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>

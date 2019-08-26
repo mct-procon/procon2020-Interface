@@ -6,25 +6,40 @@
         xmlns:local="clr-namespace:GameInterface"
         xmlns:cellLocal="clr-namespace:GameInterface.Cells"
         mc:Ignorable="d"
-        Title="MainWindow" Height="600" Width="1000" MinHeight="600" MinWidth="1000">
+        Title="MainWindow" Height="600" Width="1000" MinHeight="600" MinWidth="1000" Closed="Window_Closed">
     <Window.Resources>
         <ResourceDictionary Source="Styles.xaml"/>
     </Window.Resources>
     <Grid Background="White">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition MaxWidth="180"/>
-            <ColumnDefinition Width="1.5*" />
-            <ColumnDefinition Width="1.5*" />
-            <ColumnDefinition MaxWidth="180"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="180"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="40"/>
+            <RowDefinition Height="32"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
 
-        <TextBlock x:Name="text1" Grid.ColumnSpan="2" Text="{Binding TimerStr}" FontSize="24"/>
-        <TextBlock x:Name="text2" Grid.Column="2" Grid.ColumnSpan="2" Text="{Binding TurnStr}" FontSize="24"/>
-        <Button x:Name="MenuButton" Grid.Column="3" HorizontalAlignment="Right" Content="MENU" Click="MenuButton_Click">
+        <TextBlock x:Name="text1" Text="{Binding TimerStr}" FontSize="18"/>
+        <TextBlock x:Name="text2" Grid.Column="1" Text="{Binding TurnStr}" FontSize="18" Margin="10,0,0,0"/>
+
+        <Button x:Name="Show1PButton" Grid.Column="2" Margin="2" Background="Blue" Click="Show1PButton_Click">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="Player 1   " Foreground="White"/>
+                <TextBlock Text="{Binding Players[0].Score}" Foreground="White"/>
+            </StackPanel>
+        </Button>
+        <Button x:Name="Show2PButton" Grid.Column="3" HorizontalAlignment="Left" Margin="2" Background="Red" Click="Show2PButton_Click">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="Player 2   " Foreground="White"/>
+                <TextBlock Text="{Binding Players[1].Score}" Foreground="White"/>
+            </StackPanel>
+        </Button>
+
+        <Button x:Name="MenuButton" Grid.Column="4" HorizontalAlignment="Right" Content="MENU" Click="MenuButton_Click" Margin="2">
             <Button.ContextMenu>
                 <ContextMenu>
                     <MenuItem Header="新規ゲーム" Click="NewGameMenu_Clicked"/>
@@ -33,101 +48,9 @@
                 </ContextMenu>
             </Button.ContextMenu>
         </Button>
-        <TextBox Text="{Binding TimeLimitSeconds}" Grid.Column="3" Margin="85,0,47,0"/>
-        <Button x:Name="SkipButton" Grid.Column="3" HorizontalAlignment="Left"  Content="SKIP" Click="SkipButton_Click" Width="80"/>
+        <TextBox Text="{Binding TimeLimitSeconds}" Grid.Column="4" Margin="85,2,47,2"/>
+        <Button x:Name="SkipButton" Grid.Column="4" HorizontalAlignment="Left"  Content="SKIP" Click="SkipButton_Click" Width="80" Margin="2"/>
 
-        <Grid x:Name="player1Grid" Grid.Row="1" Grid.Column="0" Background="MediumSlateBlue">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto" MinHeight="120"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto" MinHeight="120"/>
-                <RowDefinition Height="10"/>
-                <RowDefinition/>
-            </Grid.RowDefinitions>
-            <StackPanel Grid.Row="0" Orientation="Horizontal">
-                <StackPanel.Resources>
-                    <Style TargetType="TextBlock">
-                        <Setter Property="Foreground" Value="White"/>
-                        <Setter Property="FontSize" Value="18"/>
-                    </Style>
-                </StackPanel.Resources>
-                <TextBlock Text="1P  "/>
-                <TextBlock Text="{Binding Players[0].Score}"/>
-                <TextBlock Text=" pts."/>
-            </StackPanel>
-            <TextBlock Text="1p.エージェント0" Grid.Row="1" Foreground="White"/>
-            <TextBlock Text="1p.エージェント1" Grid.Row="3" Foreground="White"/>
-
-            <ListBox x:Name="Decisions1P" Grid.Row="8" ItemsSource="{Binding Decisions1P}" SelectionChanged="Decisions1P_SelectionChanged" SelectedIndex="{Binding Decisions1PSelectedIndex}">
-                <ListBox.ItemTemplate>
-                    <DataTemplate>
-                        <Grid Height="20">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="40"/>
-                                <ColumnDefinition/>
-                            </Grid.ColumnDefinitions>
-                            <TextBlock Text="{Binding Score}"/>
-                            <StackPanel Orientation="Horizontal" Grid.Column="1">
-                                <TextBlock Foreground="Green" Text="{Binding MeAgent1}"/>
-                                <TextBlock Foreground="Violet" Text="{Binding MeAgent2}"/>
-                            </StackPanel>
-                        </Grid>
-                    </DataTemplate>
-                </ListBox.ItemTemplate>
-            </ListBox>
-        </Grid>
-
-        <Grid x:Name="cellGrid" Grid.Row="1" Grid.ColumnSpan="2" Grid.Column="1">
-            <Grid.Resources>
-                <Style TargetType="cellLocal:CellUserControl">
-                    <Setter Property="Margin" Value="1"/>
-                </Style>
-            </Grid.Resources>
-        </Grid>
-
-        <Grid x:Name="player2Grid" Grid.Row="1" Grid.Column="3" Background="Crimson">
-            <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto" MinHeight="120"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto" MinHeight="120"/>
-                    <RowDefinition Height="10"/>
-                    <RowDefinition/>
-            </Grid.RowDefinitions>
-            <StackPanel Grid.Row="0" Orientation="Horizontal">
-                <StackPanel.Resources>
-                    <Style TargetType="TextBlock">
-                        <Setter Property="Foreground" Value="White"/>
-                        <Setter Property="FontSize" Value="18"/>
-                    </Style>
-                </StackPanel.Resources>
-                <TextBlock Text="2P  "/>
-                <TextBlock Text="{Binding Players[1].Score}"/>
-                <TextBlock Text=" pts."/>
-            </StackPanel>
-            <TextBlock Text="2p.エージェント0" Grid.Row="1" Foreground="White"/>
-            <TextBlock Text="2p.エージェント1" Grid.Row="3" Foreground="White"/>
-            <ListBox x:Name="Decisions2P" Grid.Row="6" ItemsSource="{Binding Decisions2P}" SelectionChanged="Decisions2P_SelectionChanged" SelectedIndex="{Binding Decisions2PSelectedIndex}">
-                <ListBox.ItemTemplate>
-                    <DataTemplate>
-                        <Grid Height="20">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="40"/>
-                                <ColumnDefinition/>
-                            </Grid.ColumnDefinitions>
-                            <TextBlock Text="{Binding Score}"/>
-                            <StackPanel Orientation="Horizontal" Grid.Column="1">
-                                <TextBlock Foreground="Green" Text="{Binding MeAgent1}"/>
-                                <TextBlock Foreground="Violet" Text="{Binding MeAgent2}"/>
-                            </StackPanel>
-                        </Grid>
-                    </DataTemplate>
-                </ListBox.ItemTemplate>
-            </ListBox>
-        </Grid>
-
+        <Grid x:Name="cellGrid" Grid.Row="1" Grid.ColumnSpan="5"/>
     </Grid>
 </Window>

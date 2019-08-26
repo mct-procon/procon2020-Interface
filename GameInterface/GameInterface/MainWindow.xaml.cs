@@ -22,6 +22,10 @@ namespace GameInterface
     {
         private MainWindowViewModel viewModel;
         private GameManager gameManager;
+
+        private PlayerControlPanel Player1Window;
+        private PlayerControlPanel Player2Window;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -36,7 +40,12 @@ namespace GameInterface
         {
             gameManager.InitGameData(settings);
             CreateCellOnCellGrid(gameManager.Data.BoardWidth, gameManager.Data.BoardHeight);
-            CreateOrderButtonsOnPlayerGrid();
+            Player1Window = new PlayerControlPanel(gameManager, viewModel.Players[0]);
+            Player2Window = new PlayerControlPanel(gameManager, viewModel.Players[1]);
+            if (settings.IsUser1P)
+                Player1Window.Show();
+            if (settings.IsUser2P)
+                Player2Window.Show();
         }
 
         void CreateCellOnCellGrid(int boardWidth, int boardHeight)
@@ -80,36 +89,6 @@ namespace GameInterface
             }
         }
         
-        void CreateOrderButtonsOnPlayerGrid()
-        {
-            List<Controls.UserOrderPanel> removes = new List<Controls.UserOrderPanel>();
-            foreach(var a in player1Grid.Children)
-            {
-                if (a is Controls.UserOrderPanel)
-                    removes.Add((Controls.UserOrderPanel)a);
-            }
-            foreach (var rem in removes)
-                player1Grid.Children.Remove(rem);
-            removes.Clear();
-            foreach (var a in player2Grid.Children)
-            {
-                if (a is Controls.UserOrderPanel)
-                    removes.Add((Controls.UserOrderPanel)a);
-            }
-            foreach (var rem in removes)
-                player2Grid.Children.Remove(rem);
-            for (int i = 0; i < App.PlayersCount; i++)
-            {
-                var currentGrid = i == 0 ? player1Grid : player2Grid;
-                var orderButtonUserControl = new Controls.UserOrderPanel() { DataContext = viewModel.Players[i].AgentViewModels[0] };
-                currentGrid.Children.Add(orderButtonUserControl);
-                Grid.SetRow(orderButtonUserControl, 2);
-                var orderButtonUserControl2 = new Controls.UserOrderPanel() { DataContext = viewModel.Players[i].AgentViewModels[1] };
-                currentGrid.Children.Add(orderButtonUserControl2);
-                Grid.SetRow(orderButtonUserControl2, 4);
-            }
-        }
-
         private void MenuButton_Click(object sender, RoutedEventArgs e)
         {
             MenuButton.ContextMenu.IsOpen = true;
@@ -137,6 +116,8 @@ namespace GameInterface
                 viewModel.gameManager.Server.SendGameEnd();
             if (GameSettings.GameSettingDialog.ShowDialog(out var result))
             {
+                Player1Window?.Close();
+                Player2Window?.Close();
                 InitGame(result);
                 if (!(result.IsUser1P & result.IsUser2P))
                     (new GameSettings.WaitForAIDialog(viewModel.gameManager.Server, result)).ShowDialog();
@@ -170,18 +151,29 @@ namespace GameInterface
             }
         }
 
-        private void Decisions1P_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void Show1PButton_Click(object sender, RoutedEventArgs e)
         {
-            var decided = (Decision)((ListBox)sender).SelectedItem;
-            if (decided == null) return;
-            gameManager.SetDecision(0, decided);
+            if (Player1Window == null)
+                return;
+            if (Player1Window.Visibility == Visibility.Visible)
+                Player1Window.Visibility = Visibility.Hidden;
+            else
+                Player1Window.Visibility = Visibility.Visible;
         }
 
-        private void Decisions2P_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void Show2PButton_Click(object sender, RoutedEventArgs e)
         {
-            var decided = (Decision)((ListBox)sender).SelectedItem;
-            if (decided == null) return;
-            gameManager.SetDecision(1, decided);
+            if (Player2Window == null)
+                return;
+            if (Player2Window.Visibility == Visibility.Visible)
+                Player2Window.Visibility = Visibility.Hidden;
+            else
+                Player2Window.Visibility = Visibility.Visible;
+        }
+
+        private void Window_Closed(object sender, EventArgs e)
+        {
+            Environment.Exit(0);
         }
     }
 }

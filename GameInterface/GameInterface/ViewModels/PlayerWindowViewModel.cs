@@ -11,7 +11,7 @@ namespace GameInterface.ViewModels
     public class PlayerWindowViewModel : ViewModelBase
     {
         public GameManagement.Player Data { get; set; }
-
+        public int PlayerNum { get; set; }
         public int Score {
             get => Data.Score;
             set {
@@ -56,9 +56,10 @@ namespace GameInterface.ViewModels
             RaisePropertyChanged(nameof(DecisionsSelectedIndex));
         }
 
-        public PlayerWindowViewModel(Player data)
+        public PlayerWindowViewModel(Player data, int playerNum)
         {
             Data = data;
+            PlayerNum = playerNum;
         }
     }
 }
