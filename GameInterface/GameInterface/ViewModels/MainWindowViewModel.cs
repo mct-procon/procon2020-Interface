@@ -53,18 +53,5 @@ namespace GameInterface.ViewModels
             get => players;
             set => RaisePropertyChanged(ref players, value);
         }
-
-
-        public DelegateCommand<Point> ChangeColorCommand { get; private set; }
-
-        public MainWindowViewModel()
-        {
-            ChangeColorCommand = new DelegateCommand<Point>(ChangeColor);
-        }
-
-        private void ChangeColor(Point point)
-        {
-            gameManager.ChangeCellToNextColor(point);
-        }
     }
 }

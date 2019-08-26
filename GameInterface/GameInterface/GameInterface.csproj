@@ -75,9 +75,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Cells\ChangeColorUserCtrl.xaml.cs">
-      <DependentUpon>ChangeColorUserCtrl.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Controls\UserOrderPanel.xaml.cs">
       <DependentUpon>UserOrderPanel.xaml</DependentUpon>
     </Compile>
@@ -107,10 +104,6 @@
     <Compile Include="ViewModels\UserOrderPanelViewModel.cs" />
     <Compile Include="ViewModels\ViewModelBase.cs" />
     <Page Include="Cells\CellUserControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Cells\ChangeColorUserCtrl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

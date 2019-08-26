@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Point = MCTProcon30Protocol.Point;
 
 namespace GameInterface.Cells
 {
@@ -20,9 +21,19 @@ namespace GameInterface.Cells
     /// </summary>
     public partial class CellUserControl : UserControl
     {
-        public CellUserControl()
+        private GameManagement.GameManager gameManager;
+        private Point point;
+
+        public CellUserControl(GameManagement.GameManager gameMan, Point p)
         {
             InitializeComponent();
+            gameManager = gameMan;
+            point = p;
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            gameManager.ChangeCellToNextColor(point);
         }
     }
 }

@@ -75,16 +75,11 @@ namespace GameInterface
             {
                 for (int j = 0; j < boardHeight; j++)
                 {
-                    var cellUserControl = new CellUserControl();
+                    var cellUserControl = new CellUserControl(gameManager, new Point((byte)i, (byte)j));
                     cellUserControl.DataContext = gameManager.Data.CellData[i, j];
                     cellGrid.Children.Add(cellUserControl);
                     Grid.SetColumn(cellUserControl, i);
                     Grid.SetRow(cellUserControl, j);
-
-                    var changeColorUserCtrl = new ChangeColorUserCtrl(new Point((byte)i, (byte)j));
-                    cellGrid.Children.Add(changeColorUserCtrl);
-                    Grid.SetColumn(changeColorUserCtrl, i);
-                    Grid.SetRow(changeColorUserCtrl, j);
                 }
             }
         }
