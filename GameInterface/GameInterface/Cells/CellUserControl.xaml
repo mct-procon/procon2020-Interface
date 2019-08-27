@@ -51,9 +51,9 @@
         </Button.Template>
         <Grid>
             <Border BorderThickness="4">
-                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding Score}" FontSize="18"/>
+                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding Score}" FontSize="24"/>
             </Border>
-            <TextBlock HorizontalAlignment="Left" VerticalAlignment="Top" Text="{Binding AgentNum}" Visibility="{Binding AgentNumVisibility}" FontSize="12"/>
+            <TextBlock HorizontalAlignment="Left" VerticalAlignment="Top" Text="{Binding AgentNum}" Visibility="{Binding AgentNumVisibility}" FontSize="16" Margin="2,2,0,0"/>
         </Grid>
     </Button>
 </UserControl>

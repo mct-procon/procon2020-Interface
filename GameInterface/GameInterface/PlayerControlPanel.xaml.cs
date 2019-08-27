@@ -31,11 +31,16 @@ namespace GameInterface
             MainGrid.Background = new SolidColorBrush(viewModel.PlayerNum == 1 ? Colors.Blue : Colors.Red);
 
             MainGrid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(1, GridUnitType.Star) });
-            if(viewModel.AgentViewModels.Length >= 3)
+            if (viewModel.AgentViewModels.Length >= 3)
+            {
                 MainGrid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(1, GridUnitType.Star) });
-            if(viewModel.AgentViewModels.Length >= 6)
+                this.Height *= 2;
+            }
+            if (viewModel.AgentViewModels.Length >= 6)
+            {
                 MainGrid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(1, GridUnitType.Star) });
-
+                this.Height = this.Height * 3 / 2;
+            }
             int i = 0;
             for (; i < viewModel.AgentViewModels.Length; ++i)
             {
