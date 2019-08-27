@@ -65,6 +65,16 @@
                     <TextBlock Text="エージェント数" Grid.Row="1" Grid.Column="0" Margin="4" HorizontalAlignment="Right"/>
                     <TextBox Grid.Row="1" Grid.Column="1" Margin="2,2,42,2" Text="{Binding AgentsCount}" Validation.ErrorTemplate="{StaticResource ValidationTemplate}"/>
                     <Button Content="ランダム" x:Name="AgentBox_RandomButton" Grid.Row="1" Grid.Column="1" Margin="2" HorizontalAlignment="Right" Click="AgentBox_RandomButton_Click"/>
+                    <StackPanel Grid.Row="1" Grid.Column="3" Grid.ColumnSpan="2" Orientation="Horizontal">
+                        <StackPanel.Resources>
+                            <Style TargetType="CheckBox">
+                                <Setter Property="Margin" Value="10,0,0,0"/>
+                            </Style>
+                        </StackPanel.Resources>
+                        <CheckBox Content="X軸線対称" HorizontalAlignment="Left" VerticalAlignment="Center" IsChecked="{Binding IsCreateX}"/>
+                        <CheckBox Content="Y軸線対称" HorizontalAlignment="Left" VerticalAlignment="Center" IsChecked="{Binding IsCreateY}"/>
+                        <CheckBox Content="点対称" HorizontalAlignment="Left" VerticalAlignment="Center" IsChecked="{Binding IsCreateRotate}"/>
+                    </StackPanel>
                 </Grid>
             </TabItem>
             <!--<TabItem Header="保存した盤面から">

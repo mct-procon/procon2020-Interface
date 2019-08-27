@@ -164,10 +164,70 @@ namespace GameInterface.GameSettings
             get => isUseSameAI;
             set => isUseSameAI = value;
         }
+
+        private BoardSymmetry creationSymmetry = BoardSymmetry.XY;
+        public BoardSymmetry CreationSymmetry {
+            get => creationSymmetry;
+            set {
+                RaisePropertyChanged(ref creationSymmetry, value);
+                RaisePropertyChanged(nameof(IsCreateX));
+                RaisePropertyChanged(nameof(IsCreateY));
+                RaisePropertyChanged(nameof(IsCreateRotate));
+            }
+        }
+
+        public bool IsCreateX {
+            get => (creationSymmetry & BoardSymmetry.X) != 0;
+            set {
+                if(value)
+                {
+                    if ((creationSymmetry & BoardSymmetry.Rotate) != 0)
+                        CreationSymmetry = BoardSymmetry.X;
+                    else
+                        CreationSymmetry = creationSymmetry | BoardSymmetry.X;
+                }
+                else
+                {
+                    if ((creationSymmetry & ~BoardSymmetry.X) != 0)
+                        CreationSymmetry = creationSymmetry & ~BoardSymmetry.X;
+                }
+            }
+        }
+
+        public bool IsCreateY {
+            get => (creationSymmetry & BoardSymmetry.Y) != 0;
+            set {
+                if (value)
+                {
+                    if ((creationSymmetry & BoardSymmetry.Rotate) != 0)
+                        CreationSymmetry = BoardSymmetry.Y;
+                    else
+                        CreationSymmetry = creationSymmetry | BoardSymmetry.Y;
+                }
+                else
+                {
+                    if ((creationSymmetry & ~BoardSymmetry.Y) != 0)
+                        CreationSymmetry = creationSymmetry & ~BoardSymmetry.Y;
+                }
+            }
+        }
+
+        public bool IsCreateRotate {
+            get => creationSymmetry == BoardSymmetry.Rotate;
+            set {
+                if (value)
+                    CreationSymmetry = BoardSymmetry.Rotate;
+            }
+        }
     }
 
     public enum BoardCreation : byte
     {
         Random = 0, JsonFile = 1
+    }
+    
+    public enum BoardSymmetry : byte
+    {
+        X = 1, Y = 2, XY = 3, Rotate = 4
     }
 }

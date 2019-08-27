@@ -53,16 +53,7 @@ namespace GameInterface
             // Clear before game.
             cellGrid.RowDefinitions.Clear();
             cellGrid.ColumnDefinitions.Clear();
-
-            List<Cells.CellUserControl> cells = new List<CellUserControl>();
-            foreach(var ctrl in cellGrid.Children)
-            {
-                if (ctrl is Cells.CellUserControl)
-                    cells.Add((Cells.CellUserControl)ctrl);
-            }
-            foreach (var ctrl in cells)
-                cellGrid.Children.Remove(ctrl);
-            // end
+            cellGrid.Children.Clear();
 
             //Gridに列、行を追加
             for (int i = 0; i < boardHeight; i++)
