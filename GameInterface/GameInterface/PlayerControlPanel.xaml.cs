@@ -22,6 +22,15 @@ namespace GameInterface
     {
         GameManagement.GameManager gameManager { get; set; }
 
+        private ViewModels.PlayerWindowViewModel vm = null;
+        public new ViewModels.PlayerWindowViewModel DataContext {
+            get => vm;
+            set {
+                vm = value;
+                base.DataContext = value;
+            }
+        }
+
         public PlayerControlPanel(GameManagement.GameManager gameMan, ViewModels.PlayerWindowViewModel viewModel)
         {
             InitializeComponent();
@@ -57,7 +66,7 @@ namespace GameInterface
         {
             var decided = (Decision)((ListBox)sender).SelectedItem;
             if (decided == null) return;
-            gameManager.SetDecision(0, decided);
+            gameManager.SetDecision(DataContext, decided);
         }
     }
 }
