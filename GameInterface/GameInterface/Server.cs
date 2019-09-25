@@ -86,7 +86,7 @@ namespace GameInterface
                 dig.ShowDialog();
                 server.SendConnect(managerNum);
                 server.SendGameInit(managerNum);
-                server.SendTurnStart(managerNum, true, true);
+                server.SendTurnStart(managerNum, Enumerable.Range(0, gameManager.Data.AgentsCount).Select(x => true).ToArray());
             }
             else
             {
@@ -212,19 +212,19 @@ namespace GameInterface
                     board[i, j] = (sbyte)data.CellData[i, j].Score;
                 }
             }
-            managers[playerNum].Write(DataKind.GameInit, new GameInit((byte)data.BoardHeight, (byte)data.BoardWidth, board, 2,
-                Unsafe8Array<MCTProcon30Protocol.Point>.Create(data.Players[0].Agents.Select(item => item.Point).ToArray()),
-                Unsafe8Array<MCTProcon30Protocol.Point>.Create(data.Players[1].Agents.Select(item => item.Point).ToArray()),
+            managers[playerNum].Write(DataKind.GameInit, new GameInit((byte)data.BoardHeight, (byte)data.BoardWidth, board, (byte)data.AgentsCount,
+                Unsafe8Array<MCTProcon30Protocol.Point>.Create(data.Players[playerNum == 0 ? 0 : 1].Agents.Select(item => item.Point).ToArray()),
+                Unsafe8Array<MCTProcon30Protocol.Point>.Create(data.Players[playerNum == 0 ? 1 : 0].Agents.Select(item => item.Point).ToArray()),
                 data.FinishTurn));
         }
 
         public void SendTurnStart(bool[] movable)
         {
-            SendTurnStart(0, movable[0], movable[1]);
-            SendTurnStart(1, movable[2], movable[3]);
+            SendTurnStart(0, movable.Take(movable.Length / 2).ToArray());
+            SendTurnStart(1, movable.Skip(movable.Length / 2).ToArray());
         }
 
-        public void SendTurnStart(int playerNum, bool isAgent1Moved, bool isAgent2Moved)
+        public void SendTurnStart(int playerNum, bool[] isAgentsMoved)
         {
             IsDecidedReceived[playerNum] = false;
             if (!isConnected[playerNum]) return;
@@ -242,11 +242,11 @@ namespace GameInterface
                 }
             if (playerNum == 1) Swap(ref colorBoardMe, ref colorBoardEnemy);
             managers[playerNum].Write(DataKind.TurnStart, new TurnStart((byte)data.NowTurn, data.TimeLimitSeconds * 1000,
-                Unsafe8Array<MCTProcon30Protocol.Point>.Create(data.Players[0].Agents.Select(item => item.Point).ToArray()),
-                Unsafe8Array<MCTProcon30Protocol.Point>.Create(data.Players[1].Agents.Select(item => item.Point).ToArray()),
+                Unsafe8Array<MCTProcon30Protocol.Point>.Create(data.Players[playerNum == 0 ? 0 : 1].Agents.Select(item => item.Point).ToArray()),
+                Unsafe8Array<MCTProcon30Protocol.Point>.Create(data.Players[playerNum == 0 ? 1 : 0].Agents.Select(item => item.Point).ToArray()),
                 colorBoardMe,
                 colorBoardEnemy,
-                Unsafe8Array<bool>.Create(isAgent1Moved,isAgent2Moved)
+                Unsafe8Array<bool>.Create(isAgentsMoved)
                 ));
         }
 
