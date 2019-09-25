@@ -40,12 +40,18 @@ namespace GameInterface
         {
             gameManager.InitGameData(settings);
             CreateCellOnCellGrid(gameManager.Data.BoardWidth, gameManager.Data.BoardHeight);
-            Player1Window = new PlayerControlPanel(gameManager, viewModel.Players[0]);
-            Player2Window = new PlayerControlPanel(gameManager, viewModel.Players[1]);
             if (settings.IsUser1P)
+            {
+                Player1Window = new PlayerControlPanel(gameManager, viewModel.Players[0]);
+                Player1Window.Closed += (ss, ee) => Player1Window = null;
                 Player1Window.Show();
+            }
             if (settings.IsUser2P)
+            {
+                Player2Window = new PlayerControlPanel(gameManager, viewModel.Players[1]);
+                Player2Window.Closed += (ss, ee) => Player2Window = null;
                 Player2Window.Show();
+            }
         }
 
         void CreateCellOnCellGrid(int boardWidth, int boardHeight)
@@ -140,21 +146,31 @@ namespace GameInterface
         private void Show1PButton_Click(object sender, RoutedEventArgs e)
         {
             if (Player1Window == null)
-                return;
-            if (Player1Window.Visibility == Visibility.Visible)
-                Player1Window.Visibility = Visibility.Hidden;
+            {
+                Player1Window = new PlayerControlPanel(gameManager, viewModel.Players[0]);
+                Player1Window.Closed += (ss, ee) => Player1Window = null;
+                Player1Window.Show();
+            }
             else
-                Player1Window.Visibility = Visibility.Visible;
+            {
+                Player1Window.Close();
+                Player1Window = null;
+            }
         }
 
         private void Show2PButton_Click(object sender, RoutedEventArgs e)
         {
             if (Player2Window == null)
-                return;
-            if (Player2Window.Visibility == Visibility.Visible)
-                Player2Window.Visibility = Visibility.Hidden;
+            {
+                Player2Window = new PlayerControlPanel(gameManager, viewModel.Players[1]);
+                Player2Window.Closed += (ss, ee) => Player2Window = null;
+                Player2Window.Show();
+            }
             else
-                Player2Window.Visibility = Visibility.Visible;
+            {
+                Player2Window.Close();
+                Player2Window = null;
+            }
         }
 
         private void Window_Closed(object sender, EventArgs e)

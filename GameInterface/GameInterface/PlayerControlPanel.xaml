@@ -28,7 +28,7 @@
             <TextBlock Text="{Binding Score}" Margin="10,0,0,0"/>
         </StackPanel>
 
-        <ListBox x:Name="Decisions" ItemsSource="{Binding Decisions1P}" SelectionChanged="Decisions_SelectionChanged" SelectedIndex="{Binding Decisions1PSelectedIndex}">
+        <ListBox x:Name="Decisions" ItemsSource="{Binding Decisions}" SelectionChanged="Decisions_SelectionChanged" SelectedIndex="{Binding DecisionsSelectedIndex}">
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <Grid Height="20">
@@ -38,8 +38,14 @@
                         </Grid.ColumnDefinitions>
                         <TextBlock Text="{Binding Score}"/>
                         <StackPanel Orientation="Horizontal" Grid.Column="1">
-                            <TextBlock Foreground="Green" Text="{Binding MeAgent1}"/>
-                            <TextBlock Foreground="Violet" Text="{Binding MeAgent2}"/>
+                            <TextBlock Foreground="Green" Text="{Binding Agents[0]}"/>
+                            <TextBlock Foreground="Violet" Text="{Binding Agents[1]}"/>
+                            <TextBlock Foreground="Brown" Text="{Binding Agents[2]}"/>
+                            <TextBlock Foreground="Cyan" Text="{Binding Agents[3]}"/>
+                            <TextBlock Foreground="Gold" Text="{Binding Agents[4]}"/>
+                            <TextBlock Foreground="Orange" Text="{Binding Agents[5]}"/>
+                            <TextBlock Foreground="Purple" Text="{Binding Agents[6]}"/>
+                            <TextBlock Foreground="Silver" Text="{Binding Agents[7]}"/>
                         </StackPanel>
                     </Grid>
                 </DataTemplate>
