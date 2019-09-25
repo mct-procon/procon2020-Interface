@@ -66,7 +66,7 @@ namespace GameInterface
         {
             var decided = (Decision)((ListBox)sender).SelectedItem;
             if (decided == null) return;
-            gameManager.SetDecision(DataContext.DecisionsSelectedIndex, decided);
+            gameManager.SetDecision(DataContext.PlayerNum, decided);
         }
     }
 }
