@@ -92,6 +92,7 @@
       <DependentUpon>WaitForAIDialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="GameManagement\ScoreCalculator.cs" />
+    <Compile Include="Network\NetworkInformation.cs" />
     <Compile Include="PlayerControlPanel.xaml.cs">
       <DependentUpon>PlayerControlPanel.xaml</DependentUpon>
     </Compile>
@@ -183,5 +184,6 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

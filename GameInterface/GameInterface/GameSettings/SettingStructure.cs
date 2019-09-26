@@ -223,7 +223,7 @@ namespace GameInterface.GameSettings
 
     public enum BoardCreation : byte
     {
-        Random = 0, JsonFile = 1
+        Random = 0, JsonFile = 1, Server = 2
     }
     
     public enum BoardSymmetry : byte
