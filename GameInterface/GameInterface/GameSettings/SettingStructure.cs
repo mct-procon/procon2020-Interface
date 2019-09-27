@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,6 +14,8 @@ namespace GameInterface.GameSettings
     public class SettingStructure : ViewModels.NotifyDataErrorInfoViewModel
     {
         private ushort limitTime = 5;
+
+        public bool IsEnableGameConduct => BoardCreation != BoardCreation.Server;
 
         /// <summary>
         /// Limitation Time [Seconds]
@@ -64,13 +67,16 @@ namespace GameInterface.GameSettings
         /// </summary>
         public byte _BoardCreationState {
             get => boardCreationState;
-            set => RaisePropertyChanged(ref boardCreationState, value);
+            set {
+                RaisePropertyChanged(ref boardCreationState, value);
+                RaisePropertyChanged(nameof(IsEnableGameConduct));
+            }
         }
 
-        internal BoardCreation BoardCreation => _BoardCreationState == 0 ? BoardCreation.Random : BoardCreation.JsonFile;
+        internal BoardCreation BoardCreation => (BoardCreation)_BoardCreationState;
 
-        internal Cells.Cell[,] JsonCell { get; set; }
-        internal Agent[] JsonAgent { get; set; }
+        //internal Cells.Cell[,] JsonCell { get; set; }
+        //internal Agent[] JsonAgent { get; set; }
 
         private byte turns = 60;
 
@@ -140,7 +146,7 @@ namespace GameInterface.GameSettings
         /// </summary>
         public bool IsAutoSkip {
             get => isAutoSkip;
-            set => isAutoSkip = value;
+            set => RaisePropertyChanged(ref isAutoSkip, value);
         }
 
         private bool isAutoGoNextGame = false;
@@ -151,19 +157,47 @@ namespace GameInterface.GameSettings
         public bool IsAutoGoNextGame
         {
             get => isAutoGoNextGame;
-            set => isAutoGoNextGame = value;
+            set => RaisePropertyChanged(ref isAutoGoNextGame, value);
         }
 
-        private bool isUseSameAI = false;
+        public string HostName {
+            get => Network.ProconAPIClient.Information.HostName;
+            set {
+                Network.ProconAPIClient.Information.HostName = value;
+                RaisePropertyChanged();
+            }
+        }
+
+        /// <summary>
+        /// Token of Server
+        /// </summary>
+        public string ServerToken {
+            get => Network.ProconAPIClient.Information.AuthenticationID;
+            set {
+                Network.ProconAPIClient.Information.AuthenticationID = value;
+                RaisePropertyChanged();
+            }
+        }
+
+        private MCTProcon30Protocol.Json.Match[] matches = null;
+        public MCTProcon30Protocol.Json.Match[] Matches {
+            get => matches;
+            set {
+                RaisePropertyChanged(ref matches, value);
+                SelectedMatchIndex = value == null || value.Length <= 0 ? -1 : 0;
+            }
+        }
+
+        private int selectedMatchIndex = -1;
+        public int SelectedMatchIndex {
+            get => selectedMatchIndex;
+            set => RaisePropertyChanged(ref selectedMatchIndex, value);
+        }
 
         /// <summary>
         /// Whether the AI used in before game use.
         /// </summary>
-        public bool IsUseSameAI
-        {
-            get => isUseSameAI;
-            set => isUseSameAI = value;
-        }
+        public bool IsUseSameAI { get; set; } = false;
 
         private BoardSymmetry creationSymmetry = BoardSymmetry.XY;
         public BoardSymmetry CreationSymmetry {
@@ -223,7 +257,7 @@ namespace GameInterface.GameSettings
 
     public enum BoardCreation : byte
     {
-        Random = 0, JsonFile = 1, Server = 2
+        Random = 0, Server = 1, JsonFile = 2
     }
     
     public enum BoardSymmetry : byte

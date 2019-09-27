@@ -62,10 +62,9 @@ namespace GameInterface.GameManagement
             TimeLimitSeconds = settings.LimitTime;
             IsAutoSkipTurn = settings.IsAutoSkip;
 
-            if(settings.BoardCreation == GameSettings.BoardCreation.JsonFile)
+            if(settings.BoardCreation == GameSettings.BoardCreation.Server)
             {
-                settings.BoardWidth = (byte)settings.JsonCell.GetLength(0);
-                settings.BoardHeight = (byte)settings.JsonCell.GetLength(1);
+                //TODO
             }
             Players[0] = new Player();
             Players[1] = new Player();
@@ -132,9 +131,6 @@ namespace GameInterface.GameManagement
             }
             else
             {
-                CellData = settings.JsonCell;
-                BoardWidth = CellData.GetLength(0);
-                BoardHeight = CellData.GetLength(1);
             }
         }
 

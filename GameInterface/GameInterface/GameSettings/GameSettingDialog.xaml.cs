@@ -122,23 +122,18 @@ namespace GameInterface.GameSettings
 
         private void OkButton_Click(object sender, RoutedEventArgs e)
         {
-            //switch(DataContext._BoardCreationState)
-            //{
-            //    case 1:
-            //        if (string.IsNullOrEmpty(DataContext.QCIMGText))
-            //        {
-            //            MessageBox.Show("画像ファイルを参照してQRコードを読み込んでください．", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
-            //            return;
-            //        }
-            //        break;
-            //    case 2:
-            //        if (string.IsNullOrEmpty(DataContext.QCCAMText))
-            //        {
-            //            MessageBox.Show("カメラで撮影してQRコードを読み込んでください．", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
-            //            return;
-            //        }
-            //        break;
-            //}
+            switch (DataContext.BoardCreation)
+            {
+                case BoardCreation.Server:
+                    if (DataContext.SelectedMatchIndex == -1)
+                    {
+                        MessageBox.Show("試合IDを正しく選択してください．", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+                        return;
+                    }
+                    MessageBox.Show("未実装です．", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                    break;
+            }
             DialogResult = true;
             Close();
         }
@@ -156,6 +151,18 @@ namespace GameInterface.GameSettings
         private void AgentBox_RandomButton_Click(object sender, RoutedEventArgs e)
         {
             DataContext.AgentsCount = randomer.Next(2, 8);
+        }
+
+        private async void GetBattles(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                DataContext.Matches = await Network.ProconAPIClient.Instance.GetMatches();
+            }
+            catch(Exception ex)
+            {
+                MessageBox.Show($"Exception is thrown.\n{ex}", "Error Occured!", MessageBoxButton.OK);
+            }
         }
     }
 }
