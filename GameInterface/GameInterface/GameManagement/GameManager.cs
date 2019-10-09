@@ -53,11 +53,13 @@ namespace GameInterface.GameManagement
             Data.IsPause = false;
         }
 
-        public void InitGameData(GameSettings.SettingStructure settings)
+        public bool InitGameData(GameSettings.SettingStructure settings)
         {
-            Data.InitGameData(settings);
+            if (!Data.InitGameData(settings))
+                return false;
             Data.IsPause = false;
             Server.StartListening(settings);
+            return true;
         }
 
         public void TimerStop()
@@ -121,7 +123,7 @@ namespace GameInterface.GameManagement
             {
                 EndGame();
                 Server.SendGameEnd();
-                if (Data.CurrentGameSettings.IsAutoGoNextGame)
+                if (Data.CurrentGameSettings.IsAutoGoNextGame && Data.CurrentGameSettings.IsEnableGameConduct == false)
                 {
                     Data.CurrentGameSettings.IsUseSameAI = true;
                     var settings = Data.CurrentGameSettings;

@@ -36,6 +36,7 @@ namespace GameInterface.GameManagement
         public bool IsGameStarted { get; set; } = false;
         public bool IsNextTurnStart { get; set; } = true;
         public bool IsAutoSkipTurn { get; set; }
+        public bool IsEnableGameConduct { get; set; }
         public bool IsPause { get; set; }
         public int NowTurn { get; set; }
         public int BoardHeight { get; private set; }
@@ -53,7 +54,7 @@ namespace GameInterface.GameManagement
             viewModel.Players = new PlayerWindowViewModel[Players.Length];
         }
 
-        public void InitGameData(GameSettings.SettingStructure settings)
+        public bool InitGameData(GameSettings.SettingStructure settings)
         {
             CurrentGameSettings = settings;
             SecondCount = 0;
@@ -61,19 +62,25 @@ namespace GameInterface.GameManagement
             FinishTurn = settings.Turns;
             TimeLimitSeconds = settings.LimitTime;
             IsAutoSkipTurn = settings.IsAutoSkip;
+            IsEnableGameConduct = settings.IsEnableGameConduct;
 
-            if(settings.BoardCreation == GameSettings.BoardCreation.Server)
+            if (settings.BoardCreation == GameSettings.BoardCreation.Server)
             {
                 //TODO
+                return false;
             }
-            Players[0] = new Player();
-            Players[1] = new Player();
+            else
+            {
+                Players[0] = new Player();
+                Players[1] = new Player();
 
-            for (int i = 0; i < Players.Length; ++i)
-                viewModel.Players[i] = new PlayerWindowViewModel(Players[i], i+1);
+                for (int i = 0; i < Players.Length; ++i)
+                    viewModel.Players[i] = new PlayerWindowViewModel(Players[i], i + 1);
 
-            InitCellData(settings);
-            InitAgents(settings);
+                InitCellData(settings);
+                InitAgents(settings);
+                return true;
+            }
         }
 
         void InitCellData(GameSettings.SettingStructure settings)

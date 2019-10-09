@@ -51,5 +51,13 @@ namespace GameInterface.Network
                 throw new Exception("無効なトークンです");
             }
         }
+
+        public async Task<bool> GetState(int id, out Field fieldState, out ErrorResponse error)
+        {
+            fieldState = null;
+            error = null;
+            PrepareHeader();
+            var response = await hc.GetAsync
+        }
     }
 }

@@ -36,9 +36,10 @@ namespace GameInterface
             this.viewModel.gameManager = this.gameManager;
         }
 
-        public void InitGame(GameSettings.SettingStructure settings)
+        public bool InitGame(GameSettings.SettingStructure settings)
         {
-            gameManager.InitGameData(settings);
+            if (!gameManager.InitGameData(settings))
+                return false;
             CreateCellOnCellGrid(gameManager.Data.BoardWidth, gameManager.Data.BoardHeight);
             if (settings.IsUser1P)
             {
@@ -52,6 +53,7 @@ namespace GameInterface
                 Player2Window.Closed += (ss, ee) => Player2Window = null;
                 Player2Window.Show();
             }
+            return true;
         }
 
         void CreateCellOnCellGrid(int boardWidth, int boardHeight)
@@ -110,7 +112,8 @@ namespace GameInterface
             {
                 Player1Window?.Close();
                 Player2Window?.Close();
-                InitGame(result);
+                if (!InitGame(result))
+                    return;
                 if (!(result.IsUser1P & result.IsUser2P))
                     (new GameSettings.WaitForAIDialog(viewModel.gameManager.Server, result)).ShowDialog();
                 gameManager.StartGame();
