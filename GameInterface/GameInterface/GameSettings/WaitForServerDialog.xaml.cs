@@ -20,15 +20,14 @@ namespace GameInterface.GameSettings
     public partial class WaitForServerDialog : Window
     {
         DispatcherTimer timer { get; set; } = new DispatcherTimer();
-        public int ID { get; set; }
         public WaitForServerDialog()
         {
             InitializeComponent();
         }
 
-        public async static Task<bool> ShowDialog(int id)
+        public async static Task<bool> ShowDialogEx()
         {
-            if(await Network.ProconAPIClient.Instance.GetState(id))
+            if(await Network.ProconAPIClient.Instance.GetState())
             {
                 return true;
             }
@@ -41,7 +40,7 @@ namespace GameInterface.GameSettings
                 }
                 else
                 {
-                    WaitForServerDialog dig = new WaitForServerDialog() { ID = id };
+                    WaitForServerDialog dig = new WaitForServerDialog();
                     if(dig.ShowDialog() == true)
                         return true;
                     return false;
@@ -55,7 +54,7 @@ namespace GameInterface.GameSettings
             ProgressText.Text = $"ゲーム開始時間：{Network.ProconAPIClient.Instance.LastError.StartAt.Value} 残り時間：{(Network.ProconAPIClient.Instance.LastError.StartAt.Value - System.DateTime.Now).Seconds}秒";
             if (Network.ProconAPIClient.Instance.LastError.StartAt.Value <= System.DateTime.Now)
             {
-                if (await Network.ProconAPIClient.Instance.GetState(ID))
+                if (await Network.ProconAPIClient.Instance.GetState())
                     DialogResult = true;
                 else if (Network.ProconAPIClient.Instance.LastError.StartAt == null)
                 {

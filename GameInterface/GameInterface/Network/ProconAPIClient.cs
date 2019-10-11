@@ -58,10 +58,10 @@ namespace GameInterface.Network
             }
         }
 
-        public async Task<bool> GetState(int id)
+        public async Task<bool> GetState()
         {
             PrepareHeader();
-            var response = await hc.GetAsync(Information.URLStarts + "matches/" + id);
+            var response = await hc.GetAsync(Information.URLStarts + "matches/" + this.MatchData.Id.ToString());
             if(response.StatusCode == System.Net.HttpStatusCode.OK)
             {
                 FieldState = JsonConvert.DeserializeObject<Field>(await response.Content.ReadAsStringAsync());

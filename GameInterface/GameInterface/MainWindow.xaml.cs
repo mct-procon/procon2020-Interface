@@ -94,10 +94,10 @@ namespace GameInterface
             MenuButton.ContextMenu.IsOpen = true;
         }
 
-        private void SkipButton_Click(object sender, RoutedEventArgs e)
+        private async void SkipButton_Click(object sender, RoutedEventArgs e)
         {
             //まだEndTurn()していないなら、しておく
-            if (gameManager.Data.IsNextTurnStart) gameManager.EndTurn();
+            if (gameManager.Data.IsNextTurnStart) await gameManager.EndTurn();
             gameManager.StartTurn();
         }
 

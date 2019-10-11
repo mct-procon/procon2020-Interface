@@ -56,19 +56,28 @@ namespace GameInterface.GameManagement
 
         public async Task<bool> InitGameData(GameSettings.SettingStructure settings)
         {
+            IsEnableGameConduct = settings.IsEnableGameConduct;
             CurrentGameSettings = settings;
             SecondCount = 0;
             NowTurn = 1;
-            FinishTurn = settings.Turns;
-            TimeLimitSeconds = settings.LimitTime;
-            IsAutoSkipTurn = settings.IsAutoSkip;
-            IsEnableGameConduct = settings.IsEnableGameConduct;
 
             if (settings.BoardCreation == GameSettings.BoardCreation.Server)
             {
-                if ((await GameSettings.WaitForServerDialog.ShowDialog(Network.ProconAPIClient.Instance.MatchData.Id)) == false)
+                if ((await GameSettings.WaitForServerDialog.ShowDialogEx()) == false)
                     return false;
+                settings.Turns = (byte)Network.ProconAPIClient.Instance.MatchData.Turns;
+                settings.LimitTime = (ushort)(Network.ProconAPIClient.Instance.MatchData.IntervalMilliseconds / 1000);
+                settings.IsAutoSkip = true;
+                settings.BoardHeight = (byte)Network.ProconAPIClient.Instance.FieldState.Height;
+                settings.BoardWidth = (byte)Network.ProconAPIClient.Instance.FieldState.Width;
+                settings.AgentsCount = Network.ProconAPIClient.Instance.FieldState.Teams[0].Agents.Length;
             }
+
+            BoardHeight = settings.BoardHeight;
+            BoardWidth = settings.BoardWidth;
+            FinishTurn = settings.Turns;
+            TimeLimitSeconds = settings.LimitTime;
+            IsAutoSkipTurn = settings.IsAutoSkip;
 
             Players[0] = new Player();
             Players[1] = new Player();
@@ -101,9 +110,6 @@ namespace GameInterface.GameManagement
 
         void InitCellData(GameSettings.SettingStructure settings)
         {
-            BoardHeight = settings.BoardHeight;
-            BoardWidth = settings.BoardWidth;
-
             if (settings.IsCreateRotate)
             {
                 int randWidth = (BoardWidth + 1) / 2;

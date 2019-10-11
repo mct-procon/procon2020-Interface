@@ -86,18 +86,17 @@ namespace GameInterface.GameManagement
         //一秒ごとに呼ばれる
         private void DispatcherTimer_Tick(object sender, EventArgs e)
         {
-            Update();
-            Draw();
+            Update().ContinueWith((t) => Draw(), TaskScheduler.Current);
         }
 
-        private void Update()
+        private async Task Update()
         {
             if (!Data.IsNextTurnStart) return;
             Data.SecondCount++;
             if (Data.SecondCount == Data.TimeLimitSeconds || Server.IsDecidedReceived.All(b => b))
             {
                 Data.IsNextTurnStart = false;
-                EndTurn();
+                await EndTurn();
             }
         }
 
@@ -110,7 +109,7 @@ namespace GameInterface.GameManagement
             Server.SendTurnStart(movable);
         }
 
-        public void EndTurn()
+        public async Task EndTurn()
         {
             if (!Data.IsGameStarted) return;
             Server.SendTurnEnd();
@@ -118,7 +117,11 @@ namespace GameInterface.GameManagement
             {
                 Data.NowTurn++;
                 if (Data.IsAutoSkipTurn)
+                {
+                    if(!Data.IsEnableGameConduct)
+                        await Network.ProconAPIClient.Instance.GetState();
                     StartTurn();
+                }
             }
             else
             {
@@ -198,42 +201,62 @@ namespace GameInterface.GameManagement
 
         }
 
+        private Point ToPoint(MCTProcon30Protocol.Json.Agent agent) => new Point((byte)agent.X, (byte)agent.Y);
+
         private bool[] MoveAgents()
         {
-            List<Agent> ActionableAgents = GetActionableAgents();
+            if (Data.IsEnableGameConduct)
+            {
+                List<Agent> ActionableAgents = GetActionableAgents();
 
-            // Erase Agent Location's data from cells.
-            foreach (var p in Data.Players)
-                foreach (var a in p.Agents)
+                // Erase Agent Location's data from cells.
+                foreach (var p in Data.Players)
+                    foreach (var a in p.Agents)
+                    {
+                        Data.CellData[a.Point.X, a.Point.Y].AgentState = TeamColor.Free;
+                        Data.CellData[a.Point.X, a.Point.Y].AgentNum = -1;
+                        a.IsMoved = false;
+                    }
+
+                foreach (var a in ActionableAgents)
                 {
-                    Data.CellData[a.Point.X, a.Point.Y].AgentState = TeamColor.Free;
-                    Data.CellData[a.Point.X, a.Point.Y].AgentNum = -1;
-                    a.IsMoved = false;
+                    var nextP = a.GetNextPoint();
+
+                    TeamColor nextAreaState = Data.CellData[nextP.X, nextP.Y].AreaState;
+                    ActionAgentToNextP(a, nextP, nextAreaState);
+                    a.State = AgentState.Move;
+                    a.IsMoved = true;
                 }
 
-            foreach(var a in ActionableAgents)
-            {
-                var nextP = a.GetNextPoint();
+                // Reset Agent Location's data to cells.
+                foreach (var p in Data.Players) foreach (var a in p.Agents)
+                    {
+                        Data.CellData[a.Point.X, a.Point.Y].AgentState = a.PlayerNum == 0 ? TeamColor.Area1P : TeamColor.Area2P;
+                        Data.CellData[a.Point.X, a.Point.Y].AreaState = a.PlayerNum == 0 ? TeamColor.Area1P : TeamColor.Area2P;
+                        Data.CellData[a.Point.X, a.Point.Y].AgentNum = a.AgentNum;
+                    }
 
-                TeamColor nextAreaState = Data.CellData[nextP.X, nextP.Y].AreaState;
-                ActionAgentToNextP(a, nextP, nextAreaState);
-                a.State = AgentState.Move;
-                a.IsMoved = true;
+                bool[] retVal = new bool[App.PlayersCount * Data.AgentsCount];
+                for (int p = 0; p < Data.Players.Length; ++p)
+                    for (int i = 0; i < Data.Players[p].Agents.Length; ++i)
+                        retVal[p * Data.AgentsCount + i] = Data.Players[p].Agents[i].IsMoved;
+                return retVal;
             }
-
-            // Reset Agent Location's data to cells.
-            foreach(var p in Data.Players) foreach(var a in p.Agents)
+            else
             {
-                Data.CellData[a.Point.X, a.Point.Y].AgentState = a.PlayerNum == 0 ? TeamColor.Area1P : TeamColor.Area2P;
-                Data.CellData[a.Point.X, a.Point.Y].AreaState = a.PlayerNum == 0 ? TeamColor.Area1P : TeamColor.Area2P;
-                Data.CellData[a.Point.X, a.Point.Y].AgentNum = a.AgentNum;
+                var retVal = new bool[App.PlayersCount * Data.AgentsCount];
+                for(int i = 0; i < App.PlayersCount; ++i)
+                    for(int j = 0; j < Data.AgentsCount; ++j)
+                    {
+                        if (Data.Players[i].Agents[j].AgentDirection == AgentDirection.None)
+                        {
+                            retVal[i * Data.AgentsCount + j] = true;
+                            continue;
+                        }
+                        retVal[i * Data.AgentsCount + j] = (Data.Players[i].Agents[j].GetNextPoint() == ToPoint(Network.ProconAPIClient.Instance.FieldState.Teams[i].Agents[j]));
+                    }
+                return retVal;
             }
-
-            bool[] retVal = new bool[App.PlayersCount * Data.AgentsCount];
-            for (int p = 0; p < Data.Players.Length; ++p)
-                for (int i = 0; i < Data.Players[p].Agents.Length; ++i)
-                    retVal[p * Data.AgentsCount + i] = Data.Players[p].Agents[i].IsMoved;
-            return retVal;
         }
 
         //naotti: 行動可能なエージェントのId(1p{0,1}, 2p{2,3})を返す。
