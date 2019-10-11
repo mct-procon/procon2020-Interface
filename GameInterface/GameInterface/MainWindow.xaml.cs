@@ -12,6 +12,7 @@ using GameInterface.GameManagement;
 using Point = MCTProcon30Protocol.Point;
 using MCTProcon30Protocol;
 using GameInterface.ViewModels;
+using System.Threading.Tasks;
 
 namespace GameInterface
 {
@@ -36,10 +37,14 @@ namespace GameInterface
             this.viewModel.gameManager = this.gameManager;
         }
 
-        public bool InitGame(GameSettings.SettingStructure settings)
+        public async Task<bool> InitGame(GameSettings.SettingStructure settings)
         {
-            if (!gameManager.InitGameData(settings))
+            this.IsEnabled = false;
+            if (!(await gameManager.InitGameData(settings)))
+            {
+                this.IsEnabled = true;
                 return false;
+            }
             CreateCellOnCellGrid(gameManager.Data.BoardWidth, gameManager.Data.BoardHeight);
             if (settings.IsUser1P)
             {
@@ -53,6 +58,7 @@ namespace GameInterface
                 Player2Window.Closed += (ss, ee) => Player2Window = null;
                 Player2Window.Show();
             }
+            this.IsEnabled = true;
             return true;
         }
 
@@ -103,7 +109,7 @@ namespace GameInterface
             System.Diagnostics.Debugger.Break();
         }
 
-        private void NewGameMenu_Clicked(object sender, RoutedEventArgs e)
+        private async void NewGameMenu_Clicked(object sender, RoutedEventArgs e)
         {
             viewModel.gameManager.TimerStop();
             if (viewModel != null && viewModel.gameManager != null && viewModel.gameManager.Data != null && viewModel.gameManager.Data.IsGameStarted && (viewModel.gameManager.Data.NowTurn < viewModel.gameManager.Data.FinishTurn))
@@ -112,7 +118,7 @@ namespace GameInterface
             {
                 Player1Window?.Close();
                 Player2Window?.Close();
-                if (!InitGame(result))
+                if (!(await InitGame(result)))
                     return;
                 if (!(result.IsUser1P & result.IsUser2P))
                     (new GameSettings.WaitForAIDialog(viewModel.gameManager.Server, result)).ShowDialog();
@@ -140,6 +146,8 @@ namespace GameInterface
 
             JpegBitmapEncoder encoder = new JpegBitmapEncoder();
             encoder.Frames.Add(BitmapFrame.Create(renderTarget));
+            if (!System.IO.Directory.Exists("Saves"))
+                System.IO.Directory.CreateDirectory("Saves");
             using (System.IO.FileStream stream = new System.IO.FileStream(System.IO.Path.Combine("Saves", $"{ DateTime.Now.ToString("MM日H時m分")}.jpg"), System.IO.FileMode.Create, System.IO.FileAccess.Write))
             {
                 encoder.Save(stream);

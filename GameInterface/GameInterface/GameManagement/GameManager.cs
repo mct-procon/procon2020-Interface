@@ -5,6 +5,7 @@ using System.Windows.Threading;
 using MCTProcon30Protocol.Methods;
 using MCTProcon30Protocol;
 using GameInterface.ViewModels;
+using System.Threading.Tasks;
 
 namespace GameInterface.GameManagement
 {
@@ -53,9 +54,9 @@ namespace GameInterface.GameManagement
             Data.IsPause = false;
         }
 
-        public bool InitGameData(GameSettings.SettingStructure settings)
+        public async Task<bool> InitGameData(GameSettings.SettingStructure settings)
         {
-            if (!Data.InitGameData(settings))
+            if (!(await Data.InitGameData(settings)))
                 return false;
             Data.IsPause = false;
             Server.StartListening(settings);
@@ -123,12 +124,12 @@ namespace GameInterface.GameManagement
             {
                 EndGame();
                 Server.SendGameEnd();
-                if (Data.CurrentGameSettings.IsAutoGoNextGame && Data.CurrentGameSettings.IsEnableGameConduct == false)
+                if (Data.CurrentGameSettings.IsAutoGoNextGame && Data.CurrentGameSettings.IsEnableGameConduct)
                 {
                     Data.CurrentGameSettings.IsUseSameAI = true;
                     var settings = Data.CurrentGameSettings;
                     mainWindow.ShotAndSave();
-                    mainWindow.InitGame(settings);
+                    mainWindow.InitGame(settings).Wait();
                     StartGame();
                 }
             }

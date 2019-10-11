@@ -17,6 +17,10 @@ namespace GameInterface.Network
         private HttpClient hc { get; set; }
         public Match[] Matches { get; private set; }
 
+        public ErrorResponse LastError { get; private set; }
+        public Field FieldState { get; private set; }
+        public Match MatchData { get; private set; }
+
         static ProconAPIClient()
         {
             Information = new NetworkInformation();
@@ -35,6 +39,8 @@ namespace GameInterface.Network
                 hc.DefaultRequestHeaders.Add("Authorization", Information.AuthenticationID);
         }
 
+        public void SetMatchData(Match match) => MatchData = match;
+
         public async Task<Match[]> GetMatches()
         {
             PrepareHeader();
@@ -52,12 +58,20 @@ namespace GameInterface.Network
             }
         }
 
-        public async Task<bool> GetState(int id, out Field fieldState, out ErrorResponse error)
+        public async Task<bool> GetState(int id)
         {
-            fieldState = null;
-            error = null;
             PrepareHeader();
-            var response = await hc.GetAsync
+            var response = await hc.GetAsync(Information.URLStarts + "matches/" + id);
+            if(response.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                FieldState = JsonConvert.DeserializeObject<Field>(await response.Content.ReadAsStringAsync());
+                return true;
+            }
+            else
+            {
+                LastError = JsonConvert.DeserializeObject<ErrorResponse>(await response.Content.ReadAsStringAsync());
+                return false;
+            }
         }
     }
 }

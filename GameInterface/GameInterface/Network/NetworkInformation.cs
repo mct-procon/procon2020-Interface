@@ -13,6 +13,5 @@ namespace GameInterface.Network
                     ? HostName.EndsWith("/") ? string.Concat("http://", HostName) : string.Concat("http://", HostName, "/")
                     : HostName.EndsWith("/") ? string.Concat(HostName) : string.Concat(HostName, "/");
         public string AuthenticationID { get; set; }
-        public string MatchID { get; set; }
     }
 }

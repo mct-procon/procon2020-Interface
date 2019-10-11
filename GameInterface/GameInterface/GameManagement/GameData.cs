@@ -54,7 +54,7 @@ namespace GameInterface.GameManagement
             viewModel.Players = new PlayerWindowViewModel[Players.Length];
         }
 
-        public bool InitGameData(GameSettings.SettingStructure settings)
+        public async Task<bool> InitGameData(GameSettings.SettingStructure settings)
         {
             CurrentGameSettings = settings;
             SecondCount = 0;
@@ -66,78 +66,88 @@ namespace GameInterface.GameManagement
 
             if (settings.BoardCreation == GameSettings.BoardCreation.Server)
             {
-                //TODO
-                return false;
+                if ((await GameSettings.WaitForServerDialog.ShowDialog(Network.ProconAPIClient.Instance.MatchData.Id)) == false)
+                    return false;
             }
-            else
+
+            Players[0] = new Player();
+            Players[1] = new Player();
+
+            for (int i = 0; i < Players.Length; ++i)
+                viewModel.Players[i] = new PlayerWindowViewModel(Players[i], i + 1);
+
+            if (settings.BoardCreation == GameSettings.BoardCreation.Random)
             {
-                Players[0] = new Player();
-                Players[1] = new Player();
-
-                for (int i = 0; i < Players.Length; ++i)
-                    viewModel.Players[i] = new PlayerWindowViewModel(Players[i], i + 1);
-
                 InitCellData(settings);
                 InitAgents(settings);
                 return true;
             }
+            else
+            {
+                SetCellData(settings);
+                SetAgents(settings);
+                return true;
+            }
+        }
+
+        void SetCellData(GameSettings.SettingStructure settings)
+        {
+            var fieldState = Network.ProconAPIClient.Instance.FieldState;
+            CellData = new Cell[fieldState.Width, fieldState.Height];
+            for (int i = 0; i < fieldState.Width; ++i)
+                for (int j = 0; j < fieldState.Height; ++j)
+                    CellData[i, j] = new Cell(fieldState.Point[j, i]) { AreaState = fieldState.Tiled[j, i] == Network.ProconAPIClient.Instance.MatchData.TeamId ? TeamColor.Area1P : (fieldState.Tiled[j, i] == 0 ? TeamColor.Free : TeamColor.Area2P) };
         }
 
         void InitCellData(GameSettings.SettingStructure settings)
         {
-            if (settings.BoardCreation == GameSettings.BoardCreation.Random)
+            BoardHeight = settings.BoardHeight;
+            BoardWidth = settings.BoardWidth;
+
+            if (settings.IsCreateRotate)
             {
-                BoardHeight = settings.BoardHeight;
-                BoardWidth = settings.BoardWidth;
-
-                if (settings.IsCreateRotate)
+                int randWidth = (BoardWidth + 1) / 2;
+                CellData = new Cell[BoardWidth, BoardHeight];
+                for (int i = 0; i < BoardWidth; i++)
                 {
-                    int randWidth = (BoardWidth + 1) / 2;
-                    CellData = new Cell[BoardWidth, BoardHeight];
-                    for (int i = 0; i < BoardWidth; i++)
+                    for (int j = 0; j < BoardHeight; j++)
                     {
-                        for (int j = 0; j < BoardHeight; j++)
+                        if (i < randWidth)
                         {
-                            if (i < randWidth)
-                            {
-                                //40%の確率で値を0未満にする
-                                if (rand.Next(1, 100) > 40)
-                                    CellData[i, j] = new Cell(rand.Next(1, 16));
-                                else
-                                    CellData[i, j] = new Cell(rand.Next(-16, 0));
-                            }
+                            //40%の確率で値を0未満にする
+                            if (rand.Next(1, 100) > 40)
+                                CellData[i, j] = new Cell(rand.Next(1, 16));
                             else
-                                CellData[i, j] = new Cell(CellData[i >= randWidth ? BoardWidth - 1 - i : i, BoardHeight - 1 - j].Score);
+                                CellData[i, j] = new Cell(rand.Next(-16, 0));
                         }
-                    }
-                }
-                else
-                {
-                    int randWidth, randHeight;
-                    randWidth = settings.IsCreateY ? (BoardWidth + 1) / 2 : BoardWidth;
-                    randHeight = settings.IsCreateX ? (BoardHeight + 1) / 2 : BoardHeight;
-
-                    CellData = new Cell[BoardWidth, BoardHeight];
-                    for (int i = 0; i < BoardWidth; i++)
-                    {
-                        for (int j = 0; j < BoardHeight; j++)
-                        {
-                            if (i < randWidth && j < randHeight)
-                            {
-                                //40%の確率で値を0未満にする
-                                if (rand.Next(1, 100) > 40)
-                                    CellData[i, j] = new Cell(rand.Next(1, 16));
-                                else
-                                    CellData[i, j] = new Cell(rand.Next(-16, 0));
-                            }
-                            else
-                                CellData[i, j] = new Cell(CellData[i >= randWidth ? BoardWidth - 1 - i : i, j >= randHeight ? BoardHeight - 1 - j : j].Score);
-                        }
+                        else
+                            CellData[i, j] = new Cell(CellData[i >= randWidth ? BoardWidth - 1 - i : i, BoardHeight - 1 - j].Score);
                     }
                 }
             }
             else
             {
+                int randWidth, randHeight;
+                randWidth = settings.IsCreateY ? (BoardWidth + 1) / 2 : BoardWidth;
+                randHeight = settings.IsCreateX ? (BoardHeight + 1) / 2 : BoardHeight;
+
+                CellData = new Cell[BoardWidth, BoardHeight];
+                for (int i = 0; i < BoardWidth; i++)
+                {
+                    for (int j = 0; j < BoardHeight; j++)
+                    {
+                        if (i < randWidth && j < randHeight)
+                        {
+                            //40%の確率で値を0未満にする
+                            if (rand.Next(1, 100) > 40)
+                                CellData[i, j] = new Cell(rand.Next(1, 16));
+                            else
+                                CellData[i, j] = new Cell(rand.Next(-16, 0));
+                        }
+                        else
+                            CellData[i, j] = new Cell(CellData[i >= randWidth ? BoardWidth - 1 - i : i, j >= randHeight ? BoardHeight - 1 - j : j].Score);
+                    }
+                }
             }
         }
 
@@ -148,6 +158,34 @@ namespace GameInterface.GameManagement
             return new Point((symmetry & GameSettings.BoardSymmetry.Y) != 0 ? (byte)(boardSize.X - 1 - p.X) : p.X, (symmetry & GameSettings.BoardSymmetry.X) != 0 ? (byte)(boardSize.Y - 1 - p.Y) : p.Y);
         }
 
+        void SetAgents(GameSettings.SettingStructure settings)
+        {
+            var fieldState = Network.ProconAPIClient.Instance.FieldState;
+            AgentsCount = fieldState.Teams[0].Agents.Length;
+            Players[0].Agents = new Agent[AgentsCount];
+            Players[1].Agents = new Agent[AgentsCount];
+            viewModel.Players[0].AgentViewModels = new UserOrderPanelViewModel[AgentsCount];
+            viewModel.Players[1].AgentViewModels = new UserOrderPanelViewModel[AgentsCount];
+            for (int i = 0; i < Players[0].Agents.Length; ++i)
+            {
+                var a0 = fieldState.Teams[0].Agents[i];
+                Players[0].Agents[i] = new Agent() { Point = new Point((byte)a0.X, (byte)a0.Y), PlayerNum = 0, AgentNum = i };
+                CellData[a0.X, a0.Y].AreaState = TeamColor.Area1P;
+                CellData[a0.X, a0.Y].AgentState = TeamColor.Area1P;
+
+                viewModel.Players[0].AgentViewModels[i] = new UserOrderPanelViewModel(Players[0].Agents[i]);
+            }
+            for (int i = 0; i < Players[1].Agents.Length; ++i)
+            {
+                var a0 = fieldState.Teams[1].Agents[i];
+                Players[1].Agents[i] = new Agent() { Point = new Point((byte)a0.X, (byte)a0.Y), PlayerNum = 1, AgentNum = i };
+                CellData[a0.X, a0.Y].AreaState = TeamColor.Area2P;
+                CellData[a0.X, a0.Y].AgentState = TeamColor.Area2P;
+
+                viewModel.Players[1].AgentViewModels[i] = new UserOrderPanelViewModel(Players[1].Agents[i]);
+            }
+        }
+
         void InitAgents(GameSettings.SettingStructure settings)
         {
             AgentsCount = settings.AgentsCount;
@@ -155,32 +193,29 @@ namespace GameInterface.GameManagement
             Players[1].Agents = new Agent[settings.AgentsCount];
             viewModel.Players[0].AgentViewModels = new UserOrderPanelViewModel[settings.AgentsCount];
             viewModel.Players[1].AgentViewModels = new UserOrderPanelViewModel[settings.AgentsCount];
-            if (settings.BoardCreation == GameSettings.BoardCreation.Random)
+            Point BoardSize = new Point(settings.BoardWidth, settings.BoardHeight);
+            Point[] points = new Point[AgentsCount];
+            for (int i = 0; i < points.Length; ++i)
             {
-                Point BoardSize = new Point(settings.BoardWidth, settings.BoardHeight);
-                Point[] points = new Point[AgentsCount];
-                for (int i = 0; i < points.Length; ++i)
-                {
-                repeat:
-                    points[i] = new Point((byte)rand.Next(0, BoardWidth), (byte)rand.Next(0, BoardWidth));
-                    for (int j = 0; j < i; ++j)
-                        if (points[i] == points[j] || points[i] == GenerateSymmetryPosition(points[j], BoardSize, settings.CreationSymmetry))
-                            goto repeat;
-                }
-                for (int i = 0; i < Players[0].Agents.Length; ++i)
-                {
-                    var a0 = points[i];
-                    var a1 = GenerateSymmetryPosition(points[i], BoardSize, settings.CreationSymmetry);
-                    Players[0].Agents[i] = new Agent() { Point = a0, PlayerNum = 0, AgentNum = i };
-                    Players[1].Agents[i] = new Agent() { Point = a1, PlayerNum = 1, AgentNum = i };
-                    CellData[a0.X, a0.Y].AreaState = TeamColor.Area1P;
-                    CellData[a0.X, a0.Y].AgentState = TeamColor.Area1P;
-                    CellData[a1.X, a1.Y].AreaState = TeamColor.Area2P;
-                    CellData[a1.X, a1.Y].AgentState = TeamColor.Area2P;
+            repeat:
+                points[i] = new Point((byte)rand.Next(0, BoardWidth), (byte)rand.Next(0, BoardWidth));
+                for (int j = 0; j < i; ++j)
+                    if (points[i] == points[j] || points[i] == GenerateSymmetryPosition(points[j], BoardSize, settings.CreationSymmetry))
+                        goto repeat;
+            }
+            for (int i = 0; i < Players[0].Agents.Length; ++i)
+            {
+                var a0 = points[i];
+                var a1 = GenerateSymmetryPosition(points[i], BoardSize, settings.CreationSymmetry);
+                Players[0].Agents[i] = new Agent() { Point = a0, PlayerNum = 0, AgentNum = i };
+                Players[1].Agents[i] = new Agent() { Point = a1, PlayerNum = 1, AgentNum = i };
+                CellData[a0.X, a0.Y].AreaState = TeamColor.Area1P;
+                CellData[a0.X, a0.Y].AgentState = TeamColor.Area1P;
+                CellData[a1.X, a1.Y].AreaState = TeamColor.Area2P;
+                CellData[a1.X, a1.Y].AgentState = TeamColor.Area2P;
 
-                    viewModel.Players[0].AgentViewModels[i] = new UserOrderPanelViewModel(Players[0].Agents[i]);
-                    viewModel.Players[1].AgentViewModels[i] = new UserOrderPanelViewModel(Players[1].Agents[i]);
-                }
+                viewModel.Players[0].AgentViewModels[i] = new UserOrderPanelViewModel(Players[0].Agents[i]);
+                viewModel.Players[1].AgentViewModels[i] = new UserOrderPanelViewModel(Players[1].Agents[i]);
             }
         }
     }

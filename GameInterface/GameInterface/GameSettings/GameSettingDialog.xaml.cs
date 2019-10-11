@@ -130,6 +130,7 @@ namespace GameInterface.GameSettings
                         MessageBox.Show("試合IDを正しく選択してください．", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
                         return;
                     }
+                    Network.ProconAPIClient.Instance.SetMatchData(DataContext.Matches[DataContext.SelectedMatchIndex]);
                     MessageBox.Show("未実装です．", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
                     break;

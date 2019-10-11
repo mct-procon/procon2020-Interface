@@ -5,18 +5,19 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:GameInterface.GameSettings"
         mc:Ignorable="d"
-        Title="WaitForServerDialog" Height="234" Width="800">
+        Title="WaitForServerDialog" Height="160" Width="800" Loaded="Window_Loaded">
     <Grid Margin="10">
         <TextBlock Text="サーバの接続を待っています" FontSize="32" Foreground="Gray" VerticalAlignment="Top"/>
-        <Grid Margin="10,60,10,0" VerticalAlignment="Top">
+        <Grid Margin="10,60,10,0" VerticalAlignment="Stretch">
             <Grid.RowDefinitions>
-                <RowDefinition/>
-                <RowDefinition/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="1*"/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
-            <ProgressBar x:Name="Progress" Height="40" Value="100" IsIndeterminate="true" Margin="10" Grid.Row="1"/>
+            <TextBlock Text="ゲーム開始時間：{hoge} 残り時間：{fuga}" x:Name="ProgressText"/>
+            <ProgressBar x:Name="Progress" Value="100" IsIndeterminate="true" Margin="10" Grid.Row="1"/>
         </Grid>
     </Grid>
 </Window>
