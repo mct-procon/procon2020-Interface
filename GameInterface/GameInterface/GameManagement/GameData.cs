@@ -168,60 +168,30 @@ namespace GameInterface.GameManagement
         {
             var fieldState = Network.ProconAPIClient.Instance.FieldState;
             AgentsCount = fieldState.Teams[0].Agents.Length;
-            Players[0].Agents = new Agent[AgentsCount];
-            Players[1].Agents = new Agent[AgentsCount];
-            viewModel.Players[0].AgentViewModels = new UserOrderPanelViewModel[AgentsCount];
-            viewModel.Players[1].AgentViewModels = new UserOrderPanelViewModel[AgentsCount];
-            for (int i = 0; i < Players[0].Agents.Length; ++i)
+            for (int p = 0; p < Players.Length; p++)
             {
-                var a0 = fieldState.Teams[0].Agents[i];
-                Players[0].Agents[i] = new Agent() { Point = new Point((byte)a0.X, (byte)a0.Y), PlayerNum = 0, AgentNum = i };
-                CellData[a0.X, a0.Y].AreaState = TeamColor.Area1P;
-                CellData[a0.X, a0.Y].AgentState = TeamColor.Area1P;
-
-                viewModel.Players[0].AgentViewModels[i] = new UserOrderPanelViewModel(Players[0].Agents[i]);
-            }
-            for (int i = 0; i < Players[1].Agents.Length; ++i)
-            {
-                var a0 = fieldState.Teams[1].Agents[i];
-                Players[1].Agents[i] = new Agent() { Point = new Point((byte)a0.X, (byte)a0.Y), PlayerNum = 1, AgentNum = i };
-                CellData[a0.X, a0.Y].AreaState = TeamColor.Area2P;
-                CellData[a0.X, a0.Y].AgentState = TeamColor.Area2P;
-
-                viewModel.Players[1].AgentViewModels[i] = new UserOrderPanelViewModel(Players[1].Agents[i]);
+                Players[p].Agents = new Agent[settings.AgentsCount];
+                viewModel.Players[p].AgentViewModels = new UserOrderPanelViewModel[settings.AgentsCount];
+                for (int i = 0; i < Players[p].Agents.Length; ++i)
+                {
+                    Players[p].Agents[i] = new Agent() { PlayerNum = p, AgentNum = i };
+                    viewModel.Players[p].AgentViewModels[i] = new UserOrderPanelViewModel(Players[p].Agents[i]);
+                }
             }
         }
 
         void InitAgents(GameSettings.SettingStructure settings)
         {
             AgentsCount = settings.AgentsCount;
-            Players[0].Agents = new Agent[settings.AgentsCount];
-            Players[1].Agents = new Agent[settings.AgentsCount];
-            viewModel.Players[0].AgentViewModels = new UserOrderPanelViewModel[settings.AgentsCount];
-            viewModel.Players[1].AgentViewModels = new UserOrderPanelViewModel[settings.AgentsCount];
-            Point BoardSize = new Point(settings.BoardWidth, settings.BoardHeight);
-            Point[] points = new Point[AgentsCount];
-            for (int i = 0; i < points.Length; ++i)
+            for (int p = 0; p < Players.Length; p++)
             {
-            repeat:
-                points[i] = new Point((byte)rand.Next(0, BoardWidth), (byte)rand.Next(0, BoardWidth));
-                for (int j = 0; j < i; ++j)
-                    if (points[i] == points[j] || points[i] == GenerateSymmetryPosition(points[j], BoardSize, settings.CreationSymmetry))
-                        goto repeat;
-            }
-            for (int i = 0; i < Players[0].Agents.Length; ++i)
-            {
-                var a0 = points[i];
-                var a1 = GenerateSymmetryPosition(points[i], BoardSize, settings.CreationSymmetry);
-                Players[0].Agents[i] = new Agent() { Point = a0, PlayerNum = 0, AgentNum = i };
-                Players[1].Agents[i] = new Agent() { Point = a1, PlayerNum = 1, AgentNum = i };
-                CellData[a0.X, a0.Y].AreaState = TeamColor.Area1P;
-                CellData[a0.X, a0.Y].AgentState = TeamColor.Area1P;
-                CellData[a1.X, a1.Y].AreaState = TeamColor.Area2P;
-                CellData[a1.X, a1.Y].AgentState = TeamColor.Area2P;
-
-                viewModel.Players[0].AgentViewModels[i] = new UserOrderPanelViewModel(Players[0].Agents[i]);
-                viewModel.Players[1].AgentViewModels[i] = new UserOrderPanelViewModel(Players[1].Agents[i]);
+                Players[p].Agents = new Agent[settings.AgentsCount];
+                viewModel.Players[p].AgentViewModels = new UserOrderPanelViewModel[settings.AgentsCount];
+                for (int i = 0; i < Players[p].Agents.Length; ++i)
+                {
+                    Players[p].Agents[i] = new Agent() { PlayerNum = p, AgentNum = i };
+                    viewModel.Players[p].AgentViewModels[i] = new UserOrderPanelViewModel(Players[p].Agents[i]);
+                }
             }
         }
     }
