@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Threading;
@@ -263,65 +263,52 @@ namespace GameInterface.GameManagement
         //naotti: 行動可能なエージェントのId(1p{0,1}, 2p{2,3})を返す。
         private List<Agent> GetActionableAgents()
         {
-            bool[] isExist = new bool[Data.AgentsCount * App.PlayersCount]; //isExist[i] = エージェントiは配置されるor配置されているか？
-            bool[] canMove = new bool[isExist.Length];     //canMove[i] = エージェントiは移動または配置をするか？
-            bool[] canAction = new bool[canMove.Length];   //canAction[i] = エージェントiは移動または配置またはタイル除去をするか？
+            bool[] canMove = new bool[Data.AgentsCount * App.PlayersCount];     // canMove[i] = エージェントiは移動または配置をするか？
+            bool[] canAction = new bool[canMove.Length];    // canAction[i] = エージェントiは移動または配置またはタイル除去をするか？
+            List<Agent> existAgents = new List<Agent>();    // 配置されるor配置されているエージェント
 
             // まだフィールドに配置されておらず、かつ配置される予定のないエージェントは計算に含める必要がないため、
             // ・まだフィールドに存在していない
             // ・このターンに置かれる予定がない
-            // エージェントのisExistをfalseにする。また、canMoveやcanActionもfalseにする。
-            for(int p = 0; p < Data.Players.Length; ++p)
-                for (int i = 0; i < Data.Players[p].Agents.Length; i++)
+            // エージェント以外でexistAgentsを構成し、以降はこれについて考える。
+            foreach (var player in Data.Players)
+                foreach (var agent in player.Agents)
                 {
-                    var agent = Data.Players[p].Agents[i];
-                    isExist[p * Data.AgentsCount + i] =
-                        canMove[p * Data.AgentsCount + i] =
-                        canAction[p * Data.AgentsCount + i] =
-                        agent.IsOnField || agent.State == AgentState.BePlaced;
+                    if (agent.IsOnField || agent.State == AgentState.BePlaced)
+                    {
+                        existAgents.Add(agent);
+                    }
                 }
 
             //まずは、各エージェントの移動先を知りたいので、canMoveを求める。
             //最初, canMove[i] = trueとしておき、移動不可なエージェントを振るい落とす方式を取る。このループでは以下の2点をチェックする。
             //・相手陣を指しているエージェントはタイル除去なので、移動しない
             //・範囲外を指しているエージェントは移動できない。
-            for(int p = 0; p < Data.Players.Length; ++p)
-                for (int i = 0; i < Data.Players[p].Agents.Length; i++)
-                {
-                    var agent = Data.Players[p].Agents[i];
-                    var nextP = agent.GetNextPoint();
-                    if (CheckIsPointInBoard(nextP) == false) { canMove[p * Data.AgentsCount + i] = false; continue; }
-                    TeamColor nextAreaState = Data.CellData[nextP.X, nextP.Y].AreaState;
-                    if ((agent.PlayerNum == 0 && nextAreaState == TeamColor.Area2P) || (agent.PlayerNum == 1 && nextAreaState == TeamColor.Area1P))
-                        canMove[p * Data.AgentsCount + i] = false;
-                }
+            foreach (var agent in existAgents)
+            {
+                canMove[agent.AgentID] = true;
+                var nextP = agent.GetNextPoint();
+                if (!CheckIsPointInBoard(nextP)) { canMove[agent.AgentID] = false; continue; }
+                TeamColor nextAreaState = Data.CellData[nextP.X, nextP.Y].AreaState;
+                if ((agent.PlayerNum == 0 && nextAreaState == TeamColor.Area2P) || (agent.PlayerNum == 1 && nextAreaState == TeamColor.Area1P))
+                    canMove[agent.AgentID] = false;
+            }
 
             //次に、「指示先(agent.GetNextPoint()の位置)が被っているエージェントは移動不可」とする。
-            for (int p = 0; p < Data.Players.Length; ++p)
-                for (int i = 0; i < Data.Players[p].Agents.Length; i++)
+            foreach (var agent1 in existAgents)
+            {
+                var nextP1 = agent1.GetNextPoint();
+                foreach (var agent2 in existAgents)
                 {
-                    if(!isExist[p * Data.AgentsCount + i])
-                        continue;
-                    var agent1 = Data.Players[p].Agents[i];
-                    var nextP1 = agent1.GetNextPoint();
-                    int j = i + 1;
-                    for (int q = p; q < Data.Players.Length; ++q)
+                    if (agent1.AgentID <= agent2.AgentID) { break; }
+                    var nextP2 = agent2.GetNextPoint();
+                    if (nextP1 == nextP2)
                     {
-                        for (; j < Data.Players[q].Agents.Length; j++)
-                        {
-                            if(!isExist[q * Data.AgentsCount + j])
-                                continue;
-                            var agent2 = Data.Players[q].Agents[j];
-                            var nextP2 = agent2.GetNextPoint();
-                            if (nextP1 == nextP2)
-                            {
-                                canMove[p * Data.AgentsCount + i] = false;
-                                canMove[q * Data.AgentsCount + j] = false;
-                            }
-                        }
-                        j = 0;
+                        canMove[agent1.AgentID] = false;
+                        canMove[agent2.AgentID] = false;
                     }
                 }
+            }
 
             //次に、canMove[]の更新が起きなくなるまで、以下を繰り返す
             //・移動先に移動不可な(orタイル除去をする)エージェントがいる場合、移動不可とする
@@ -329,100 +316,75 @@ namespace GameInterface.GameManagement
             do
             {
                 updateFlag = false;
-                for(int p = 0; p < Data.Players.Length; ++p)
-                for (int i = 0; i < Data.Players[p].Agents.Length; i++)
+                foreach (var agent1 in existAgents)
                 {
-                    if (
-                        !canMove[p * Data.AgentsCount + i] ||
-                        !isExist[p * Data.AgentsCount + i]
-                    ) { continue; }
-                    var agent1 = Data.Players[p].Agents[i];
+                    if (!canMove[agent1.AgentID]) { continue; }
                     var nextP1 = agent1.GetNextPoint();
-                    for(int q = 0; q < Data.Players.Length; ++q)
-                    for (int j = 0; j < Data.Players[q].Agents.Length; j++)
+                    foreach (var agent2 in existAgents)
                     {
-                        if (p * Data.AgentsCount + i == q * Data.AgentsCount + j) { continue; }
-                        if (
-                            canMove[q * Data.AgentsCount + j] ||
-                            !isExist[q * Data.AgentsCount + j]
-                        ) { continue; }
-                        var agent2 = Data.Players[q].Agents[j];
+                        if (agent1.AgentID == agent2.AgentID || canMove[agent2.AgentID]) { continue; }
                         var nextP2 = agent2.Point;
                         if (nextP1 == nextP2)
                         {
-                            canMove[p * Data.AgentsCount + i] = false;
+                            canMove[agent1.AgentID] = false;
                             updateFlag = true;
                             break;
                         }
                     }
                 }
             }
-            while (updateFlag) ;
+            while (updateFlag);
 
             //この時点でcanMove[i] == trueならば、エージェントiは移動することになる。
             //次は、行動(移動またはタイル除去)が可能なエージェントを求める。
-            //最初, canAction[i] = trueとしておき、行動不可なエージェントを振るい落とす方式を取る。このループでは以下の1点をチェックする。
-            //・範囲外を指しているエージェントは移動できない。
-            for (int p = 0; p < Data.Players.Length; ++p)
-            for (int i = 0; i < Data.Players[p].Agents.Length; i++)
+            //最初, canAction[i] = trueとしておき、行動不可なエージェントを振るい落とす方式を取る。このループでは以下の2点をチェックする。
+            //・範囲外を指しているエージェントは行動できない。
+            //・相手陣を指しているエージェントは配置できない。
+            foreach (var agent in existAgents)
             {
-                var agent = Data.Players[p].Agents[i];
+                canAction[agent.AgentID] = true;
                 var nextP = agent.GetNextPoint();
-                if (CheckIsPointInBoard(nextP) == false)
-                    canAction[p * Data.AgentsCount + i] = false;
+                if (!CheckIsPointInBoard(nextP))
+                    canAction[agent.AgentID] = false;
+                TeamColor nextAreaState = Data.CellData[nextP.X, nextP.Y].AreaState;
+                if(agent.State == AgentState.BePlaced)
+                    if ((agent.PlayerNum == 0 && nextAreaState == TeamColor.Area2P) || (agent.PlayerNum == 1 && nextAreaState == TeamColor.Area1P))
+                        canAction[agent.AgentID] = false;
             }
 
             //次に、「指示先(agent.GetNextPoint()の位置)が被っているエージェントは行動不可」とする。
-            for(int p = 0; p < Data.Players.Length; ++p)
-            for (int i = 0; i < Data.Players[p].Agents.Length; i++)
+            foreach (var agent1 in existAgents)
             {
-                var agent1 = Data.Players[p].Agents[i];
                 var nextP1 = agent1.GetNextPoint();
-                int j = i + 1;
-                    for (int q = p; q < Data.Players.Length; ++q)
+                foreach (var agent2 in existAgents)
+                {
+                    if (agent1.AgentID <= agent2.AgentID)
+                        break;
+                    var nextP2 = agent2.GetNextPoint();
+                    if (nextP1 == nextP2)
                     {
-                        for (; j < Data.Players[q].Agents.Length; j++)
-                        {
-                            if(!isExist[q * Data.AgentsCount + j])
-                                continue;
-                            var agent2 = Data.Players[q].Agents[j];
-                            var nextP2 = agent2.GetNextPoint();
-                            if (nextP1 == nextP2)
-                            {
-                                canAction[p * Data.AgentsCount + i] = false;
-                                canAction[q * Data.AgentsCount + j] = false;
-                            }
-                        }
-                        j = 0;
+                        canAction[agent1.AgentID] = false;
+                        canAction[agent2.AgentID] = false;
                     }
+                }
             }
 
             //次に、「指示先に移動不可な(orタイル除去をする)エージェントがいる場合、行動不可」とする。
             //このチェックは, 先ほどのように何回もwhileループで回す必要がない。
-            for(int p = 0; p < Data.Players.Length; ++p)
-            for (int i = 0; i < Data.AgentsCount; i++)
+            foreach (var agent1 in existAgents)
             {
-                if (
-                    canAction[p * Data.AgentsCount + i] ||
-                    !isExist[p * Data.AgentsCount + i]
-                ) { continue; }
-                var agent1 = Data.Players[p].Agents[i];
+                if (canAction[agent1.AgentID]) { continue; }
                 var nextP1 = agent1.GetNextPoint();
-
-                for(int q = 0; q < Data.Players.Length; ++q)
-                for (int j = 0; j < Data.Players[q].Agents.Length; j++)
+                foreach (var agent2 in existAgents)
                 {
-                    if (p * Data.AgentsCount + i == q * Data.AgentsCount + j) { continue; }
                     if (
-                        canMove[q * Data.AgentsCount + j] || 
-                        !isExist[q * Data.AgentsCount + j]
+                        agent1.AgentID == agent2.AgentID ||
+                        canMove[agent2.AgentID]
                     ) { continue; }
-                    var agent2 = Data.Players[q].Agents[j];
-                    var nextP2 = agent2.Point;
-
+                    var nextP2 = agent2.GetNextPoint();
                     if (nextP1 == nextP2)
                     {
-                        canAction[p * Data.AgentsCount + i] = false;
+                        canAction[agent1.AgentID] = false;
                         break;
                     }
                 }
@@ -431,10 +393,9 @@ namespace GameInterface.GameManagement
             //この時点でcanAction[i] == trueならば、エージェントiは行動可能である
             //よって、行動可能なエージェントの番号を返すことができる
             List<Agent> ret = new List<Agent>();
-            for(int p = 0; p < Data.Players.Length; ++p)
-            for (int i = 0; i < Data.Players[p].Agents.Length; i++)
-                if (canAction[p * Data.AgentsCount + i])
-                        ret.Add(Data.Players[p].Agents[i]);
+            foreach (var agent in existAgents)
+                if (canAction[agent.AgentID])
+                    ret.Add(agent);
             return ret;
         }
 

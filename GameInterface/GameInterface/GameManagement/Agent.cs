@@ -8,8 +8,16 @@ namespace GameInterface.GameManagement
 {
     public class Agent : ViewModels.ViewModelBase
     {
-        public int PlayerNum { get; set; } //0,1
-        public int AgentNum { get; set; }
+        public Agent(int PlayerNum, int AgentNum, int AgentsCount)
+        {
+            this.PlayerNum = PlayerNum;
+            this.AgentNum = AgentNum;
+            this.AgentID = PlayerNum * AgentsCount + AgentNum;
+        }
+
+        public int PlayerNum { get; } //0,1
+        public int AgentID { get; }
+        public int AgentNum { get; }
         public bool IsOnField { get; set; } = false;
 
         // IsOnField = false かつ State = AgentState.BePlacedのときは

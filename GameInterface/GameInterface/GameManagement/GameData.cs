@@ -174,7 +174,7 @@ namespace GameInterface.GameManagement
                 viewModel.Players[p].AgentViewModels = new UserOrderPanelViewModel[settings.AgentsCount];
                 for (int i = 0; i < Players[p].Agents.Length; ++i)
                 {
-                    Players[p].Agents[i] = new Agent() { PlayerNum = p, AgentNum = i };
+                    Players[p].Agents[i] = new Agent(PlayerNum: p, AgentNum: i, AgentsCount: settings.AgentsCount);
                     viewModel.Players[p].AgentViewModels[i] = new UserOrderPanelViewModel(Players[p].Agents[i]);
                 }
             }
@@ -189,7 +189,7 @@ namespace GameInterface.GameManagement
                 viewModel.Players[p].AgentViewModels = new UserOrderPanelViewModel[settings.AgentsCount];
                 for (int i = 0; i < Players[p].Agents.Length; ++i)
                 {
-                    Players[p].Agents[i] = new Agent() { PlayerNum = p, AgentNum = i };
+                    Players[p].Agents[i] = new Agent(PlayerNum: p, AgentNum: i, AgentsCount: settings.AgentsCount);
                     viewModel.Players[p].AgentViewModels[i] = new UserOrderPanelViewModel(Players[p].Agents[i]);
                 }
             }
