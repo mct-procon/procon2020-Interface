@@ -49,6 +49,12 @@
                 <ContentPresenter/>
             </ControlTemplate>
         </Button.Template>
+        <Button.ContextMenu>
+            <ContextMenu>
+                <MenuItem Header="青エージェントを配置"  Click="Context_Place_Blue"/>
+                <MenuItem Header="赤エージェントを配置"  Click="Context_Place_Red"/>
+            </ContextMenu>
+        </Button.ContextMenu>
         <Grid>
             <Border BorderThickness="4">
                 <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding Score}" FontSize="24"/>

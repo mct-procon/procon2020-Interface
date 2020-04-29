@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Threading;
@@ -138,6 +138,18 @@ namespace GameInterface.GameManagement
             }
         }
 
+        public void PlaceAgent(int playerNum, Point point)
+        {
+            foreach (var a in Data.Players[playerNum].Agents)
+            {
+                if(!a.IsOnField && a.State != AgentState.BePlaced){
+                    a.Point = point;
+                    a.State = AgentState.BePlaced;
+                    return;
+                }    
+            }
+        }
+
         public void ChangeCellToNextColor(Point point)
         {
             //エージェントがいる場合、エージェントの移動処理へ
@@ -231,6 +243,7 @@ namespace GameInterface.GameManagement
                 // Reset Agent Location's data to cells.
                 foreach (var p in Data.Players) foreach (var a in p.Agents)
                     {
+                        if(!a.IsOnField) continue;
                         Data.CellData[a.Point.X, a.Point.Y].AgentState = a.PlayerNum == 0 ? TeamColor.Area1P : TeamColor.Area2P;
                         Data.CellData[a.Point.X, a.Point.Y].AreaState = a.PlayerNum == 0 ? TeamColor.Area1P : TeamColor.Area2P;
                         Data.CellData[a.Point.X, a.Point.Y].AgentNum = a.AgentNum;
@@ -446,6 +459,9 @@ namespace GameInterface.GameManagement
                     break;
                 case AgentState.RemoveTile:
                     Data.CellData[nextP.X, nextP.Y].AreaState = TeamColor.Free;
+                    break;
+                case AgentState.BePlaced:
+                    agent.IsOnField = true;
                     break;
                 default:
                     break;

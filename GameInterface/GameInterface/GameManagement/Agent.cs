@@ -10,7 +10,10 @@ namespace GameInterface.GameManagement
     {
         public int PlayerNum { get; set; } //0,1
         public int AgentNum { get; set; }
+        public bool IsOnField { get; set; } = false;
 
+        // IsOnField = false かつ State = AgentState.BePlacedのときは
+        // 今から配置する予定の座標を示し, IsOnField = trueのときは現在座標を示す
         private Point point;
         public Point Point {
             get => point;
@@ -34,6 +37,8 @@ namespace GameInterface.GameManagement
 
         public Point GetNextPoint()
         {
+            if(this.State == AgentState.BePlaced)
+                return this.Point;
             byte x = this.Point.X, y = this.Point.Y;
             switch((AgentDirection)((uint)AgentDirection & 0b11))
             {

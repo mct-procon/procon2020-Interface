@@ -35,5 +35,15 @@ namespace GameInterface.Cells
         {
             gameManager.ChangeCellToNextColor(point);
         }
+
+        private void Context_Place_Blue(object sender, RoutedEventArgs e)
+        {
+            gameManager.PlaceAgent(0, point);
+        }
+
+        private void Context_Place_Red(object sender, RoutedEventArgs e)
+        {
+            gameManager.PlaceAgent(1, point);
+        }
     }
 }

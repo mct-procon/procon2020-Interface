@@ -2,6 +2,7 @@
 {
     public enum AgentState {
         Move,
-        RemoveTile
+        RemoveTile,
+        BePlaced
     }
 }
