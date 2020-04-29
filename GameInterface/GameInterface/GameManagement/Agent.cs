@@ -33,8 +33,6 @@ namespace GameInterface.GameManagement
             set => RaisePropertyChanged(ref state, value);
         }
 
-        public bool IsMoved { get; set; } = false;
-
         public Point GetNextPoint()
         {
             if(this.State == AgentState.BePlaced)

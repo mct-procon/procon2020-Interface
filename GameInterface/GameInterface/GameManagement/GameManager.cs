@@ -220,39 +220,24 @@ namespace GameInterface.GameManagement
             if (Data.IsEnableGameConduct)
             {
                 List<Agent> ActionableAgents = GetActionableAgents();
-
-                // Erase Agent Location's data from cells.
-                foreach (var p in Data.Players)
-                    foreach (var a in p.Agents)
-                    {
-                        Data.CellData[a.Point.X, a.Point.Y].AgentState = TeamColor.Free;
-                        Data.CellData[a.Point.X, a.Point.Y].AgentNum = -1;
-                        a.IsMoved = false;
-                    }
+                var retVal = new bool[App.PlayersCount * Data.AgentsCount];
 
                 foreach (var a in ActionableAgents)
                 {
+                    Data.CellData[a.Point.X, a.Point.Y].AgentState = TeamColor.Free;
+                    Data.CellData[a.Point.X, a.Point.Y].AgentNum = -1;
                     var nextP = a.GetNextPoint();
 
                     TeamColor nextAreaState = Data.CellData[nextP.X, nextP.Y].AreaState;
                     ActionAgentToNextP(a, nextP, nextAreaState);
                     a.State = AgentState.Move;
-                    a.IsMoved = true;
+
+                    Data.CellData[a.Point.X, a.Point.Y].AgentState = a.PlayerNum == 0 ? TeamColor.Area1P : TeamColor.Area2P;
+                    Data.CellData[a.Point.X, a.Point.Y].AreaState = a.PlayerNum == 0 ? TeamColor.Area1P : TeamColor.Area2P;
+                    Data.CellData[a.Point.X, a.Point.Y].AgentNum = a.AgentNum;
+                    retVal[a.PlayerNum * Data.AgentsCount + a.AgentNum] = true;
                 }
 
-                // Reset Agent Location's data to cells.
-                foreach (var p in Data.Players) foreach (var a in p.Agents)
-                    {
-                        if(!a.IsOnField) continue;
-                        Data.CellData[a.Point.X, a.Point.Y].AgentState = a.PlayerNum == 0 ? TeamColor.Area1P : TeamColor.Area2P;
-                        Data.CellData[a.Point.X, a.Point.Y].AreaState = a.PlayerNum == 0 ? TeamColor.Area1P : TeamColor.Area2P;
-                        Data.CellData[a.Point.X, a.Point.Y].AgentNum = a.AgentNum;
-                    }
-
-                bool[] retVal = new bool[App.PlayersCount * Data.AgentsCount];
-                for (int p = 0; p < Data.Players.Length; ++p)
-                    for (int i = 0; i < Data.Players[p].Agents.Length; ++i)
-                        retVal[p * Data.AgentsCount + i] = Data.Players[p].Agents[i].IsMoved;
                 return retVal;
             }
             else
