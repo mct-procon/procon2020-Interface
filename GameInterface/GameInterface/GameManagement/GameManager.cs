@@ -260,8 +260,23 @@ namespace GameInterface.GameManagement
         //naotti: 行動可能なエージェントのId(1p{0,1}, 2p{2,3})を返す。
         private List<Agent> GetActionableAgents()
         {
-            bool[] canMove = new bool[Data.AgentsCount * App.PlayersCount];     //canMove[i] = エージェントiは移動するか？
-            bool[] canAction = new bool[canMove.Length];   //canAction[i] = エージェントiは移動またはタイル除去をするか？
+            bool[] isExist = new bool[Data.AgentsCount * App.PlayersCount]; //isExist[i] = エージェントiは配置されるor配置されているか？
+            bool[] canMove = new bool[isExist.Length];     //canMove[i] = エージェントiは移動または配置をするか？
+            bool[] canAction = new bool[canMove.Length];   //canAction[i] = エージェントiは移動または配置またはタイル除去をするか？
+
+            // まだフィールドに配置されておらず、かつ配置される予定のないエージェントは計算に含める必要がないため、
+            // ・まだフィールドに存在していない
+            // ・このターンに置かれる予定がない
+            // エージェントのisExistをfalseにする。また、canMoveやcanActionもfalseにする。
+            for(int p = 0; p < Data.Players.Length; ++p)
+                for (int i = 0; i < Data.Players[p].Agents.Length; i++)
+                {
+                    var agent = Data.Players[p].Agents[i];
+                    isExist[p * Data.AgentsCount + i] =
+                        canMove[p * Data.AgentsCount + i] =
+                        canAction[p * Data.AgentsCount + i] =
+                        agent.IsOnField || agent.State == AgentState.BePlaced;
+                }
 
             //まずは、各エージェントの移動先を知りたいので、canMoveを求める。
             //最初, canMove[i] = trueとしておき、移動不可なエージェントを振るい落とす方式を取る。このループでは以下の2点をチェックする。
@@ -270,7 +285,6 @@ namespace GameInterface.GameManagement
             for(int p = 0; p < Data.Players.Length; ++p)
                 for (int i = 0; i < Data.Players[p].Agents.Length; i++)
                 {
-                    canMove[p * Data.AgentsCount + i] = true;
                     var agent = Data.Players[p].Agents[i];
                     var nextP = agent.GetNextPoint();
                     if (CheckIsPointInBoard(nextP) == false) { canMove[p * Data.AgentsCount + i] = false; continue; }
@@ -283,6 +297,8 @@ namespace GameInterface.GameManagement
             for (int p = 0; p < Data.Players.Length; ++p)
                 for (int i = 0; i < Data.Players[p].Agents.Length; i++)
                 {
+                    if(!isExist[p * Data.AgentsCount + i])
+                        continue;
                     var agent1 = Data.Players[p].Agents[i];
                     var nextP1 = agent1.GetNextPoint();
                     int j = i + 1;
@@ -290,6 +306,8 @@ namespace GameInterface.GameManagement
                     {
                         for (; j < Data.Players[q].Agents.Length; j++)
                         {
+                            if(!isExist[q * Data.AgentsCount + j])
+                                continue;
                             var agent2 = Data.Players[q].Agents[j];
                             var nextP2 = agent2.GetNextPoint();
                             if (nextP1 == nextP2)
@@ -311,14 +329,20 @@ namespace GameInterface.GameManagement
                 for(int p = 0; p < Data.Players.Length; ++p)
                 for (int i = 0; i < Data.Players[p].Agents.Length; i++)
                 {
-                    if (canMove[p * Data.AgentsCount + i] == false) { continue; }
+                    if (
+                        !canMove[p * Data.AgentsCount + i] ||
+                        !isExist[p * Data.AgentsCount + i]
+                    ) { continue; }
                     var agent1 = Data.Players[p].Agents[i];
                     var nextP1 = agent1.GetNextPoint();
-                    for(int q = 0; q  <Data.Players.Length; ++q)
+                    for(int q = 0; q < Data.Players.Length; ++q)
                     for (int j = 0; j < Data.Players[q].Agents.Length; j++)
                     {
                         if (p * Data.AgentsCount + i == q * Data.AgentsCount + j) { continue; }
-                        if (canMove[ q * Data.AgentsCount + j] == true) { continue; }
+                        if (
+                            canMove[q * Data.AgentsCount + j] ||
+                            !isExist[q * Data.AgentsCount + j]
+                        ) { continue; }
                         var agent2 = Data.Players[q].Agents[j];
                         var nextP2 = agent2.Point;
                         if (nextP1 == nextP2)
@@ -339,7 +363,6 @@ namespace GameInterface.GameManagement
             for (int p = 0; p < Data.Players.Length; ++p)
             for (int i = 0; i < Data.Players[p].Agents.Length; i++)
             {
-                canAction[p * Data.AgentsCount + i] = true;
                 var agent = Data.Players[p].Agents[i];
                 var nextP = agent.GetNextPoint();
                 if (CheckIsPointInBoard(nextP) == false)
@@ -357,6 +380,8 @@ namespace GameInterface.GameManagement
                     {
                         for (; j < Data.Players[q].Agents.Length; j++)
                         {
+                            if(!isExist[q * Data.AgentsCount + j])
+                                continue;
                             var agent2 = Data.Players[q].Agents[j];
                             var nextP2 = agent2.GetNextPoint();
                             if (nextP1 == nextP2)
@@ -374,7 +399,10 @@ namespace GameInterface.GameManagement
             for(int p = 0; p < Data.Players.Length; ++p)
             for (int i = 0; i < Data.AgentsCount; i++)
             {
-                if (canAction[p * Data.AgentsCount + i] == false) { continue; }
+                if (
+                    canAction[p * Data.AgentsCount + i] ||
+                    !isExist[p * Data.AgentsCount + i]
+                ) { continue; }
                 var agent1 = Data.Players[p].Agents[i];
                 var nextP1 = agent1.GetNextPoint();
 
@@ -382,7 +410,10 @@ namespace GameInterface.GameManagement
                 for (int j = 0; j < Data.Players[q].Agents.Length; j++)
                 {
                     if (p * Data.AgentsCount + i == q * Data.AgentsCount + j) { continue; }
-                    if (canMove[q * Data.AgentsCount + j] == true) { continue; }
+                    if (
+                        canMove[q * Data.AgentsCount + j] || 
+                        !isExist[q * Data.AgentsCount + j]
+                    ) { continue; }
                     var agent2 = Data.Players[q].Agents[j];
                     var nextP2 = agent2.Point;
 
