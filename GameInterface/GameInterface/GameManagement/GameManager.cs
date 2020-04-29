@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Threading;
@@ -426,7 +426,6 @@ namespace GameInterface.GameManagement
                             if (nextAreaState != TeamColor.Area2P)
                             {
                                 agent.Point = nextP;
-                                Data.CellData[nextP.X, nextP.Y].AreaState = TeamColor.Area1P;
                             }
                             else
                             {
@@ -437,7 +436,6 @@ namespace GameInterface.GameManagement
                             if (nextAreaState != TeamColor.Area1P)
                             {
                                 agent.Point = nextP;
-                                Data.CellData[nextP.X, nextP.Y].AreaState = TeamColor.Area2P;
                             }
                             else
                             {
