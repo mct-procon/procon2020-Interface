@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Threading;
@@ -230,13 +230,16 @@ namespace GameInterface.GameManagement
 
                     TeamColor nextAreaState = Data.CellData[nextP.X, nextP.Y].AreaState;
                     ActionAgentToNextP(a, nextP, nextAreaState);
-                    a.State = AgentState.Move;
 
                     Data.CellData[a.Point.X, a.Point.Y].AgentState = a.PlayerNum == 0 ? TeamColor.Area1P : TeamColor.Area2P;
                     Data.CellData[a.Point.X, a.Point.Y].AreaState = a.PlayerNum == 0 ? TeamColor.Area1P : TeamColor.Area2P;
                     Data.CellData[a.Point.X, a.Point.Y].AgentNum = a.AgentNum;
                     retVal[a.PlayerNum * Data.AgentsCount + a.AgentNum] = true;
                 }
+
+                foreach (var p in Data.Players)
+                    foreach (var a in p.Agents)
+                        a.State = AgentState.Move;
 
                 return retVal;
             }
