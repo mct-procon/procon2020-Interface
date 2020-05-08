@@ -231,6 +231,9 @@ namespace GameInterface
 
             ColoredBoardNormalSmaller colorBoardMe = new ColoredBoardNormalSmaller((uint)data.BoardWidth, (uint)data.BoardHeight);
             ColoredBoardNormalSmaller colorBoardEnemy = new ColoredBoardNormalSmaller((uint)data.BoardWidth, (uint)data.BoardHeight);
+            ColoredBoardNormalSmaller surroundedBoardMe = new ColoredBoardNormalSmaller((uint)data.BoardWidth, (uint)data.BoardHeight);
+            ColoredBoardNormalSmaller surroundedBoardEnemy = new ColoredBoardNormalSmaller((uint)data.BoardWidth, (uint)data.BoardHeight);
+
 
             for (int i = 0; i < data.BoardWidth; i++)
                 for (int j = 0; j < data.BoardHeight; j++)
@@ -239,14 +242,21 @@ namespace GameInterface
                         colorBoardMe[(uint)i, (uint)j] = true;
                     else if (data.CellData[i, j].AreaState == TeamColor.Area2P)
                         colorBoardEnemy[(uint)i, (uint)j] = true;
+                    else if (data.CellData[i, j].SurroundedState == TeamColor.Area1P)
+                        surroundedBoardMe[(uint)i, (uint)j] = true;
+                    else if (data.CellData[i, j].SurroundedState == TeamColor.Area2P)
+                        surroundedBoardEnemy[(uint)i, (uint)j] = true;
                 }
+
             if (playerNum == 1) Swap(ref colorBoardMe, ref colorBoardEnemy);
             managers[playerNum].Write(DataKind.TurnStart, new TurnStart((byte)data.NowTurn, data.TimeLimitSeconds * 1000,
                 Unsafe8Array<MCTProcon30Protocol.Point>.Create(data.Players[playerNum == 0 ? 0 : 1].Agents.Select(item => item.Point).ToArray()),
                 Unsafe8Array<MCTProcon30Protocol.Point>.Create(data.Players[playerNum == 0 ? 1 : 0].Agents.Select(item => item.Point).ToArray()),
                 colorBoardMe,
                 colorBoardEnemy,
-                Unsafe8Array<bool>.Create(isAgentsMoved)
+                Unsafe8Array<bool>.Create(isAgentsMoved),
+                surroundedBoardMe,
+                surroundedBoardEnemy
                 ));
         }
 

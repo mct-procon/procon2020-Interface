@@ -28,6 +28,13 @@ namespace GameInterface.GameManagement
                 }
             ScoreEvaluation.BadSpaceFill(ref checker, width, height);
 
+            /*
+            for (uint x = 0; x < width; ++x)
+                for (uint y = 0; y < height; ++y)
+                    if (vells[x, y].AreaState == state)
+                        result += Math.Abs(cells[x, y].Score);
+            */
+
             for (uint x = 0; x < width; ++x)
                 for (uint y = 0; y < height; ++y)
                     if (!checker[x, y])
