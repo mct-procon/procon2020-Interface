@@ -408,9 +408,9 @@ namespace GameInterface.GameManagement
 
         private void GetScore()
         {
-            for (int x = 0; x < Data.CellData.GetLength(0); ++x)
-                for (int y = 0; y < Data.CellData.GetLength(1); ++y)
-                    Data.CellData[x, y].SurroundedState = TeamColor.Free;
+            //for (int x = 0; x < Data.CellData.GetLength(0); ++x)
+            //    for (int y = 0; y < Data.CellData.GetLength(1); ++y)
+            //        Data.CellData[x, y].SurroundedState = TeamColor.Free;
             for (int i = 0; i < App.PlayersCount; i++)
                 viewModel.Players[i].Score = ScoreCalculator.CalcScore(i, Data.CellData);
         }
