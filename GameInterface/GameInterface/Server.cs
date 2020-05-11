@@ -3,8 +3,8 @@ using System.Windows;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using MCTProcon30Protocol.Methods;
-using MCTProcon30Protocol;
+using MCTProcon31Protocol.Methods;
+using MCTProcon31Protocol;
 using System.Threading;
 using System.Diagnostics;
 using GameInterface.GameManagement;
@@ -213,8 +213,8 @@ namespace GameInterface
                 }
             }
             managers[playerNum].Write(DataKind.GameInit, new GameInit((byte)data.BoardHeight, (byte)data.BoardWidth, board, (byte)data.AgentsCount,
-                Unsafe8Array<MCTProcon30Protocol.Point>.Create(data.Players[playerNum == 0 ? 0 : 1].Agents.Select(item => item.Point).ToArray()),
-                Unsafe8Array<MCTProcon30Protocol.Point>.Create(data.Players[playerNum == 0 ? 1 : 0].Agents.Select(item => item.Point).ToArray()),
+                Unsafe16Array<MCTProcon31Protocol.Point>.Create(data.Players[playerNum == 0 ? 0 : 1].Agents.Select(item => item.Point).ToArray()),
+                Unsafe16Array<MCTProcon31Protocol.Point>.Create(data.Players[playerNum == 0 ? 1 : 0].Agents.Select(item => item.Point).ToArray()),
                 data.FinishTurn));
         }
 
@@ -250,13 +250,16 @@ namespace GameInterface
 
             if (playerNum == 1) Swap(ref colorBoardMe, ref colorBoardEnemy);
             managers[playerNum].Write(DataKind.TurnStart, new TurnStart((byte)data.NowTurn, data.TimeLimitSeconds * 1000,
-                Unsafe8Array<MCTProcon30Protocol.Point>.Create(data.Players[playerNum == 0 ? 0 : 1].Agents.Select(item => item.Point).ToArray()),
-                Unsafe8Array<MCTProcon30Protocol.Point>.Create(data.Players[playerNum == 0 ? 1 : 0].Agents.Select(item => item.Point).ToArray()),
+                Unsafe16Array<MCTProcon31Protocol.Point>.Create(data.Players[playerNum == 0 ? 0 : 1].Agents.Select(item => item.Point).ToArray()),
+                Unsafe16Array<MCTProcon31Protocol.Point>.Create(data.Players[playerNum == 0 ? 1 : 0].Agents.Select(item => item.Point).ToArray()),
                 colorBoardMe,
                 colorBoardEnemy,
-                Unsafe8Array<bool>.Create(isAgentsMoved),
+                Unsafe16Array<bool>.Create(isAgentsMoved),
                 surroundedBoardMe,
-                surroundedBoardEnemy
+                surroundedBoardEnemy,
+                // TODO : Send Correct Agents Count.
+                (byte)data.AgentsCount,
+                (byte)data.AgentsCount
                 ));
         }
 

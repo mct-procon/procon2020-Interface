@@ -4,7 +4,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using GameInterface.Cells;
-using MCTProcon30Protocol;
+using MCTProcon31Protocol;
 
 namespace GameInterface.GameManagement
 {

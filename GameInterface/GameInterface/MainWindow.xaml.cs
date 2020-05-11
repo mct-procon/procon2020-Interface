@@ -9,8 +9,8 @@ using System.Collections.Generic;
 using System.Windows.Media.Imaging;
 using System.Windows.Media;
 using GameInterface.GameManagement;
-using Point = MCTProcon30Protocol.Point;
-using MCTProcon30Protocol;
+using Point = MCTProcon31Protocol.Point;
+using MCTProcon31Protocol;
 using GameInterface.ViewModels;
 using System.Threading.Tasks;
 

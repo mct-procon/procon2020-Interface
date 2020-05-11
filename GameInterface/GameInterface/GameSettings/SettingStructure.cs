@@ -179,8 +179,8 @@ namespace GameInterface.GameSettings
             }
         }
 
-        private MCTProcon30Protocol.Json.Match[] matches = null;
-        public MCTProcon30Protocol.Json.Match[] Matches {
+        private MCTProcon31Protocol.Json.Match[] matches = null;
+        public MCTProcon31Protocol.Json.Match[] Matches {
             get => matches;
             set {
                 RaisePropertyChanged(ref matches, value);

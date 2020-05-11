@@ -2,7 +2,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Collections.Generic;
-using MCTProcon30Protocol;
+using MCTProcon31Protocol;
 
 namespace GameInterface.GameManagement
 {

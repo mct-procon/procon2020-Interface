@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Threading;
-using MCTProcon30Protocol.Methods;
-using MCTProcon30Protocol;
+using MCTProcon31Protocol.Methods;
+using MCTProcon31Protocol;
 using GameInterface.ViewModels;
 using System.Threading.Tasks;
 
@@ -201,7 +201,7 @@ namespace GameInterface.GameManagement
 
         }
 
-        private Point ToPoint(MCTProcon30Protocol.Json.Agent agent) => new Point((byte)agent.X, (byte)agent.Y);
+        private Point ToPoint(MCTProcon31Protocol.Json.Agent agent) => new Point((byte)agent.X, (byte)agent.Y);
 
         private bool[] MoveAgents()
         {
