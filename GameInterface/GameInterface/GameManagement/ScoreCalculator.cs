@@ -4,7 +4,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using GameInterface.Cells;
-using MCTProcon30Protocol;
+using MCTProcon31Protocol;
 
 namespace GameInterface.GameManagement
 {
@@ -26,15 +26,16 @@ namespace GameInterface.GameManagement
                         checker[x, y] = true;
                     }
                 }
+            // TODO: Update BadSpaceFill.
             ScoreEvaluation.BadSpaceFill(ref checker, width, height);
 
             for (uint x = 0; x < width; ++x)
                 for (uint y = 0; y < height; ++y)
+                {
                     if (!checker[x, y])
-                    {
-                        result += Math.Abs(cells[x, y].Score);
                         cells[x, y].SurroundedState |= state;
-                    }
+                    if((cells[x, y].SurroundedState & state) != 0) result += Math.Abs(cells[x, y].Score);
+                }
             return result;
         }
     }

@@ -1,11 +1,11 @@
 ﻿using GameInterface.Cells;
-using MCTProcon30Protocol.Methods;
+using MCTProcon31Protocol.Methods;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using MCTProcon30Protocol;
+using MCTProcon31Protocol;
 using GameInterface.ViewModels;
 
 namespace GameInterface.GameManagement

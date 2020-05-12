@@ -80,14 +80,14 @@ namespace GameInterface.GameSettings
 
         private byte turns = 60;
 
-        private int agentsCount = 2;
+        private int agentsCount = 6;
         public int AgentsCount {
             get => agentsCount;
             set {
-                if (value < 2)
-                    AddError("エージェントの数は2以上でなければなりません．");
-                if (value > 8)
-                    AddError("エージェントの数は8以下でなければなりません．");
+                if (value < 6)
+                    AddError("エージェントの数は6以上でなければなりません．");
+                if (value > 16)
+                    AddError("エージェントの数は16以下でなければなりません．");
                 RaisePropertyChanged(ref agentsCount, value);
             }
         }
@@ -105,7 +105,7 @@ namespace GameInterface.GameSettings
             }
         }
 
-        private byte boardWidth = 10;
+        private byte boardWidth = 12;
 
         /// <summary>
         /// Width of Board
@@ -114,15 +114,15 @@ namespace GameInterface.GameSettings
             get => boardWidth;
             set {
                 ResetError();
-                if (value < 10)
-                    AddError("フィールドの幅は10以上でなければなりません");
-                if(value > 20)
-                    AddError("フィールドの幅は20以下でなければなりません");
+                if (value < 12)
+                    AddError("フィールドの幅は12以上でなければなりません");
+                if(value > 24)
+                    AddError("フィールドの幅は24以下でなければなりません");
                 RaisePropertyChanged(ref boardWidth, value);
             }
         }
 
-        private byte boardHeight = 10;
+        private byte boardHeight = 12;
 
         /// <summary>
         /// Height of Bord
@@ -131,10 +131,10 @@ namespace GameInterface.GameSettings
             get => boardHeight;
             set {
                 ResetError();
-                if(value < 10)
-                    AddError("フィールドの高さは10以上でなければなりません");
-                if (value > 20)
-                    AddError("フィールドの高さは20以下でなければなりません");
+                if(value < 12)
+                    AddError("フィールドの高さは12以上でなければなりません");
+                if (value > 24)
+                    AddError("フィールドの高さは24以下でなければなりません");
                 RaisePropertyChanged(ref boardHeight, value);
             }
         }
@@ -179,8 +179,8 @@ namespace GameInterface.GameSettings
             }
         }
 
-        private MCTProcon30Protocol.Json.Match[] matches = null;
-        public MCTProcon30Protocol.Json.Match[] Matches {
+        private MCTProcon31Protocol.Json.Match[] matches = null;
+        public MCTProcon31Protocol.Json.Match[] Matches {
             get => matches;
             set {
                 RaisePropertyChanged(ref matches, value);

@@ -12,7 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using Point = MCTProcon30Protocol.Point;
+using Point = MCTProcon31Protocol.Point;
 
 namespace GameInterface.Cells
 {
