@@ -178,7 +178,7 @@ namespace GameInterface.GameManagement
         private Agent GetOnAgent(Point point)
         {
             for(int m = 0; m < App.PlayersCount; ++m)
-                for (int i = 0; i < Data.AgentsCount; i++)
+                for (int i = 0; i < Data.AllAgentsCount; i++)
                 {
                     var agent = Data.Players[m].Agents[i];
                     if (agent.Point == point)
@@ -220,7 +220,7 @@ namespace GameInterface.GameManagement
             if (Data.IsEnableGameConduct)
             {
                 List<Agent> ActionableAgents = GetActionableAgents();
-                var retVal = new bool[App.PlayersCount * Data.AgentsCount];
+                var retVal = new bool[App.PlayersCount * Data.AllAgentsCount];
 
                 foreach (var a in ActionableAgents)
                 {
@@ -234,7 +234,7 @@ namespace GameInterface.GameManagement
                     Data.CellData[a.Point.X, a.Point.Y].AgentState = a.PlayerNum == 0 ? TeamColor.Area1P : TeamColor.Area2P;
                     Data.CellData[a.Point.X, a.Point.Y].AreaState = a.PlayerNum == 0 ? TeamColor.Area1P : TeamColor.Area2P;
                     Data.CellData[a.Point.X, a.Point.Y].AgentNum = a.AgentNum;
-                    retVal[a.PlayerNum * Data.AgentsCount + a.AgentNum] = true;
+                    retVal[a.PlayerNum * Data.AllAgentsCount + a.AgentNum] = true;
                 }
 
                 foreach (var p in Data.Players)
@@ -245,16 +245,16 @@ namespace GameInterface.GameManagement
             }
             else
             {
-                var retVal = new bool[App.PlayersCount * Data.AgentsCount];
+                var retVal = new bool[App.PlayersCount * Data.AllAgentsCount];
                 for(int i = 0; i < App.PlayersCount; ++i)
-                    for(int j = 0; j < Data.AgentsCount; ++j)
+                    for(int j = 0; j < Data.AllAgentsCount; ++j)
                     {
                         if (Data.Players[i].Agents[j].AgentDirection == AgentDirection.None)
                         {
-                            retVal[i * Data.AgentsCount + j] = true;
+                            retVal[i * Data.AllAgentsCount + j] = true;
                             continue;
                         }
-                        retVal[i * Data.AgentsCount + j] = (Data.Players[i].Agents[j].GetNextPoint() == ToPoint(Network.ProconAPIClient.Instance.FieldState.Teams[i].Agents[j]));
+                        retVal[i * Data.AllAgentsCount + j] = (Data.Players[i].Agents[j].GetNextPoint() == ToPoint(Network.ProconAPIClient.Instance.FieldState.Teams[i].Agents[j]));
                     }
                 return retVal;
             }
@@ -263,7 +263,7 @@ namespace GameInterface.GameManagement
         //naotti: 行動可能なエージェントのId(1p{0,1}, 2p{2,3})を返す。
         private List<Agent> GetActionableAgents()
         {
-            bool[] canMove = new bool[Data.AgentsCount * App.PlayersCount];     // canMove[i] = エージェントiは移動または配置をするか？
+            bool[] canMove = new bool[Data.AllAgentsCount * App.PlayersCount];     // canMove[i] = エージェントiは移動または配置をするか？
             bool[] canAction = new bool[canMove.Length];    // canAction[i] = エージェントiは移動または配置またはタイル除去をするか？
             List<Agent> existAgents = new List<Agent>();    // 配置されるor配置されているエージェント
 
@@ -466,7 +466,7 @@ namespace GameInterface.GameManagement
 
         public void SetDecision(int index, Decision decide)
         {
-            for (int i = 0; i < Data.AgentsCount; ++i)
+            for (int i = 0; i < Data.AllAgentsCount; ++i)
             {
                 AgentDirection dir = DirectionExtensions.CastPointToDir(decide.Agents[i]);
                 viewModel.Players[index].AgentViewModels[i].Data.AgentDirection = dir;

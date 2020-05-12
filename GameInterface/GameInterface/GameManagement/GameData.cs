@@ -43,7 +43,8 @@ namespace GameInterface.GameManagement
         public int BoardWidth { get; private set; }
         public Agent SelectedAgent { get; set; }
 
-        public int AgentsCount { get; set; } = 0;
+        public int AllAgentsCount { get; set; } = 0;
+        public int[] AgentsCounts { get; set; } = new int[2];
 
         public GameSettings.SettingStructure CurrentGameSettings { get; set; }
 
@@ -167,7 +168,7 @@ namespace GameInterface.GameManagement
         void SetAgents(GameSettings.SettingStructure settings)
         {
             var fieldState = Network.ProconAPIClient.Instance.FieldState;
-            AgentsCount = fieldState.Teams[0].Agents.Length;
+            AllAgentsCount = fieldState.Teams[0].Agents.Length;
             for (int p = 0; p < Players.Length; p++)
             {
                 Players[p].Agents = new Agent[settings.AgentsCount];
@@ -182,7 +183,7 @@ namespace GameInterface.GameManagement
 
         void InitAgents(GameSettings.SettingStructure settings)
         {
-            AgentsCount = settings.AgentsCount;
+            AllAgentsCount = settings.AgentsCount;
             for (int p = 0; p < Players.Length; p++)
             {
                 Players[p].Agents = new Agent[settings.AgentsCount];
