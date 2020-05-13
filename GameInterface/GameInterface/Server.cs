@@ -262,6 +262,16 @@ namespace GameInterface
                 ));
         }
 
+        public void SendRequestAnswer(){
+            SendRequestAnswer(0);
+            SendRequestAnswer(1);
+        }
+
+        public void SendRequestAnswer(int playerNum){
+            if (!isConnected[playerNum]) return;
+            managers[playerNum].Write(DataKind.RequestAnswer, new RequestAnswer((byte)data.NowTurn));
+        }
+
         public void SendTurnEnd()
         {
             SendTurnEnd(0);
