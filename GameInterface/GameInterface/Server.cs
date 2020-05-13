@@ -257,8 +257,8 @@ namespace GameInterface
                 Unsafe16Array<bool>.Create(isAgentsMoved),
                 surroundedBoardMe,
                 surroundedBoardEnemy,
-                (byte)data.AgentsCounts[playerNum == 0 ? 0 : 1],
-                (byte)data.AgentsCounts[playerNum == 0 ? 1 : 0]
+                (byte)data.Players[playerNum == 0 ? 0 : 1].AgentsCount,
+                (byte)data.Players[playerNum == 0 ? 1 : 0].AgentsCount
                 ));
         }
 

@@ -18,7 +18,6 @@ namespace GameInterface.GameManagement
         public int PlayerNum { get; } //0,1
         public int AgentID { get; }
         public int AgentNum { get; }
-        public bool IsOnField { get; set; } = false;
 
         // IsOnField = false かつ State = AgentState.BePlacedのときは
         // 今から配置する予定の座標を示し, IsOnField = trueのときは現在座標を示す

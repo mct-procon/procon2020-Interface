@@ -44,7 +44,6 @@ namespace GameInterface.GameManagement
         public Agent SelectedAgent { get; set; }
 
         public int AllAgentsCount { get; set; } = 0;
-        public int[] AgentsCounts { get; set; } = new int[2];
 
         public GameSettings.SettingStructure CurrentGameSettings { get; set; }
 

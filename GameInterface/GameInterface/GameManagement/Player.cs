@@ -13,6 +13,8 @@ namespace GameInterface.GameManagement
         public Agent[] Agents { get; set; }
         public List<Decision> Decisions { get; set; }
         public int DecisionsSelectedIndex { get; set; }
+        public int AgentsCount { get; set; }
+        public int BeforeAgentsCount { get; set; }
 
         public Player()
         {

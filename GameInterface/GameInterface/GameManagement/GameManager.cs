@@ -6,6 +6,7 @@ using MCTProcon31Protocol.Methods;
 using MCTProcon31Protocol;
 using GameInterface.ViewModels;
 using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace GameInterface.GameManagement
 {
@@ -140,13 +141,10 @@ namespace GameInterface.GameManagement
 
         public void PlaceAgent(int playerNum, Point point)
         {
-            foreach (var a in Data.Players[playerNum].Agents)
-            {
-                if(!a.IsOnField && a.State != AgentState.BePlaced){
-                    a.Point = point;
-                    a.State = AgentState.BePlaced;
-                    return;
-                }    
+            if(Data.Players[playerNum].AgentsCount < Data.AllAgentsCount){
+                var agent = Data.Players[playerNum].Agents[Data.Players[playerNum].AgentsCount];
+                agent.Point = point;
+                Data.Players[playerNum].AgentsCount++;
             }
         }
 
@@ -217,10 +215,16 @@ namespace GameInterface.GameManagement
 
         private bool[] MoveAgents()
         {
+            var retVal = new bool[App.PlayersCount * Data.AllAgentsCount];
             if (Data.IsEnableGameConduct)
             {
+                foreach (var player in Data.Players)
+                    for (int i = player.BeforeAgentsCount; i < player.AgentsCount; i++)
+                    {
+                        var agent = player.Agents[i];
+                        agent.State = AgentState.BePlaced;
+                    }
                 List<Agent> ActionableAgents = GetActionableAgents();
-                var retVal = new bool[App.PlayersCount * Data.AllAgentsCount];
 
                 foreach (var a in ActionableAgents)
                 {
@@ -237,15 +241,16 @@ namespace GameInterface.GameManagement
                     retVal[a.PlayerNum * Data.AllAgentsCount + a.AgentNum] = true;
                 }
 
+                foreach (var player in Data.Players)
+                    player.BeforeAgentsCount = player.AgentsCount;
+
                 foreach (var p in Data.Players)
                     foreach (var a in p.Agents)
                         a.State = AgentState.Move;
 
-                return retVal;
             }
             else
             {
-                var retVal = new bool[App.PlayersCount * Data.AllAgentsCount];
                 for(int i = 0; i < App.PlayersCount; ++i)
                     for(int j = 0; j < Data.AllAgentsCount; ++j)
                     {
@@ -256,8 +261,8 @@ namespace GameInterface.GameManagement
                         }
                         retVal[i * Data.AllAgentsCount + j] = (Data.Players[i].Agents[j].GetNextPoint() == ToPoint(Network.ProconAPIClient.Instance.FieldState.Teams[i].Agents[j]));
                     }
-                return retVal;
             }
+            return retVal;
         }
 
         //naotti: 行動可能なエージェントのId(1p{0,1}, 2p{2,3})を返す。
@@ -272,12 +277,9 @@ namespace GameInterface.GameManagement
             // ・このターンに置かれる予定がない
             // エージェント以外でexistAgentsを構成し、以降はこれについて考える。
             foreach (var player in Data.Players)
-                foreach (var agent in player.Agents)
+                for (int i = 0; i < player.AgentsCount; i++)
                 {
-                    if (agent.IsOnField || agent.State == AgentState.BePlaced)
-                    {
-                        existAgents.Add(agent);
-                    }
+                    existAgents.Add(player.Agents[i]);
                 }
 
             //まずは、各エージェントの移動先を知りたいので、canMoveを求める。
@@ -441,7 +443,6 @@ namespace GameInterface.GameManagement
                     Data.CellData[nextP.X, nextP.Y].AreaState = TeamColor.Free;
                     break;
                 case AgentState.BePlaced:
-                    agent.IsOnField = true;
                     break;
                 default:
                     break;
@@ -466,12 +467,18 @@ namespace GameInterface.GameManagement
 
         public void SetDecision(int index, Decision decide)
         {
+            Console.WriteLine(decide.ToString());
+            Data.Players[index].AgentsCount = decide.AgentsCount;
             for (int i = 0; i < Data.AllAgentsCount; ++i)
             {
                 AgentDirection dir = DirectionExtensions.CastPointToDir(decide.Agents[i]);
                 viewModel.Players[index].AgentViewModels[i].Data.AgentDirection = dir;
                 viewModel.Players[index].AgentViewModels[i].Data.State = AgentState.Move;
             }
+        }
+
+        public void RequestAnswer(){
+            Server.SendRequestAnswer();
         }
 
         private void Draw()
