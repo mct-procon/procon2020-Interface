@@ -12,45 +12,43 @@
     </Window.Resources>
     <Grid Background="White">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="1*"/>
-            <ColumnDefinition Width="180"/>
+            <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="28"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
 
-        <TextBlock x:Name="text1" Text="{Binding TimerStr}" FontSize="18"/>
-        <TextBlock x:Name="text2" Grid.Column="1" Text="{Binding TurnStr}" FontSize="18" Margin="10,0,0,0"/>
+        <DockPanel Grid.Column = "1">
+            <TextBlock x:Name="text1" DockPanel.Dock="Left" Text="{Binding TimerStr}" FontSize="18" />
+            <TextBlock x:Name="text2" DockPanel.Dock="Left"  Text="{Binding TurnStr}" FontSize="18" Margin="10,0,0,0"/>
 
-        <Button x:Name="Show1PButton" Grid.Column="2" Margin="2" Background="Blue" Click="Show1PButton_Click">
-            <StackPanel Orientation="Horizontal">
-                <TextBlock Text="Player 1   " Foreground="White"/>
-                <TextBlock Text="{Binding Players[0].Score}" Foreground="White"/>
-            </StackPanel>
-        </Button>
-        <Button x:Name="Show2PButton" Grid.Column="3" HorizontalAlignment="Left" Margin="2" Background="Red" Click="Show2PButton_Click">
-            <StackPanel Orientation="Horizontal">
-                <TextBlock Text="Player 2   " Foreground="White"/>
-                <TextBlock Text="{Binding Players[1].Score}" Foreground="White"/>
-            </StackPanel>
-        </Button>
+            <Button x:Name="Show1PButton" DockPanel.Dock="Left"  Margin="10,2,2,2" Background="Blue" Click="Show1PButton_Click">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="Player 1   " Foreground="White"/>
+                    <TextBlock Text="{Binding Players[0].Score}" Foreground="White"/>
+                </StackPanel>
+            </Button>
+            <Button x:Name="Show2PButton"  DockPanel.Dock="Left" Margin="2" Background="Red" Click="Show2PButton_Click">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="Player 2   " Foreground="White"/>
+                    <TextBlock Text="{Binding Players[1].Score}" Foreground="White"/>
+                </StackPanel>
+            </Button>
 
-        <Button x:Name="MenuButton" Grid.Column="4" HorizontalAlignment="Right" Content="MENU" Click="MenuButton_Click" Margin="2">
-            <Button.ContextMenu>
-                <ContextMenu>
-                    <MenuItem Header="新規ゲーム" Click="NewGameMenu_Clicked"/>
-                    <MenuItem Header="デバッグ情報"/>
-                    <MenuItem Header="Break" Click="BreakMenu_Clicked"/>
-                </ContextMenu>
-            </Button.ContextMenu>
-        </Button>
-        <TextBox Text="{Binding TimeLimitSeconds}" Grid.Column="4" Margin="85,2,47,2"/>
-        <Button x:Name="SkipButton" Grid.Column="4" HorizontalAlignment="Left"  Content="SKIP" Click="SkipButton_Click" Width="80" Margin="2"/>
-
-        <Grid x:Name="cellGrid" Grid.Row="1" Grid.ColumnSpan="5"/>
+            <Button x:Name="MenuButton"  DockPanel.Dock="Right" Content="MENU" Click="MenuButton_Click" Margin="2">
+                <Button.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="新規ゲーム" Click="NewGameMenu_Clicked"/>
+                        <MenuItem Header="デバッグ情報"/>
+                        <MenuItem Header="Break" Click="BreakMenu_Clicked"/>
+                    </ContextMenu>
+                </Button.ContextMenu>
+            </Button>
+            <TextBox Text="{Binding TimeLimitSeconds}" DockPanel.Dock="Right" Width="50" Margin="2"/>
+            <Button x:Name="SkipButton"   DockPanel.Dock="Right" Content="SKIP" Click="SkipButton_Click" Width="80" Margin="2"/>
+            <Button x:Name="RequestButton"  DockPanel.Dock="Right" HorizontalAlignment="Right" Content="REQUEST" Click="RequestButton_Click" Width="80" Margin="2"/>
+        </DockPanel>
+        <Grid x:Name="cellGrid" Grid.Row="2"/>
     </Grid>
 </Window>

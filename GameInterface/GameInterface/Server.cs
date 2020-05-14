@@ -86,7 +86,7 @@ namespace GameInterface
                 dig.ShowDialog();
                 server.SendConnect(managerNum);
                 server.SendGameInit(managerNum);
-                server.SendTurnStart(managerNum, Enumerable.Range(0, gameManager.Data.AgentsCount).Select(x => true).ToArray());
+                server.SendTurnStart(managerNum, Enumerable.Range(0, gameManager.Data.AllAgentsCount).Select(x => true).ToArray());
             }
             else
             {
@@ -212,7 +212,7 @@ namespace GameInterface
                     board[i, j] = (sbyte)data.CellData[i, j].Score;
                 }
             }
-            managers[playerNum].Write(DataKind.GameInit, new GameInit((byte)data.BoardHeight, (byte)data.BoardWidth, board, (byte)data.AgentsCount,
+            managers[playerNum].Write(DataKind.GameInit, new GameInit((byte)data.BoardHeight, (byte)data.BoardWidth, board, (byte)data.AllAgentsCount,
                 Unsafe16Array<MCTProcon31Protocol.Point>.Create(data.Players[playerNum == 0 ? 0 : 1].Agents.Select(item => item.Point).ToArray()),
                 Unsafe16Array<MCTProcon31Protocol.Point>.Create(data.Players[playerNum == 0 ? 1 : 0].Agents.Select(item => item.Point).ToArray()),
                 data.FinishTurn));
@@ -257,10 +257,19 @@ namespace GameInterface
                 Unsafe16Array<bool>.Create(isAgentsMoved),
                 surroundedBoardMe,
                 surroundedBoardEnemy,
-                // TODO : Send Correct Agents Count.
-                (byte)data.AgentsCount,
-                (byte)data.AgentsCount
+                (byte)data.Players[playerNum == 0 ? 0 : 1].AgentsCount,
+                (byte)data.Players[playerNum == 0 ? 1 : 0].AgentsCount
                 ));
+        }
+
+        public void SendRequestAnswer(){
+            SendRequestAnswer(0);
+            SendRequestAnswer(1);
+        }
+
+        public void SendRequestAnswer(int playerNum){
+            if (!isConnected[playerNum]) return;
+            managers[playerNum].Write(DataKind.RequestAnswer, new RequestAnswer((byte)data.NowTurn));
         }
 
         public void SendTurnEnd()

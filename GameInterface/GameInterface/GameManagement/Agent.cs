@@ -8,9 +8,19 @@ namespace GameInterface.GameManagement
 {
     public class Agent : ViewModels.ViewModelBase
     {
-        public int PlayerNum { get; set; } //0,1
-        public int AgentNum { get; set; }
+        public Agent(int PlayerNum, int AgentNum, int AgentsCount)
+        {
+            this.PlayerNum = PlayerNum;
+            this.AgentNum = AgentNum;
+            this.AgentID = PlayerNum * AgentsCount + AgentNum;
+        }
 
+        public int PlayerNum { get; } //0,1
+        public int AgentID { get; }
+        public int AgentNum { get; }
+
+        // IsOnField = false かつ State = AgentState.BePlacedのときは
+        // 今から配置する予定の座標を示し, IsOnField = trueのときは現在座標を示す
         private Point point;
         public Point Point {
             get => point;
@@ -30,10 +40,10 @@ namespace GameInterface.GameManagement
             set => RaisePropertyChanged(ref state, value);
         }
 
-        public bool IsMoved { get; set; } = false;
-
         public Point GetNextPoint()
         {
+            if(this.State == AgentState.BePlaced)
+                return this.Point;
             byte x = this.Point.X, y = this.Point.Y;
             switch((AgentDirection)((uint)AgentDirection & 0b11))
             {

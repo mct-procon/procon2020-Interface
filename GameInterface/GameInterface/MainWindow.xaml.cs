@@ -101,6 +101,11 @@ namespace GameInterface
             gameManager.StartTurn();
         }
 
+        private void RequestButton_Click(object sender, RoutedEventArgs e)
+        {
+            gameManager.RequestAnswer();
+        }
+
         private void BreakMenu_Clicked(object sender, RoutedEventArgs e)
         {
             if (!System.Diagnostics.Debugger.IsAttached)
