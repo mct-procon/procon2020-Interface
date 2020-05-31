@@ -171,6 +171,7 @@ namespace GameInterface.GameManagement
             var color = Data.CellData[point.X, point.Y].AreaState;
             var nextColor = (TeamColor)(((int)color + 1) % 3);
             Data.CellData[point.X, point.Y].AreaState = nextColor;
+            Data.CellData[point.X, point.Y].SurroundedState = TeamColor.Free;
         }
 
         private Agent GetOnAgent(Point point)
@@ -237,6 +238,7 @@ namespace GameInterface.GameManagement
 
                     Data.CellData[a.Point.X, a.Point.Y].AgentState = a.PlayerNum == 0 ? TeamColor.Area1P : TeamColor.Area2P;
                     Data.CellData[a.Point.X, a.Point.Y].AreaState = a.PlayerNum == 0 ? TeamColor.Area1P : TeamColor.Area2P;
+                    Data.CellData[a.Point.X, a.Point.Y].SurroundedState = TeamColor.Free;
                     Data.CellData[a.Point.X, a.Point.Y].AgentNum = a.AgentNum;
                     retVal[a.PlayerNum * Data.AllAgentsCount + a.AgentNum] = true;
                 }
