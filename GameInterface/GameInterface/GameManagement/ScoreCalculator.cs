@@ -45,17 +45,17 @@ namespace GameInterface.GameManagement
                         cells[x, y].SurroundedState = state;
                     if ((cells[x, y].SurroundedState & state) != 0) result += Math.Abs(cells[x, y].Score);
                 }
-            bool[,] a = new bool[width, height];
-            bool[,] b = new bool[width, height];
-            bool[,] c = new bool[width, height];
-            for (uint x = 0; x < width; ++x)
-                for (uint y = 0; y < height; ++y)
-                {
-                    a[x, y] = colored[x,y];
-                    b[x, y] = checker[x,y];
-                    c[x, y] = enemyChecker[x,y];
-                }
-                    return result;
+            //bool[,] a = new bool[width, height];
+            //bool[,] b = new bool[width, height];
+            //bool[,] c = new bool[width, height];
+            //for (uint x = 0; x < width; ++x)
+            //    for (uint y = 0; y < height; ++y)
+            //    {
+            //        a[x, y] = colored[x,y];
+            //        b[x, y] = checker[x,y];
+            //        c[x, y] = enemyChecker[x,y];
+            //    }
+            return result;
         }
     }
 }
