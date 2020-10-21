@@ -33,7 +33,7 @@ namespace GameInterface.GameManagement
                 for (int i = 0; i < viewModel.Players[p].AgentViewModels.Length; ++i)
                 {
                     viewModel.Players[p].AgentViewModels[i].Data.AgentDirection = AgentDirection.None;
-                    viewModel.Players[p].AgentViewModels[i].Data.State = AgentState.Move;
+                    viewModel.Players[p].AgentViewModels[i].Data.State = AgentState.NonPlaced;
                 }
             StartTurn();
             GetScore();
@@ -143,6 +143,7 @@ namespace GameInterface.GameManagement
         {
             if(Data.Players[playerNum].AgentsCount < Data.MaximumAgentsCount){
                 var agent = Data.Players[playerNum].Agents[Data.Players[playerNum].AgentsCount];
+                agent.State = AgentState.PlacePending;
                 agent.Point = point;
                 Data.Players[playerNum].AgentsCount++;
             }
@@ -217,12 +218,6 @@ namespace GameInterface.GameManagement
             var retVal = new bool[App.PlayersCount * Data.MaximumAgentsCount];
             if (Data.IsEnableGameConduct)
             {
-                foreach (var player in Data.Players)
-                    for (int i = player.BeforeAgentsCount; i < player.AgentsCount; i++)
-                    {
-                        var agent = player.Agents[i];
-                        agent.State = AgentState.BePlaced;
-                    }
                 List<Agent> ActionableAgents = GetActionableAgents();
 
                 foreach (var a in ActionableAgents)
@@ -246,7 +241,7 @@ namespace GameInterface.GameManagement
 
                 foreach (var p in Data.Players)
                     foreach (var a in p.Agents)
-                        a.State = AgentState.Move;
+                        if(a.State.HasFlag(AgentState.Move)) a.State = AgentState.Move;
 
             }
             else
@@ -277,10 +272,9 @@ namespace GameInterface.GameManagement
             // ・このターンに置かれる予定がない
             // エージェント以外でexistAgentsを構成し、以降はこれについて考える。
             foreach (var player in Data.Players)
-                for (int i = 0; i < player.AgentsCount; i++)
-                {
-                    existAgents.Add(player.Agents[i]);
-                }
+                for (int i = 0; i < player.Agents.Length; i++)
+                    if(player.Agents[i].State != AgentState.NonPlaced)
+                        existAgents.Add(player.Agents[i]);
 
             //まずは、各エージェントの移動先を知りたいので、canMoveを求める。
             //最初, canMove[i] = trueとしておき、移動不可なエージェントを振るい落とす方式を取る。このループでは以下の2点をチェックする。
@@ -349,7 +343,7 @@ namespace GameInterface.GameManagement
                 if (!CheckIsPointInBoard(nextP))
                     canAction[agent.AgentID] = false;
                 TeamColor nextAreaState = Data.CellData[nextP.X, nextP.Y].AreaState;
-                if(agent.State == AgentState.BePlaced)
+                if(agent.State == AgentState.Move)
                     if ((agent.PlayerNum == TeamColor.Player1 && nextAreaState == TeamColor.Player2) || (agent.PlayerNum == TeamColor.Player2 && nextAreaState == TeamColor.Player1))
                         canAction[agent.AgentID] = false;
             }
@@ -419,13 +413,9 @@ namespace GameInterface.GameManagement
 
                     if(nextAreaState != against)
                         agent.Point = nextP;
-                    else
-                        Data.CellData[nextP.X, nextP.Y].AreaState = TeamColor.Free;
                     break;
                 case AgentState.RemoveTile:
                     Data.CellData[nextP.X, nextP.Y].AreaState = TeamColor.Free;
-                    break;
-                case AgentState.BePlaced:
                     break;
                 default:
                     break;
@@ -470,10 +460,6 @@ namespace GameInterface.GameManagement
             viewModel.TurnStr = $"TURN:{Data.NowTurn}/{Data.FinishTurn}";
         }
 
-        private bool CheckIsPointInBoard(Point p)
-        {
-            return (p.X >= 0 && p.X < Data.BoardWidth &&
-                p.Y >= 0 && p.Y < Data.BoardHeight);
-        }
+        private bool CheckIsPointInBoard(Point p) => (uint)p.X < Data.BoardWidth && (uint)p.Y < Data.BoardHeight;
     }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GameInterface.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,6 +24,12 @@ namespace GameInterface.Controls
         public UserOrderPanel()
         {
             InitializeComponent();
+        }
+
+        private void PlaceCancelClicked(object sender, RoutedEventArgs e)
+        {
+            if (this.DataContext is UserOrderPanelViewModel)
+                ((UserOrderPanelViewModel)this.DataContext).Data.State = GameManagement.AgentState.NonPlaced;
         }
     }
 }

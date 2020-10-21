@@ -3,6 +3,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using MCTProcon31Protocol;
+using System.Diagnostics;
 
 namespace GameInterface.GameManagement
 {
@@ -18,6 +19,7 @@ namespace GameInterface.GameManagement
         public TeamColor PlayerNum { get; }
         public int AgentID { get; }
         public int AgentNum { get; }
+        public bool IsPlaced => state.HasFlag(AgentState.Move);
 
         // IsOnField = false かつ State = AgentState.BePlacedのときは
         // 今から配置する予定の座標を示し, IsOnField = trueのときは現在座標を示す
@@ -30,10 +32,10 @@ namespace GameInterface.GameManagement
         public AgentDirection AgentDirection
         {
             get => agentDirection;
-            set => RaisePropertyChanged(ref agentDirection, value);
+            set { if (IsPlaced) RaisePropertyChanged(ref agentDirection, value); }
         }
 
-        private AgentState state;
+        private AgentState state = AgentState.NonPlaced;
         public AgentState State
         {
             get => state;
@@ -42,7 +44,8 @@ namespace GameInterface.GameManagement
 
         public Point GetNextPoint()
         {
-            if(this.State == AgentState.BePlaced)
+            Debug.Assert(this.State != AgentState.NonPlaced);
+            if(this.State == AgentState.PlacePending)
                 return this.Point;
             byte x = this.Point.X, y = this.Point.Y;
             switch((AgentDirection)((uint)AgentDirection & 0b11))
@@ -53,8 +56,6 @@ namespace GameInterface.GameManagement
                 case AgentDirection.Left:
                     x -= 1;
                     break;
-                default:
-                    break;
             }
             switch ((AgentDirection)((uint)AgentDirection & 0b1100))
             {
@@ -64,11 +65,8 @@ namespace GameInterface.GameManagement
                 case AgentDirection.Down:
                     y += 1;
                     break;
-                case AgentDirection.None:
-                    break;
             }
             return new Point(x, y);
         }
-
     }
 }

@@ -29,9 +29,12 @@
                         <Setter Property="Foreground" Value="White"/>
                     </Style>
                 </StackPanel.Resources>
-                <TextBlock Text="Agent  "/>
+                <Button Padding="2,0,2,0" IsEnabled="{Binding Data.IsNonPlaced}" Click="PlaceCancelClicked">
+                    <Path Margin="0" StrokeThickness="2" Data="M0,0 10,10 M0,10 10,0" Stroke="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}, Path=Foreground}"/>
+                </Button>
                 <TextBlock Text="{Binding Data.AgentNum}"/>
                 <TextBlock Margin="10,0,0,0"  Text="{Binding Data.Point}"/>
+                <TextBlock Margin="10,0,0,0"  Text="{Binding Data.State}"/>
             </StackPanel>
             <ToggleButton Grid.Row="1" Grid.Column="0" IsChecked="{Binding IsUpLeft}">
                 <Path StrokeThickness="2" Data="M0,10 0,0 10,0 M0,0 14,14" Stroke="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ToggleButton}}, Path=Foreground}"/>

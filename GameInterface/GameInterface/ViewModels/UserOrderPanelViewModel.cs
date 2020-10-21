@@ -26,6 +26,10 @@ namespace GameInterface.ViewModels
             Data.PropertyChanged += DataPropertyChanged;
         }
 
+        public bool IsNotPlaced {
+            get => !Data.IsPlaced;
+        }
+
         public bool IsUpLeft {
             get => Data.AgentDirection == AgentDirection.UpLeft;
             set => Data.AgentDirection = AgentDirection.UpLeft;
@@ -72,7 +76,7 @@ namespace GameInterface.ViewModels
 
         public bool IsRemoveMode {
             get => Data.State == AgentState.RemoveTile;
-            set => Data.State = value ? AgentState.RemoveTile : AgentState.Move;
+            set { if (value) Data.State = AgentState.RemoveTile; else if (Data.IsPlaced) Data.State = AgentState.Move; }
         }
 
         private void RaiseAll()
@@ -93,7 +97,10 @@ namespace GameInterface.ViewModels
             if (args.PropertyName == nameof(data.AgentDirection))
                 RaiseAll();
             else if (args.PropertyName == nameof(data.State))
+            {
                 RaisePropertyChanged(nameof(IsRemoveMode));
+                RaisePropertyChanged(nameof(IsNotPlaced));
+            }
         }
 
         ~UserOrderPanelViewModel()

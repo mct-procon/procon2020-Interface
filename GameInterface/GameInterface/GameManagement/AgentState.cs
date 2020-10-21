@@ -1,8 +1,12 @@
-﻿namespace GameInterface.GameManagement
+﻿using System;
+
+namespace GameInterface.GameManagement
 {
+    [Flags]
     public enum AgentState {
-        Move,
-        RemoveTile,
-        BePlaced
+        NonPlaced    = 0,
+        PlacePending = 1,
+        Move         = 2,
+        RemoveTile   = 3
     }
 }
