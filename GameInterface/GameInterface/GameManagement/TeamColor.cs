@@ -1,9 +1,18 @@
-﻿namespace GameInterface.GameManagement
+﻿using System;
+
+namespace GameInterface.GameManagement
 {
-    public enum TeamColor {
+    [Flags]
+    public enum TeamColor : byte {
         Free   = 0b000,
-        Area1P = 0b001,
-        Area2P = 0b010,
+        Player1 = 0b001,
+        Player2 = 0b010,
         Both   = 0b011
+    }
+
+    public static class TeamColorUtil
+    {
+        public static int ToPlayerNum(this TeamColor col) => (byte)col - 1;
+        public static TeamColor ToTeamColor(this int playerNum) => (TeamColor)(playerNum + 1);
     }
 }

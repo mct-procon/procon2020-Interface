@@ -8,14 +8,14 @@ namespace GameInterface.GameManagement
 {
     public class Agent : ViewModels.ViewModelBase
     {
-        public Agent(int PlayerNum, int AgentNum, int AgentsCount)
+        public Agent(TeamColor PlayerNum, int AgentNum, int AgentsCount)
         {
             this.PlayerNum = PlayerNum;
             this.AgentNum = AgentNum;
-            this.AgentID = PlayerNum * AgentsCount + AgentNum;
+            this.AgentID = PlayerNum.ToPlayerNum() * AgentsCount + AgentNum;
         }
 
-        public int PlayerNum { get; } //0,1
+        public TeamColor PlayerNum { get; }
         public int AgentID { get; }
         public int AgentNum { get; }
 

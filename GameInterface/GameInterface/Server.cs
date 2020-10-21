@@ -86,7 +86,7 @@ namespace GameInterface
                 dig.ShowDialog();
                 server.SendConnect(managerNum);
                 server.SendGameInit(managerNum);
-                server.SendTurnStart(managerNum, Enumerable.Range(0, gameManager.Data.AllAgentsCount).Select(x => true).ToArray());
+                server.SendTurnStart(managerNum, Enumerable.Range(0, gameManager.Data.MaximumAgentsCount).Select(x => true).ToArray());
             }
             else
             {
@@ -212,7 +212,7 @@ namespace GameInterface
                     board[i, j] = (sbyte)data.CellData[i, j].Score;
                 }
             }
-            managers[playerNum].Write(DataKind.GameInit, new GameInit((byte)data.BoardHeight, (byte)data.BoardWidth, board, (byte)data.AllAgentsCount,
+            managers[playerNum].Write(DataKind.GameInit, new GameInit((byte)data.BoardHeight, (byte)data.BoardWidth, board, (byte)data.MaximumAgentsCount,
                 Unsafe16Array<MCTProcon31Protocol.Point>.Create(data.Players[playerNum == 0 ? 0 : 1].Agents.Select(item => item.Point).ToArray()),
                 Unsafe16Array<MCTProcon31Protocol.Point>.Create(data.Players[playerNum == 0 ? 1 : 0].Agents.Select(item => item.Point).ToArray()),
                 data.FinishTurn));
@@ -238,13 +238,13 @@ namespace GameInterface
             for (int i = 0; i < data.BoardWidth; i++)
                 for (int j = 0; j < data.BoardHeight; j++)
                 {
-                    if (data.CellData[i, j].AreaState == TeamColor.Area1P)
+                    if (data.CellData[i, j].AreaState == TeamColor.Player1)
                         colorBoardMe[(uint)i, (uint)j] = true;
-                    else if (data.CellData[i, j].AreaState == TeamColor.Area2P)
+                    else if (data.CellData[i, j].AreaState == TeamColor.Player2)
                         colorBoardEnemy[(uint)i, (uint)j] = true;
-                    else if (data.CellData[i, j].SurroundedState == TeamColor.Area1P)
+                    else if (data.CellData[i, j].SurroundedState == TeamColor.Player1)
                         surroundedBoardMe[(uint)i, (uint)j] = true;
-                    else if (data.CellData[i, j].SurroundedState == TeamColor.Area2P)
+                    else if (data.CellData[i, j].SurroundedState == TeamColor.Player2)
                         surroundedBoardEnemy[(uint)i, (uint)j] = true;
                 }
 

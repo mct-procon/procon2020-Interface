@@ -17,8 +17,8 @@ namespace GameInterface.GameManagement
             ColoredBoardNormalSmaller enemyChecker = new ColoredBoardNormalSmaller(width, height);
             ColoredBoardNormalSmaller colored = new ColoredBoardNormalSmaller(width, height);
             int result = 0;
-            var state = playerNum == 0 ? TeamColor.Area1P : TeamColor.Area2P;
-            var enemyState = playerNum == 0 ? TeamColor.Area2P : TeamColor.Area1P;
+            var state = playerNum == 0 ? TeamColor.Player1 : TeamColor.Player2;
+            var enemyState = playerNum == 0 ? TeamColor.Player2 : TeamColor.Player1;
 
             for (uint x = 0; x < width; ++x)
                 for (uint y = 0; y < height; ++y)

@@ -11,16 +11,16 @@
             <Setter Property="BorderBrush" Value="LightGray" />
             <Setter Property="Background" Value="White"/>
             <Style.Triggers>
-                <DataTrigger Binding="{Binding AreaState}" Value="{x:Static local:TeamColor.Area1P}">
+                <DataTrigger Binding="{Binding AreaState}" Value="{x:Static local:TeamColor.Player1}">
                     <Setter Property="BorderBrush" Value="Blue" />
                 </DataTrigger>
-                <DataTrigger Binding="{Binding AreaState}" Value="{x:Static local:TeamColor.Area2P}">
+                <DataTrigger Binding="{Binding AreaState}" Value="{x:Static local:TeamColor.Player2}">
                     <Setter Property="BorderBrush" Value="Red" />
                 </DataTrigger>
-                <DataTrigger Binding="{Binding AgentState}" Value="{x:Static local:TeamColor.Area1P}">
+                <DataTrigger Binding="{Binding AgentState}" Value="{x:Static local:TeamColor.Player1}">
                     <Setter Property="Background" Value="Blue" />
                 </DataTrigger>
-                <DataTrigger Binding="{Binding AgentState}" Value="{x:Static local:TeamColor.Area2P}">
+                <DataTrigger Binding="{Binding AgentState}" Value="{x:Static local:TeamColor.Player2}">
                     <Setter Property="Background" Value="Red" />
                 </DataTrigger>
             </Style.Triggers>
@@ -31,10 +31,10 @@
                 <DataTrigger Binding="{Binding AgentState}" Value="{x:Static local:TeamColor.Free}">
                     <Setter Property="Foreground" Value="Black"/>
                 </DataTrigger>
-                <DataTrigger Binding="{Binding SurroundedState}" Value="{x:Static local:TeamColor.Area1P}">
+                <DataTrigger Binding="{Binding SurroundedState}" Value="{x:Static local:TeamColor.Player1}">
                     <Setter Property="Foreground" Value="Blue"/>
                 </DataTrigger>
-                <DataTrigger Binding="{Binding SurroundedState}" Value="{x:Static local:TeamColor.Area2P}">
+                <DataTrigger Binding="{Binding SurroundedState}" Value="{x:Static local:TeamColor.Player2}">
                     <Setter Property="Foreground" Value="Red"/>
                 </DataTrigger>
                 <DataTrigger Binding="{Binding SurroundedState}" Value="{x:Static local:TeamColor.Both}">

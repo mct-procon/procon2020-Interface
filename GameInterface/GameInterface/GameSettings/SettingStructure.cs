@@ -15,6 +15,9 @@ namespace GameInterface.GameSettings
     {
         private ushort limitTime = 5;
 
+        /// <summary>
+        /// Whether enable self game conduction.
+        /// </summary>
         public bool IsEnableGameConduct => BoardCreation != BoardCreation.Server;
 
         /// <summary>
@@ -81,6 +84,9 @@ namespace GameInterface.GameSettings
         private byte turns = 60;
 
         private int agentsCount = 6;
+        /// <summary>
+        /// Count of Agents
+        /// </summary>
         public int AgentsCount {
             get => agentsCount;
             set {
@@ -180,6 +186,9 @@ namespace GameInterface.GameSettings
         }
 
         private MCTProcon31Protocol.Json.Match[] matches = null;
+        /// <summary>
+        /// Matches information
+        /// </summary>
         public MCTProcon31Protocol.Json.Match[] Matches {
             get => matches;
             set {
@@ -189,6 +198,9 @@ namespace GameInterface.GameSettings
         }
 
         private int selectedMatchIndex = -1;
+        /// <summary>
+        /// Selected match index
+        /// </summary>
         public int SelectedMatchIndex {
             get => selectedMatchIndex;
             set => RaisePropertyChanged(ref selectedMatchIndex, value);
@@ -200,6 +212,9 @@ namespace GameInterface.GameSettings
         public bool IsUseSameAI { get; set; } = false;
 
         private BoardSymmetry creationSymmetry = BoardSymmetry.XY;
+        /// <summary>
+        /// Board creation mode
+        /// </summary>
         public BoardSymmetry CreationSymmetry {
             get => creationSymmetry;
             set {
@@ -210,15 +225,18 @@ namespace GameInterface.GameSettings
             }
         }
 
+        /// <summary>
+        /// Create x-axis symmetric
+        /// </summary>
         public bool IsCreateX {
-            get => (creationSymmetry & BoardSymmetry.X) != 0;
+            get => creationSymmetry.HasFlag(BoardSymmetry.X);
             set {
                 if(value)
                 {
-                    if ((creationSymmetry & BoardSymmetry.Rotate) != 0)
+                    if (!creationSymmetry.HasFlag(BoardSymmetry.Rotate))
                         CreationSymmetry = BoardSymmetry.X;
                     else
-                        CreationSymmetry = creationSymmetry | BoardSymmetry.X;
+                        CreationSymmetry |= BoardSymmetry.X;
                 }
                 else
                 {
@@ -228,15 +246,18 @@ namespace GameInterface.GameSettings
             }
         }
 
+        /// <summary>
+        /// Create y-axis symmetric
+        /// </summary>
         public bool IsCreateY {
-            get => (creationSymmetry & BoardSymmetry.Y) != 0;
+            get => creationSymmetry.HasFlag(BoardSymmetry.Y);
             set {
                 if (value)
                 {
-                    if ((creationSymmetry & BoardSymmetry.Rotate) != 0)
+                    if (!creationSymmetry.HasFlag(BoardSymmetry.Rotate))
                         CreationSymmetry = BoardSymmetry.Y;
                     else
-                        CreationSymmetry = creationSymmetry | BoardSymmetry.Y;
+                        CreationSymmetry |= BoardSymmetry.Y;
                 }
                 else
                 {
@@ -246,6 +267,9 @@ namespace GameInterface.GameSettings
             }
         }
 
+        /// <summary>
+        /// Create rotation symmetric
+        /// </summary>
         public bool IsCreateRotate {
             get => creationSymmetry == BoardSymmetry.Rotate;
             set {
@@ -260,6 +284,7 @@ namespace GameInterface.GameSettings
         Random = 0, Server = 1, JsonFile = 2
     }
     
+    [Flags]
     public enum BoardSymmetry : byte
     {
         X = 1, Y = 2, XY = 3, Rotate = 4

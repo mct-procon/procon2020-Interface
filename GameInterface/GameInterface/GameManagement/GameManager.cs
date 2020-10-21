@@ -141,7 +141,7 @@ namespace GameInterface.GameManagement
 
         public void PlaceAgent(int playerNum, Point point)
         {
-            if(Data.Players[playerNum].AgentsCount < Data.AllAgentsCount){
+            if(Data.Players[playerNum].AgentsCount < Data.MaximumAgentsCount){
                 var agent = Data.Players[playerNum].Agents[Data.Players[playerNum].AgentsCount];
                 agent.Point = point;
                 Data.Players[playerNum].AgentsCount++;
@@ -154,30 +154,29 @@ namespace GameInterface.GameManagement
             Agent onAgent = GetOnAgent(point);
             if (onAgent != null)
             {
-                if(Data.SelectedAgent != null)
-                {
+                if (Data.SelectedAgent != null)
                     ExchangeAgent(Data.SelectedAgent, onAgent);
-                }
                 else
                     Data.SelectedAgent = onAgent;
-                return;
             }
-            if (Data.SelectedAgent != null)
+            else if (Data.SelectedAgent != null)
             {
                 WarpAgent(Data.SelectedAgent, point);
                 Data.SelectedAgent = null;
-                return;
             }
-            var color = Data.CellData[point.X, point.Y].AreaState;
-            var nextColor = (TeamColor)(((int)color + 1) % 3);
-            Data.CellData[point.X, point.Y].AreaState = nextColor;
-            Data.CellData[point.X, point.Y].SurroundedState = TeamColor.Free;
+            else
+            {
+                var color = Data.CellData[point.X, point.Y].AreaState;
+                var nextColor = (TeamColor)(((int)color + 1) % 3);
+                Data.CellData[point.X, point.Y].AreaState = nextColor;
+                Data.CellData[point.X, point.Y].SurroundedState = TeamColor.Free;
+            }
         }
 
         private Agent GetOnAgent(Point point)
         {
             for(int m = 0; m < App.PlayersCount; ++m)
-                for (int i = 0; i < Data.AllAgentsCount; i++)
+                for (int i = 0; i < Data.MaximumAgentsCount; i++)
                 {
                     var agent = Data.Players[m].Agents[i];
                     if (agent.Point == point)
@@ -190,8 +189,7 @@ namespace GameInterface.GameManagement
         {
             Data.CellData[agent.Point.X, agent.Point.Y].AgentState = TeamColor.Free;
             agent.Point = dest;
-            var nextPointColor =
-                agent.PlayerNum == 0 ? TeamColor.Area1P : TeamColor.Area2P;
+            var nextPointColor = agent.PlayerNum;
             Data.CellData[dest.X, dest.Y].AreaState = nextPointColor;
             Data.CellData[dest.X, dest.Y].AgentState = nextPointColor;
             return;
@@ -201,10 +199,10 @@ namespace GameInterface.GameManagement
         {
             if(agent0.PlayerNum != agent1.PlayerNum)
             {
-                Data.CellData[agent0.Point.X, agent0.Point.Y].AgentState = agent1.PlayerNum == 0 ? TeamColor.Area1P : TeamColor.Area2P;
-                Data.CellData[agent1.Point.X, agent1.Point.Y].AgentState = agent0.PlayerNum == 0 ? TeamColor.Area1P : TeamColor.Area2P;
-                Data.CellData[agent0.Point.X, agent0.Point.Y].AreaState = agent1.PlayerNum == 0 ? TeamColor.Area1P : TeamColor.Area2P;
-                Data.CellData[agent1.Point.X, agent1.Point.Y].AreaState = agent0.PlayerNum == 0 ? TeamColor.Area1P : TeamColor.Area2P;
+                Data.CellData[agent0.Point.X, agent0.Point.Y].AgentState = agent1.PlayerNum;
+                Data.CellData[agent1.Point.X, agent1.Point.Y].AgentState = agent0.PlayerNum;
+                Data.CellData[agent0.Point.X, agent0.Point.Y].AreaState = agent1.PlayerNum;
+                Data.CellData[agent1.Point.X, agent1.Point.Y].AreaState = agent0.PlayerNum;
             }
             var swp = agent0.Point;
             agent0.Point = agent1.Point;
@@ -216,7 +214,7 @@ namespace GameInterface.GameManagement
 
         private bool[] MoveAgents()
         {
-            var retVal = new bool[App.PlayersCount * Data.AllAgentsCount];
+            var retVal = new bool[App.PlayersCount * Data.MaximumAgentsCount];
             if (Data.IsEnableGameConduct)
             {
                 foreach (var player in Data.Players)
@@ -236,11 +234,11 @@ namespace GameInterface.GameManagement
                     TeamColor nextAreaState = Data.CellData[nextP.X, nextP.Y].AreaState;
                     ActionAgentToNextP(a, nextP, nextAreaState);
 
-                    Data.CellData[a.Point.X, a.Point.Y].AgentState = a.PlayerNum == 0 ? TeamColor.Area1P : TeamColor.Area2P;
-                    Data.CellData[a.Point.X, a.Point.Y].AreaState = a.PlayerNum == 0 ? TeamColor.Area1P : TeamColor.Area2P;
+                    Data.CellData[a.Point.X, a.Point.Y].AgentState = a.PlayerNum;
+                    Data.CellData[a.Point.X, a.Point.Y].AreaState = a.PlayerNum;
                     Data.CellData[a.Point.X, a.Point.Y].SurroundedState = TeamColor.Free;
                     Data.CellData[a.Point.X, a.Point.Y].AgentNum = a.AgentNum;
-                    retVal[a.PlayerNum * Data.AllAgentsCount + a.AgentNum] = true;
+                    retVal[a.PlayerNum.ToPlayerNum() * Data.MaximumAgentsCount + a.AgentNum] = true;
                 }
 
                 foreach (var player in Data.Players)
@@ -254,14 +252,14 @@ namespace GameInterface.GameManagement
             else
             {
                 for(int i = 0; i < App.PlayersCount; ++i)
-                    for(int j = 0; j < Data.AllAgentsCount; ++j)
+                    for(int j = 0; j < Data.MaximumAgentsCount; ++j)
                     {
                         if (Data.Players[i].Agents[j].AgentDirection == AgentDirection.None)
                         {
-                            retVal[i * Data.AllAgentsCount + j] = true;
+                            retVal[i * Data.MaximumAgentsCount + j] = true;
                             continue;
                         }
-                        retVal[i * Data.AllAgentsCount + j] = (Data.Players[i].Agents[j].GetNextPoint() == ToPoint(Network.ProconAPIClient.Instance.FieldState.Teams[i].Agents[j]));
+                        retVal[i * Data.MaximumAgentsCount + j] = (Data.Players[i].Agents[j].GetNextPoint() == ToPoint(Network.ProconAPIClient.Instance.FieldState.Teams[i].Agents[j]));
                     }
             }
             return retVal;
@@ -270,7 +268,7 @@ namespace GameInterface.GameManagement
         //naotti: 行動可能なエージェントのId(1p{0,1}, 2p{2,3})を返す。
         private List<Agent> GetActionableAgents()
         {
-            bool[] canMove = new bool[Data.AllAgentsCount * App.PlayersCount];     // canMove[i] = エージェントiは移動または配置をするか？
+            bool[] canMove = new bool[Data.MaximumAgentsCount * App.PlayersCount];     // canMove[i] = エージェントiは移動または配置をするか？
             bool[] canAction = new bool[canMove.Length];    // canAction[i] = エージェントiは移動または配置またはタイル除去をするか？
             List<Agent> existAgents = new List<Agent>();    // 配置されるor配置されているエージェント
 
@@ -294,7 +292,7 @@ namespace GameInterface.GameManagement
                 var nextP = agent.GetNextPoint();
                 if (!CheckIsPointInBoard(nextP)) { canMove[agent.AgentID] = false; continue; }
                 TeamColor nextAreaState = Data.CellData[nextP.X, nextP.Y].AreaState;
-                if ((agent.PlayerNum == 0 && nextAreaState == TeamColor.Area2P) || (agent.PlayerNum == 1 && nextAreaState == TeamColor.Area1P))
+                if ((agent.PlayerNum == TeamColor.Player1 && nextAreaState == TeamColor.Player2) || (agent.PlayerNum == TeamColor.Player2 && nextAreaState == TeamColor.Player1))
                     canMove[agent.AgentID] = false;
             }
 
@@ -352,7 +350,7 @@ namespace GameInterface.GameManagement
                     canAction[agent.AgentID] = false;
                 TeamColor nextAreaState = Data.CellData[nextP.X, nextP.Y].AreaState;
                 if(agent.State == AgentState.BePlaced)
-                    if ((agent.PlayerNum == 0 && nextAreaState == TeamColor.Area2P) || (agent.PlayerNum == 1 && nextAreaState == TeamColor.Area1P))
+                    if ((agent.PlayerNum == TeamColor.Player1 && nextAreaState == TeamColor.Player2) || (agent.PlayerNum == TeamColor.Player2 && nextAreaState == TeamColor.Player1))
                         canAction[agent.AgentID] = false;
             }
 
@@ -417,29 +415,12 @@ namespace GameInterface.GameManagement
             switch (agent.State)
             {
                 case AgentState.Move:
-                    switch (agent.PlayerNum)
-                    {
-                        case 0:
-                            if (nextAreaState != TeamColor.Area2P)
-                            {
-                                agent.Point = nextP;
-                            }
-                            else
-                            {
-                                Data.CellData[nextP.X, nextP.Y].AreaState = TeamColor.Free;
-                            }
-                            break;
-                        case 1:
-                            if (nextAreaState != TeamColor.Area1P)
-                            {
-                                agent.Point = nextP;
-                            }
-                            else
-                            {
-                                Data.CellData[nextP.X, nextP.Y].AreaState = TeamColor.Free;
-                            }
-                            break;
-                    }
+                    var against = agent.PlayerNum == TeamColor.Player1 ? TeamColor.Player2 : TeamColor.Player1;
+
+                    if(nextAreaState != against)
+                        agent.Point = nextP;
+                    else
+                        Data.CellData[nextP.X, nextP.Y].AreaState = TeamColor.Free;
                     break;
                 case AgentState.RemoveTile:
                     Data.CellData[nextP.X, nextP.Y].AreaState = TeamColor.Free;
@@ -471,7 +452,7 @@ namespace GameInterface.GameManagement
         {
             Console.WriteLine(decide.ToString());
             Data.Players[index].AgentsCount = decide.AgentsCount;
-            for (int i = 0; i < Data.AllAgentsCount; ++i)
+            for (int i = 0; i < Data.MaximumAgentsCount; ++i)
             {
                 AgentDirection dir = DirectionExtensions.CastPointToDir(decide.Agents[i]);
                 viewModel.Players[index].AgentViewModels[i].Data.AgentDirection = dir;

@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using MCTProcon31Protocol;
 using GameInterface.ViewModels;
+using static GameInterface.GameManagement.TeamColorUtil;
 
 namespace GameInterface.GameManagement
 {
@@ -43,7 +44,7 @@ namespace GameInterface.GameManagement
         public int BoardWidth { get; private set; }
         public Agent SelectedAgent { get; set; }
 
-        public int AllAgentsCount { get; set; } = 0;
+        public int MaximumAgentsCount { get; set; } = 0;
 
         public GameSettings.SettingStructure CurrentGameSettings { get; set; }
 
@@ -105,7 +106,7 @@ namespace GameInterface.GameManagement
             CellData = new Cell[fieldState.Width, fieldState.Height];
             for (int i = 0; i < fieldState.Width; ++i)
                 for (int j = 0; j < fieldState.Height; ++j)
-                    CellData[i, j] = new Cell(fieldState.Point[j, i]) { AreaState = fieldState.Tiled[j, i] == Network.ProconAPIClient.Instance.MatchData.TeamId ? TeamColor.Area1P : (fieldState.Tiled[j, i] == 0 ? TeamColor.Free : TeamColor.Area2P) };
+                    CellData[i, j] = new Cell(fieldState.Point[j, i]) { AreaState = fieldState.Tiled[j, i] == Network.ProconAPIClient.Instance.MatchData.TeamId ? TeamColor.Player1 : (fieldState.Tiled[j, i] == 0 ? TeamColor.Free : TeamColor.Player2) };
         }
 
         void InitCellData(GameSettings.SettingStructure settings)
@@ -115,21 +116,13 @@ namespace GameInterface.GameManagement
                 int randWidth = (BoardWidth + 1) / 2;
                 CellData = new Cell[BoardWidth, BoardHeight];
                 for (int i = 0; i < BoardWidth; i++)
-                {
                     for (int j = 0; j < BoardHeight; j++)
-                    {
                         if (i < randWidth)
-                        {
                             //40%の確率で値を0未満にする
-                            if (rand.Next(1, 100) > 40)
-                                CellData[i, j] = new Cell(rand.Next(1, 16));
-                            else
-                                CellData[i, j] = new Cell(rand.Next(-16, 0));
-                        }
+                            CellData[i, j] = new Cell(rand.Next(1, 100) > 40 ? rand.Next(1, 16) : rand.Next(-16, 0));
                         else
+                            //対称
                             CellData[i, j] = new Cell(CellData[i >= randWidth ? BoardWidth - 1 - i : i, BoardHeight - 1 - j].Score);
-                    }
-                }
             }
             else
             {
@@ -157,6 +150,9 @@ namespace GameInterface.GameManagement
             }
         }
 
+        /// <summary>
+        /// Symmetric agent placing, not used on 2020 rule.
+        /// </summary>
         Point GenerateSymmetryPosition(Point p, Point boardSize, GameSettings.BoardSymmetry symmetry)
         {
             if(symmetry == GameSettings.BoardSymmetry.Rotate)
@@ -167,14 +163,14 @@ namespace GameInterface.GameManagement
         void SetAgents(GameSettings.SettingStructure settings)
         {
             var fieldState = Network.ProconAPIClient.Instance.FieldState;
-            AllAgentsCount = fieldState.Teams[0].Agents.Length;
+            MaximumAgentsCount = fieldState.Teams[0].Agents.Length;
             for (int p = 0; p < Players.Length; p++)
             {
                 Players[p].Agents = new Agent[settings.AgentsCount];
                 viewModel.Players[p].AgentViewModels = new UserOrderPanelViewModel[settings.AgentsCount];
                 for (int i = 0; i < Players[p].Agents.Length; ++i)
                 {
-                    Players[p].Agents[i] = new Agent(PlayerNum: p, AgentNum: i, AgentsCount: settings.AgentsCount);
+                    Players[p].Agents[i] = new Agent(PlayerNum: p.ToTeamColor(), AgentNum: i, AgentsCount: settings.AgentsCount);
                     viewModel.Players[p].AgentViewModels[i] = new UserOrderPanelViewModel(Players[p].Agents[i]);
                 }
             }
@@ -182,14 +178,14 @@ namespace GameInterface.GameManagement
 
         void InitAgents(GameSettings.SettingStructure settings)
         {
-            AllAgentsCount = settings.AgentsCount;
+            MaximumAgentsCount = settings.AgentsCount;
             for (int p = 0; p < Players.Length; p++)
             {
                 Players[p].Agents = new Agent[settings.AgentsCount];
                 viewModel.Players[p].AgentViewModels = new UserOrderPanelViewModel[settings.AgentsCount];
                 for (int i = 0; i < Players[p].Agents.Length; ++i)
                 {
-                    Players[p].Agents[i] = new Agent(PlayerNum: p, AgentNum: i, AgentsCount: settings.AgentsCount);
+                    Players[p].Agents[i] = new Agent(PlayerNum: p.ToTeamColor(), AgentNum: i, AgentsCount: settings.AgentsCount);
                     viewModel.Players[p].AgentViewModels[i] = new UserOrderPanelViewModel(Players[p].Agents[i]);
                 }
             }
