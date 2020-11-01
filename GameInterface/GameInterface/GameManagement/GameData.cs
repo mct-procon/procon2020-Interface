@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using MCTProcon31Protocol;
 using GameInterface.ViewModels;
 using static GameInterface.GameManagement.TeamColorUtil;
+using MCTProcon31Protocol.Json.Matches;
 
 namespace GameInterface.GameManagement
 {
@@ -55,24 +56,52 @@ namespace GameInterface.GameManagement
             viewModel.Players = new PlayerWindowViewModel[Players.Length];
         }
 
-        public async Task<bool> InitGameData(GameSettings.SettingStructure settings)
+        public Task<bool> InitGameData(GameSettings.SettingStructure settings)
         {
             IsEnableGameConduct = settings.IsEnableGameConduct;
             CurrentGameSettings = settings;
             SecondCount = 0;
             NowTurn = 1;
 
-            if (settings.BoardCreation == GameSettings.BoardCreation.Server)
+            return settings.BoardCreation switch
             {
-                if ((await GameSettings.WaitForServerDialog.ShowDialogEx()) == false)
-                    return false;
-                settings.Turns = (byte)Network.ProconAPIClient.Instance.MatchData.Turns;
-                settings.LimitTime = (ushort)(Network.ProconAPIClient.Instance.MatchData.IntervalMilliseconds / 1000);
-                settings.IsAutoSkip = true;
-                settings.BoardHeight = (byte)Network.ProconAPIClient.Instance.FieldState.Height;
-                settings.BoardWidth = (byte)Network.ProconAPIClient.Instance.FieldState.Width;
-                settings.AgentsCount = Network.ProconAPIClient.Instance.FieldState.Teams[0].Agents.Length;
-            }
+                GameSettings.BoardCreation.Server => InitGameDataWithServer(settings),
+                _ => Task.FromResult(InitGameDataWithRandom(settings))
+            };
+        }
+
+        bool InitGameDataWithRandom(GameSettings.SettingStructure settings)
+        {
+            BoardHeight = settings.BoardHeight;
+            BoardWidth = settings.BoardWidth;
+            FinishTurn = settings.Turns;
+            TimeLimitSeconds = settings.LimitTime;
+            IsAutoSkipTurn = settings.IsAutoSkip;
+
+            Players[0] = new Player();
+            Players[1] = new Player();
+
+            for (int i = 0; i < Players.Length; ++i)
+                viewModel.Players[i] = new PlayerWindowViewModel(Players[i], i + 1);
+            InitCellData(settings);
+            InitAgents(settings);
+            return true;
+        }
+
+        async Task<bool> InitGameDataWithServer(GameSettings.SettingStructure settings)
+        {
+            if (settings.Matches is null || !(0 < settings.SelectedMatchIndex && settings.SelectedMatchIndex < settings.Matches.Length))
+                throw new InvalidOperationException();
+            var matchInfoResult = await GameSettings.WaitForServerDialog.ShowDialogEx(settings.ApiClient, settings.Matches[settings.SelectedMatchIndex]);
+            if (!matchInfoResult.IsSuccess)
+                return false;
+            var matchInfo = matchInfoResult.Value;
+            settings.Turns = (byte)matchInfo.Turn;
+            settings.LimitTime = (ushort)(settings.Matches[settings.SelectedMatchIndex].OperationMilliseconds / 1000); // TODO:Improve
+            settings.IsAutoSkip = true;
+            settings.BoardHeight = (byte)matchInfo.Height;
+            settings.BoardWidth = (byte)matchInfo.Width;
+            settings.AgentsCount = matchInfo.Teams[0].AgentCount;
 
             BoardHeight = settings.BoardHeight;
             BoardWidth = settings.BoardWidth;
@@ -86,27 +115,17 @@ namespace GameInterface.GameManagement
             for (int i = 0; i < Players.Length; ++i)
                 viewModel.Players[i] = new PlayerWindowViewModel(Players[i], i + 1);
 
-            if (settings.BoardCreation == GameSettings.BoardCreation.Random)
-            {
-                InitCellData(settings);
-                InitAgents(settings);
-                return true;
-            }
-            else
-            {
-                SetCellData(settings);
-                SetAgents(settings);
-                return true;
-            }
+            SetCellData(settings, matchInfo);
+            InitAgents(settings);
+            return true;
         }
 
-        void SetCellData(GameSettings.SettingStructure settings)
+        void SetCellData(GameSettings.SettingStructure settings, Match matchInfo)
         {
-            var fieldState = Network.ProconAPIClient.Instance.FieldState;
-            CellData = new Cell[fieldState.Width, fieldState.Height];
-            for (int i = 0; i < fieldState.Width; ++i)
-                for (int j = 0; j < fieldState.Height; ++j)
-                    CellData[i, j] = new Cell(fieldState.Point[j, i]) { AreaState = fieldState.Tiled[j, i] == Network.ProconAPIClient.Instance.MatchData.TeamId ? TeamColor.Player1 : (fieldState.Tiled[j, i] == 0 ? TeamColor.Free : TeamColor.Player2) };
+            CellData = new Cell[matchInfo.Width, matchInfo.Height];
+            for (int i = 0; i < CellData.GetLength(0); ++i)
+                for (int j = 0; j < CellData.GetLength(1); ++j)
+                    CellData[i, j] = new Cell(matchInfo.Areas[j, i]);
         }
 
         void InitCellData(GameSettings.SettingStructure settings)
@@ -158,22 +177,6 @@ namespace GameInterface.GameManagement
             if(symmetry == GameSettings.BoardSymmetry.Rotate)
                 return new Point( (byte)(boardSize.X - 1 - p.X), (byte)(boardSize.Y - 1 - p.Y));
             return new Point((symmetry & GameSettings.BoardSymmetry.Y) != 0 ? (byte)(boardSize.X - 1 - p.X) : p.X, (symmetry & GameSettings.BoardSymmetry.X) != 0 ? (byte)(boardSize.Y - 1 - p.Y) : p.Y);
-        }
-
-        void SetAgents(GameSettings.SettingStructure settings)
-        {
-            var fieldState = Network.ProconAPIClient.Instance.FieldState;
-            MaximumAgentsCount = fieldState.Teams[0].Agents.Length;
-            for (int p = 0; p < Players.Length; p++)
-            {
-                Players[p].Agents = new Agent[settings.AgentsCount];
-                viewModel.Players[p].AgentViewModels = new UserOrderPanelViewModel[settings.AgentsCount];
-                for (int i = 0; i < Players[p].Agents.Length; ++i)
-                {
-                    Players[p].Agents[i] = new Agent(PlayerNum: p.ToTeamColor(), AgentNum: i, AgentsCount: settings.AgentsCount);
-                    viewModel.Players[p].AgentViewModels[i] = new UserOrderPanelViewModel(Players[p].Agents[i]);
-                }
-            }
         }
 
         void InitAgents(GameSettings.SettingStructure settings)

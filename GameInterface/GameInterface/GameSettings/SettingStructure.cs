@@ -13,6 +13,25 @@ namespace GameInterface.GameSettings
     /// </summary>
     public class SettingStructure : ViewModels.NotifyDataErrorInfoViewModel
     {
+        public MCTProcon31Protocol.Json.ProconAPIClient ApiClient { get; private set; } = null;
+        public void CreateClient()
+        {
+            if (ApiClient is null)
+                ApiClient = new MCTProcon31Protocol.Json.ProconAPIClient(serverToken, endPoint);
+            else
+                ApiClient.ChangeTokenAndEndPoint(serverToken, endPoint);
+        }
+        public void DeleteClient()
+        {
+            Task.Run(() =>
+            {
+                if (ApiClient == null) return;
+                var client = ApiClient;
+                ApiClient = null;
+                client.Dispose();
+            });
+        }
+
         private ushort limitTime = 5;
 
         /// <summary>
@@ -166,30 +185,32 @@ namespace GameInterface.GameSettings
             set => RaisePropertyChanged(ref isAutoGoNextGame, value);
         }
 
-        public string HostName {
-            get => Network.ProconAPIClient.Information.HostName;
+        private string endPoint = "http://";
+        public string EndPoint {
+            get => endPoint;
             set {
-                Network.ProconAPIClient.Information.HostName = value;
+                if (value.StartsWith("http://"))
+                    endPoint = value;
+                else
+                    endPoint = "http://" + value;
                 RaisePropertyChanged();
             }
         }
 
+        private string serverToken = "";
         /// <summary>
         /// Token of Server
         /// </summary>
         public string ServerToken {
-            get => Network.ProconAPIClient.Information.AuthenticationID;
-            set {
-                Network.ProconAPIClient.Information.AuthenticationID = value;
-                RaisePropertyChanged();
-            }
+            get => serverToken;
+            set => RaisePropertyChanged(ref serverToken, value);
         }
 
-        private MCTProcon31Protocol.Json.Match[] matches = null;
+        private MCTProcon31Protocol.Json.Matches.MatchInformation[] matches = null;
         /// <summary>
         /// Matches information
         /// </summary>
-        public MCTProcon31Protocol.Json.Match[] Matches {
+        public MCTProcon31Protocol.Json.Matches.MatchInformation[] Matches {
             get => matches;
             set {
                 RaisePropertyChanged(ref matches, value);

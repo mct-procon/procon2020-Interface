@@ -125,14 +125,19 @@ namespace GameInterface.GameSettings
             switch (DataContext.BoardCreation)
             {
                 case BoardCreation.Server:
-                    if (DataContext.SelectedMatchIndex == -1)
+                    if(DataContext.Matches is null)
+                    {
+                        MessageBox.Show("試合情報を取得して，試合を選択しましたか？", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+                        return;
+                    }
+                    if (DataContext.SelectedMatchIndex < 0 || DataContext.SelectedMatchIndex >= DataContext.Matches.Length)
                     {
                         MessageBox.Show("試合IDを正しく選択してください．", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
                         return;
                     }
-                    Network.ProconAPIClient.Instance.SetMatchData(DataContext.Matches[DataContext.SelectedMatchIndex]);
-                    MessageBox.Show("未実装です．", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                    return;
+                    break;
+                default:
+                    DataContext.DeleteClient();
                     break;
             }
             DialogResult = true;
@@ -158,7 +163,12 @@ namespace GameInterface.GameSettings
         {
             try
             {
-                DataContext.Matches = await Network.ProconAPIClient.Instance.GetMatches();
+                DataContext.CreateClient();
+                var matches = await DataContext.ApiClient.Matches();
+                if (matches.IsSuccess)
+                    DataContext.Matches = matches.Value._value;
+                else
+                    MessageBox.Show("Http Action failed.\nStatus Code:" + matches.HTTPReturnCode.ToString(), "Error Occured!", MessageBoxButton.OK);
             }
             catch(Exception ex)
             {

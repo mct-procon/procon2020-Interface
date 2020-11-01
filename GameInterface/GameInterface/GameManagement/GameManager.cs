@@ -119,8 +119,9 @@ namespace GameInterface.GameManagement
                 Data.NowTurn++;
                 if (Data.IsAutoSkipTurn)
                 {
-                    if(!Data.IsEnableGameConduct)
-                        await Network.ProconAPIClient.Instance.GetState();
+                    //TODO
+                    //if(!Data.IsEnableGameConduct)
+                    //    await Network.ProconAPIClient.Instance.GetState();
                     StartTurn();
                 }
             }
@@ -211,8 +212,6 @@ namespace GameInterface.GameManagement
 
         }
 
-        private Point ToPoint(MCTProcon31Protocol.Json.Agent agent) => new Point((byte)agent.X, (byte)agent.Y);
-
         private bool[] MoveAgents()
         {
             var retVal = new bool[App.PlayersCount * Data.MaximumAgentsCount];
@@ -254,7 +253,8 @@ namespace GameInterface.GameManagement
                             retVal[i * Data.MaximumAgentsCount + j] = true;
                             continue;
                         }
-                        retVal[i * Data.MaximumAgentsCount + j] = (Data.Players[i].Agents[j].GetNextPoint() == ToPoint(Network.ProconAPIClient.Instance.FieldState.Teams[i].Agents[j]));
+                        //TODO
+                        //retVal[i * Data.MaximumAgentsCount + j] = (Data.Players[i].Agents[j].GetNextPoint() == ToPoint(Network.ProconAPIClient.Instance.FieldState.Teams[i].Agents[j]));
                     }
             }
             return retVal;
