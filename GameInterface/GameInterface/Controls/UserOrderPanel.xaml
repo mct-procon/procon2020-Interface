@@ -29,7 +29,7 @@
                         <Setter Property="Foreground" Value="White"/>
                     </Style>
                 </StackPanel.Resources>
-                <Button Padding="2,0,2,0" IsEnabled="{Binding Data.IsNonPlaced}" Click="PlaceCancelClicked">
+                <Button Padding="2,0,2,0" IsEnabled="{Binding Data.IsPlacePending}" Click="PlaceCancelClicked">
                     <Path Margin="0" StrokeThickness="2" Data="M0,0 10,10 M0,10 10,0" Stroke="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}, Path=Foreground}"/>
                 </Button>
                 <TextBlock Text="{Binding Data.AgentNum}"/>

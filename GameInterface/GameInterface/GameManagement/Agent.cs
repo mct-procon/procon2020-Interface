@@ -20,6 +20,7 @@ namespace GameInterface.GameManagement
         public int AgentID { get; }
         public int AgentNum { get; }
         public bool IsPlaced => state.HasFlag(AgentState.Move);
+        public bool IsPlacePending => state == AgentState.PlacePending;
 
         // IsOnField = false かつ State = AgentState.BePlacedのときは
         // 今から配置する予定の座標を示し, IsOnField = trueのときは現在座標を示す
@@ -39,13 +40,16 @@ namespace GameInterface.GameManagement
         public AgentState State
         {
             get => state;
-            set => RaisePropertyChanged(ref state, value);
+            set {
+                RaisePropertyChanged(ref state, value);
+                RaisePropertyChanged(nameof(IsPlacePending));
+            }
         }
 
         public Point GetNextPoint()
         {
             Debug.Assert(this.State != AgentState.NonPlaced);
-            if(this.State == AgentState.PlacePending)
+            if(this.IsPlacePending)
                 return this.Point;
             byte x = this.Point.X, y = this.Point.Y;
             switch((AgentDirection)((uint)AgentDirection & 0b11))
