@@ -116,9 +116,12 @@ namespace GameInterface
 
         private async void NewGameMenu_Clicked(object sender, RoutedEventArgs e)
         {
-            viewModel.gameManager.TimerStop();
             if (viewModel != null && viewModel.gameManager != null && viewModel.gameManager.Data != null && viewModel.gameManager.Data.IsGameStarted && (viewModel.gameManager.Data.NowTurn < viewModel.gameManager.Data.FinishTurn))
+            {
+                viewModel.gameManager.TimerStop();
                 viewModel.gameManager.Server.SendGameEnd();
+                viewModel.gameManager.Data.CurrentGameSettings.DeleteClient();
+            }
             if (GameSettings.GameSettingDialog.ShowDialog(out var result))
             {
                 Player1Window?.Close();
