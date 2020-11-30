@@ -155,13 +155,8 @@ namespace GameInterface.GameManagement
                     for (int j = 0; j < BoardHeight; j++)
                     {
                         if (i < randWidth && j < randHeight)
-                        {
                             //40%の確率で値を0未満にする
-                            if (rand.Next(1, 100) > 40)
-                                CellData[i, j] = new Cell(rand.Next(1, 16));
-                            else
-                                CellData[i, j] = new Cell(rand.Next(-16, 0));
-                        }
+                            CellData[i, j] = new Cell(rand.Next(0, 100) > 40 ? rand.Next(1, 16) : rand.Next(-16, 0));
                         else
                             CellData[i, j] = new Cell(CellData[i >= randWidth ? BoardWidth - 1 - i : i, j >= randHeight ? BoardHeight - 1 - j : j].Score);
                     }
