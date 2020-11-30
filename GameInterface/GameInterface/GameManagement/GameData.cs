@@ -90,7 +90,7 @@ namespace GameInterface.GameManagement
 
         async Task<bool> InitGameDataWithServer(GameSettings.SettingStructure settings)
         {
-            if (settings.Matches is null || !(0 < settings.SelectedMatchIndex && settings.SelectedMatchIndex < settings.Matches.Length))
+            if (settings.Matches is null || !(0 <= settings.SelectedMatchIndex && settings.SelectedMatchIndex < settings.Matches.Length))
                 throw new InvalidOperationException();
             var matchInfoResult = await GameSettings.WaitForServerDialog.ShowDialogEx(settings.ApiClient, settings.Matches[settings.SelectedMatchIndex]);
             if (!matchInfoResult.IsSuccess)

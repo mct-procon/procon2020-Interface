@@ -164,7 +164,13 @@ namespace GameInterface.GameSettings
             try
             {
                 DataContext.CreateClient();
-                var matches = await DataContext.ApiClient.Matches();
+                var me = await DataContext.ApiClient.Me();
+                if (!me.IsSuccess)
+                {
+                    MessageBox.Show("Failed to get team information.", "Error Occured!", MessageBoxButton.OK);
+                    return;
+                }
+                var matches = await DataContext.ApiClient.TeamMatches(me.Value);
                 if (matches.IsSuccess)
                     DataContext.Matches = matches.Value._value;
                 else
