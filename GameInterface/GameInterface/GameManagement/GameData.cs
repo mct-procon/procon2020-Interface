@@ -61,7 +61,7 @@ namespace GameInterface.GameManagement
             IsEnableGameConduct = settings.IsEnableGameConduct;
             CurrentGameSettings = settings;
             SecondCount = 0;
-            NowTurn = 1;
+            NowTurn = -1;
 
             return settings.BoardCreation switch
             {
@@ -96,7 +96,7 @@ namespace GameInterface.GameManagement
             if (!matchInfoResult.IsSuccess)
                 return false;
             var matchInfo = matchInfoResult.Value;
-            settings.Turns = (byte)matchInfo.Turn;
+            settings.Turns = (byte)settings.Matches[settings.SelectedMatchIndex].Turns;
             settings.LimitTime = (ushort)(settings.Matches[settings.SelectedMatchIndex].OperationMilliseconds / 1000); // TODO:Improve
             settings.IsAutoSkip = true;
             settings.BoardHeight = (byte)matchInfo.Height;

@@ -7,13 +7,16 @@ using MCTProcon31Protocol;
 using GameInterface.ViewModels;
 using System.Threading.Tasks;
 using System.Diagnostics;
+using System.Threading;
 
 namespace GameInterface.GameManagement
 {
     public class GameManager
     {
         public GameData Data;
+        public MCTProcon31Protocol.Json.Matches.Match CurrentMatchState;
         internal Server Server;
+        private Thread CommunicationThread;
         private DispatcherTimer dispatcherTimer;
         public MainWindowViewModel viewModel;
         private MainWindow mainWindow;
@@ -24,6 +27,8 @@ namespace GameInterface.GameManagement
             this.Data = new GameData(_viewModel);
             this.Server = new Server(this);
         }
+
+        public MCTProcon31Protocol.Json.Matches.MatchInformation CurrentMatchInfo => Data.CurrentGameSettings.Matches[Data.CurrentGameSettings.SelectedMatchIndex];
 
         public void StartGame()
         {
@@ -40,15 +45,8 @@ namespace GameInterface.GameManagement
             Data.IsGameStarted = true;
         }
 
-        public void EndGame()
-        {
-            TimerStop();
-        }
-
-        public void PauseGame()
-        {
-            Data.IsPause = true;
-        }
+        public void EndGame() => TimerStop();
+        public void PauseGame() => Data.IsPause = true;
 
         public void RerunGame()
         {
@@ -64,15 +62,8 @@ namespace GameInterface.GameManagement
             return true;
         }
 
-        public void TimerStop()
-        {
-            dispatcherTimer?.Stop();
-        }
-
-        public void TimerResume()
-        {
-            dispatcherTimer?.Start();
-        }
+        public void TimerStop() => dispatcherTimer?.Stop();
+        public void TimerResume() => dispatcherTimer?.Start();
 
         private void InitDispatcherTimer()
         {
@@ -87,43 +78,89 @@ namespace GameInterface.GameManagement
         //一秒ごとに呼ばれる
         private void DispatcherTimer_Tick(object sender, EventArgs e)
         {
-            Update().ContinueWith((t) => Draw(), TaskScheduler.Current);
+            Update();
+            Draw();
         }
 
-        private async Task Update()
+        private void Update()
         {
             if (!Data.IsNextTurnStart) return;
             Data.SecondCount++;
-            if (Data.SecondCount == Data.TimeLimitSeconds || Server.IsDecidedReceived.All(b => b))
+            if (Data.SecondCount >= Data.TimeLimitSeconds || Server.IsDecidedReceived.All(b => b))
             {
                 Data.IsNextTurnStart = false;
-                await EndTurn();
+                EndTurn();
             }
         }
 
         public void StartTurn()
         {
-            Data.IsNextTurnStart = true;
-            var movable = MoveAgents();
-            GetScore();
-            Data.SecondCount = 0;
-            Server.SendTurnStart(movable);
+            if (Data.IsEnableGameConduct)
+            {
+                Data.IsNextTurnStart = true;
+                var movable = MoveAgents();
+                GetScore();
+                Data.SecondCount = 0;
+                Data.NowTurn++;
+                Server.SendTurnStart(movable);
+            }
+            else
+            {
+                dispatcherTimer.Stop();
+                if (!(CommunicationThread is null) && CommunicationThread.ThreadState == System.Threading.ThreadState.Running) return; // thread is running
+                var ts = new ThreadStart(async () =>
+                {
+                    System.Diagnostics.Debug.WriteLine("CALLED!");
+                    int retries = 0;
+                retry:
+                    {
+                        var res = await Data.CurrentGameSettings.ApiClient.Match(this.CurrentMatchInfo);
+                        if (res.IsSuccess && res.Value.Turn >= Data.NowTurn) // SUCCESS and turn is NOT past.
+                        {
+                            System.Diagnostics.Debug.WriteLine("YEY!");
+                            this.CurrentMatchState = res.Value;
+                            goto end;
+                        }
+                        retries++;
+                        if (retries > 10)
+                        {
+                            bool abort = false;
+                            await mainWindow.Dispatcher.BeginInvoke(() =>
+                            {
+                                abort = System.Windows.MessageBox.Show("Have failed connection.\nDo you want to disconnect?\nError Code:" + res.HTTPReturnCode, "Failed communication 10 times.", System.Windows.MessageBoxButton.YesNo) == System.Windows.MessageBoxResult.Yes;
+                            });
+                            if (abort)
+                                return;
+                            retries = 0;
+                        }
+                        await Task.Delay(100);
+                        goto retry;
+                    }
+                end:
+                    await mainWindow.Dispatcher.BeginInvoke(() =>
+                    {
+                        dispatcherTimer.Start();
+                        Data.IsNextTurnStart = true;
+                        var movable = MoveAgents();
+                        GetScore();
+                        Data.SecondCount = 0;
+                        Data.NowTurn++;
+                        Server.SendTurnStart(movable);
+                    });
+                });
+                CommunicationThread = new Thread(ts);
+                CommunicationThread.Start();
+            }
         }
 
-        public async Task EndTurn()
+        public void EndTurn()
         {
             if (!Data.IsGameStarted) return;
             Server.SendTurnEnd();
             if (Data.NowTurn <= Data.FinishTurn)
             {
-                Data.NowTurn++;
                 if (Data.IsAutoSkipTurn)
-                {
-                    //TODO
-                    //if(!Data.IsEnableGameConduct)
-                    //    await Network.ProconAPIClient.Instance.GetState();
                     StartTurn();
-                }
             }
             else
             {
@@ -132,9 +169,8 @@ namespace GameInterface.GameManagement
                 if (Data.CurrentGameSettings.IsAutoGoNextGame && Data.CurrentGameSettings.IsEnableGameConduct)
                 {
                     Data.CurrentGameSettings.IsUseSameAI = true;
-                    var settings = Data.CurrentGameSettings;
                     mainWindow.ShotAndSave();
-                    mainWindow.InitGame(settings).Wait();
+                    mainWindow.InitGame(Data.CurrentGameSettings).Wait();
                     StartGame();
                 }
             }
@@ -241,7 +277,6 @@ namespace GameInterface.GameManagement
                 foreach (var p in Data.Players)
                     foreach (var a in p.Agents)
                         if(a.State.HasFlag(AgentState.Move)) a.State = AgentState.Move;
-
             }
             else
             {
@@ -397,9 +432,6 @@ namespace GameInterface.GameManagement
 
         private void GetScore()
         {
-            //for (int x = 0; x < Data.CellData.GetLength(0); ++x)
-            //    for (int y = 0; y < Data.CellData.GetLength(1); ++y)
-            //        Data.CellData[x, y].SurroundedState = TeamColor.Free;
             for (int i = 0; i < App.PlayersCount; i++)
                 viewModel.Players[i].Score = ScoreCalculator.CalcScore(i, Data.CellData);
         }
@@ -416,8 +448,6 @@ namespace GameInterface.GameManagement
                     break;
                 case AgentState.RemoveTile:
                     Data.CellData[nextP.X, nextP.Y].AreaState = TeamColor.Free;
-                    break;
-                default:
                     break;
             }
             agent.AgentDirection = AgentDirection.None;

@@ -73,9 +73,13 @@ namespace GameInterface.GameSettings
             {
                 this.Result = await Client.Match(SelectedMatch);
                 if (Result.IsSuccess)
+                {
+                    timer.Stop();
                     DialogResult = true;
+                }
                 else if (Result.HTTPReturnCode != 425)
                 {
+                    timer.Stop();
                     MessageBox.Show("HTTP Connection error.\nError Code: " + Result.HTTPReturnCode.ToString(), "Connection Failed", MessageBoxButton.OK, MessageBoxImage.Information);
                     DialogResult = false;
                 }
