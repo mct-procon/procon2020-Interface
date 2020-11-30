@@ -47,15 +47,8 @@ namespace GameInterface.GameSettings
             }
         }
 
-        private void P1UserToggle_Checked(object sender, RoutedEventArgs e)
-        {
-            DataContext.Port1P = 0;
-        }
-
-        private void P1AIToggle_Checked(object sender, RoutedEventArgs e)
-        {
-            Set1PPort();
-        }
+        private void P1UserToggle_Checked(object sender, RoutedEventArgs e) => DataContext.Port1P = 0;
+        private void P1AIToggle_Checked(object sender, RoutedEventArgs e) => Set1PPort();
 
         private void Set1PPort()
         {
@@ -75,15 +68,8 @@ namespace GameInterface.GameSettings
                 ErrorSet(P1PortBox, P1PortBoxErrorMessage, "10000～65535の整数を入力してください．");
         }
 
-        private void P2UserToggle_Checked(object sender, RoutedEventArgs e)
-        {
-            DataContext.Port2P = 0;
-        }
-
-        private void P2AIToggle_Checked(object sender, RoutedEventArgs e)
-        {
-            Set2PPort();
-        }
+        private void P2UserToggle_Checked(object sender, RoutedEventArgs e) => DataContext.Port2P = 0;
+        private void P2AIToggle_Checked(object sender, RoutedEventArgs e) => Set2PPort();
 
         private void Set2PPort()
         {
@@ -110,15 +96,8 @@ namespace GameInterface.GameSettings
             messageBlock.Visibility = Visibility.Visible;
         }
 
-        private void P1PortBox_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            Set1PPort();
-        }
-
-        private void P2PortBox_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            Set2PPort();
-        }
+        private void P1PortBox_TextChanged(object sender, TextChangedEventArgs e) => Set1PPort();
+        private void P2PortBox_TextChanged(object sender, TextChangedEventArgs e) => Set2PPort();
 
         private void OkButton_Click(object sender, RoutedEventArgs e)
         {
@@ -144,20 +123,9 @@ namespace GameInterface.GameSettings
             Close();
         }
 
-        private void WidthBox_RandomButton_Click(object sender, RoutedEventArgs e)
-        {
-            DataContext.BoardWidth = (byte)randomer.Next(4, 13);
-        }
-
-        private void HeightBox_RandomButton_Click(object sender, RoutedEventArgs e)
-        {
-            DataContext.BoardHeight = (byte)randomer.Next(4, 13);
-        }
-
-        private void AgentBox_RandomButton_Click(object sender, RoutedEventArgs e)
-        {
-            DataContext.AgentsCount = randomer.Next(2, 8);
-        }
+        private void WidthBox_RandomButton_Click(object sender, RoutedEventArgs e) => DataContext.BoardWidth = (byte)randomer.Next(4, 13);
+        private void HeightBox_RandomButton_Click(object sender, RoutedEventArgs e) => DataContext.BoardHeight = (byte)randomer.Next(4, 13);
+        private void AgentBox_RandomButton_Click(object sender, RoutedEventArgs e) => DataContext.AgentsCount = randomer.Next(2, 8);
 
         private async void GetBattles(object sender, RoutedEventArgs e)
         {
