@@ -45,7 +45,7 @@
                     </ContextMenu>
                 </Button.ContextMenu>
             </Button>
-            <TextBox Text="{Binding TimeLimitSeconds}" DockPanel.Dock="Right" Width="50" Margin="2"/>
+            <TextBox Text="{Binding TimeLimitMilliseconds}" DockPanel.Dock="Right" Width="50" Margin="2"/>
             <Button x:Name="SkipButton"   DockPanel.Dock="Right" Content="SKIP" Click="SkipButton_Click" Width="80" Margin="2"/>
             <Button x:Name="RequestButton"  DockPanel.Dock="Right" HorizontalAlignment="Right" Content="REQUEST" Click="RequestButton_Click" Width="80" Margin="2"/>
         </DockPanel>

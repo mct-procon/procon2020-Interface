@@ -15,7 +15,8 @@ namespace GameInterface.GameManagement
     public class GameData
     {
         public byte FinishTurn { get; set; } = 60;
-        public int TimeLimitSeconds { get; set; } = 5;
+        public int TimeLimitMilliseconds { get; set; } = 5000;
+        public DateTime LastTime { get; set; }
 
         private MainWindowViewModel viewModel;
         private System.Random rand = new System.Random();
@@ -34,7 +35,6 @@ namespace GameInterface.GameManagement
         public Player[] Players { get; private set; } = null;
 
         //----------------------------------------
-        public int SecondCount { get; set; }
         public bool IsGameStarted { get; set; } = false;
         public bool IsNextTurnStart { get; set; } = true;
         public bool IsAutoSkipTurn { get; set; }
@@ -60,7 +60,6 @@ namespace GameInterface.GameManagement
         {
             IsEnableGameConduct = settings.IsEnableGameConduct;
             CurrentGameSettings = settings;
-            SecondCount = 0;
             NowTurn = -1;
 
             return settings.BoardCreation switch
@@ -75,7 +74,7 @@ namespace GameInterface.GameManagement
             BoardHeight = settings.BoardHeight;
             BoardWidth = settings.BoardWidth;
             FinishTurn = settings.Turns;
-            TimeLimitSeconds = settings.LimitTime;
+            TimeLimitMilliseconds = settings.LimitTime;
             IsAutoSkipTurn = settings.IsAutoSkip;
 
             Players[0] = new Player();
@@ -97,7 +96,7 @@ namespace GameInterface.GameManagement
                 return false;
             var matchInfo = matchInfoResult.Value;
             settings.Turns = (byte)settings.Matches[settings.SelectedMatchIndex].Turns;
-            settings.LimitTime = (ushort)(settings.Matches[settings.SelectedMatchIndex].OperationMilliseconds / 1000); // TODO:Improve
+            settings.LimitTime = settings.Matches[settings.SelectedMatchIndex].OperationMilliseconds; // TODO:Improve
             settings.IsAutoSkip = true;
             settings.BoardHeight = (byte)matchInfo.Height;
             settings.BoardWidth = (byte)matchInfo.Width;
@@ -106,7 +105,7 @@ namespace GameInterface.GameManagement
             BoardHeight = settings.BoardHeight;
             BoardWidth = settings.BoardWidth;
             FinishTurn = settings.Turns;
-            TimeLimitSeconds = settings.LimitTime;
+            TimeLimitMilliseconds = settings.LimitTime;
             IsAutoSkipTurn = settings.IsAutoSkip;
 
             Players[0] = new Player();

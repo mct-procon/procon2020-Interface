@@ -32,7 +32,7 @@ namespace GameInterface.GameSettings
             });
         }
 
-        private ushort limitTime = 5;
+        private int limitTime = 5000;
 
         /// <summary>
         /// Whether enable self game conduction.
@@ -40,13 +40,13 @@ namespace GameInterface.GameSettings
         public bool IsEnableGameConduct => BoardCreation != BoardCreation.Server;
 
         /// <summary>
-        /// Limitation Time [Seconds]
+        /// Limitation Time [MilliSeconds]
         /// </summary>
-        public ushort LimitTime {
+        public int LimitTime {
             get => limitTime;
             set {
                 ResetError();
-                if (value == 0)
+                if (value < 0)
                     AddError("ターン時間は0秒以上でなければなりません．");
                 RaisePropertyChanged(ref limitTime, value);
             }

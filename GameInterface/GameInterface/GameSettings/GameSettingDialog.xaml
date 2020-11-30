@@ -37,7 +37,7 @@
         <TextBlock Text="ゲーム設定" FontSize="42" Grid.ColumnSpan="4"/>
         <TextBlock Text="ターン数" Grid.Row="1" Margin="0,4,4,4" HorizontalAlignment="Right" Visibility="{Binding IsEnableGameConduct, Converter={StaticResource VisibilityBooleanConverter}}"/>
         <TextBox Grid.Row="1" Grid.Column="1" Margin="2" Text="{Binding Turns}" Validation.ErrorTemplate="{StaticResource ValidationTemplate}" Visibility="{Binding IsEnableGameConduct, Converter={StaticResource VisibilityBooleanConverter}}"/>
-        <TextBlock Text="ターン時間" Grid.Row="1" Grid.Column="3" Margin="0,4,4,4" HorizontalAlignment="Right" Visibility="{Binding IsEnableGameConduct, Converter={StaticResource VisibilityBooleanConverter}}"/>
+        <TextBlock Text="ターン時間[ms]" Grid.Row="1" Grid.Column="3" Margin="0,4,4,4" HorizontalAlignment="Right" Visibility="{Binding IsEnableGameConduct, Converter={StaticResource VisibilityBooleanConverter}}"/>
         <TextBox Grid.Row="1" Grid.Column="4" Margin="2" Text="{Binding LimitTime}" Validation.ErrorTemplate="{StaticResource ValidationTemplate}" Visibility="{Binding IsEnableGameConduct, Converter={StaticResource VisibilityBooleanConverter}}"/>
         <CheckBox Content="自動ターンエンド" Grid.Row="2" Grid.Column="1" IsChecked="{Binding IsAutoSkip}" Visibility="{Binding IsEnableGameConduct, Converter={StaticResource VisibilityBooleanConverter}}"/>
         <CheckBox Content="自動で次のゲームへ" Grid.Row="2" Grid.Column="4" IsChecked="{Binding IsAutoGoNextGame}" Visibility="{Binding IsEnableGameConduct, Converter={StaticResource VisibilityBooleanConverter}}"/>

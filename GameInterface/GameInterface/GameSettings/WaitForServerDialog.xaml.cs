@@ -65,6 +65,11 @@ namespace GameInterface.GameSettings
 
         private async void Update()
         {
+            if (Client == null)
+            {
+                timer.Stop();
+                return;
+            }
             this.CurrentRetryAfter -= 0.3;
             if (this.CurrentRetryAfter < 0) this.CurrentRetryAfter = 0;
             Progress.Value = this.Result.RetryAfter - this.CurrentRetryAfter;

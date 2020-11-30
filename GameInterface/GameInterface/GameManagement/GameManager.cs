@@ -68,25 +68,25 @@ namespace GameInterface.GameManagement
         private void InitDispatcherTimer()
         {
             dispatcherTimer = new DispatcherTimer(DispatcherPriority.Normal);
-            dispatcherTimer.Interval = new TimeSpan(0, 0, 1);
+            dispatcherTimer.Interval = TimeSpan.FromMilliseconds(60);
             dispatcherTimer.Tick += new EventHandler(DispatcherTimer_Tick);
+            Data.LastTime = DateTime.Now - TimeSpan.FromMilliseconds(500);
             dispatcherTimer.Start();
             viewModel.TurnStr = $"TURN:{Data.NowTurn}/{Data.FinishTurn}";
-            viewModel.TimerStr = $"TIME:{Data.SecondCount}/{Data.TimeLimitSeconds}";
+            viewModel.TimerStr = $"TIME:0.00/{Data.TimeLimitMilliseconds/1000.0:F2}";
         }
 
         //一秒ごとに呼ばれる
         private void DispatcherTimer_Tick(object sender, EventArgs e)
         {
             Update();
-            Draw();
+            Draw((int)(DateTime.Now - Data.LastTime).TotalMilliseconds);
         }
 
         private void Update()
         {
             if (!Data.IsNextTurnStart) return;
-            Data.SecondCount++;
-            if (Data.SecondCount >= Data.TimeLimitSeconds || Server.IsDecidedReceived.All(b => b))
+            if ((DateTime.Now - Data.LastTime).TotalMilliseconds >= Data.TimeLimitMilliseconds || Server.IsDecidedReceived.All(b => b))
             {
                 Data.IsNextTurnStart = false;
                 EndTurn();
@@ -100,7 +100,7 @@ namespace GameInterface.GameManagement
                 Data.IsNextTurnStart = true;
                 var movable = MoveAgents();
                 GetScore();
-                Data.SecondCount = 0;
+                Data.LastTime = DateTime.Now;
                 Data.NowTurn++;
                 Server.SendTurnStart(movable);
             }
@@ -110,14 +110,12 @@ namespace GameInterface.GameManagement
                 if (!(CommunicationThread is null) && CommunicationThread.ThreadState == System.Threading.ThreadState.Running) return; // thread is running
                 var ts = new ThreadStart(async () =>
                 {
-                    System.Diagnostics.Debug.WriteLine("CALLED!");
                     int retries = 0;
                 retry:
                     {
                         var res = await Data.CurrentGameSettings.ApiClient.Match(this.CurrentMatchInfo);
                         if (res.IsSuccess && res.Value.Turn >= Data.NowTurn) // SUCCESS and turn is NOT past.
                         {
-                            System.Diagnostics.Debug.WriteLine("YEY!");
                             this.CurrentMatchState = res.Value;
                             goto end;
                         }
@@ -137,13 +135,13 @@ namespace GameInterface.GameManagement
                         goto retry;
                     }
                 end:
+                    Data.LastTime = DateTime.Now;
+                    Data.IsNextTurnStart = true;
                     await mainWindow.Dispatcher.BeginInvoke(() =>
                     {
                         dispatcherTimer.Start();
-                        Data.IsNextTurnStart = true;
                         var movable = MoveAgents();
                         GetScore();
-                        Data.SecondCount = 0;
                         Data.NowTurn++;
                         Server.SendTurnStart(movable);
                     });
@@ -484,9 +482,9 @@ namespace GameInterface.GameManagement
             Server.SendRequestAnswer();
         }
 
-        private void Draw()
+        private void Draw(int remainingTime)
         {
-            viewModel.TimerStr = $"TIME:{Data.SecondCount}/{Data.TimeLimitSeconds}";
+            viewModel.TimerStr = Data.IsNextTurnStart ? $"TIME:{remainingTime/1000.0:F2}/{Data.TimeLimitMilliseconds/1000.0:F2}" : "NEXT TURN";
             viewModel.TurnStr = $"TURN:{Data.NowTurn}/{Data.FinishTurn}";
         }
 

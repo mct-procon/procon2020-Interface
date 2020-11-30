@@ -249,7 +249,7 @@ namespace GameInterface
                 }
 
             if (playerNum == 1) Swap(ref colorBoardMe, ref colorBoardEnemy);
-            managers[playerNum].Write(DataKind.TurnStart, new TurnStart((byte)data.NowTurn, data.TimeLimitSeconds * 1000,
+            managers[playerNum].Write(DataKind.TurnStart, new TurnStart((byte)data.NowTurn, data.TimeLimitMilliseconds,
                 Unsafe16Array<MCTProcon31Protocol.Point>.Create(data.Players[playerNum == 0 ? 0 : 1].Agents.Select(item => item.Point).ToArray()),
                 Unsafe16Array<MCTProcon31Protocol.Point>.Create(data.Players[playerNum == 0 ? 1 : 0].Agents.Select(item => item.Point).ToArray()),
                 colorBoardMe,

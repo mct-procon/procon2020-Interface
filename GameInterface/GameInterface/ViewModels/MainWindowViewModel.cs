@@ -32,10 +32,10 @@ namespace GameInterface.ViewModels
             get => timerStr; 
             set => RaisePropertyChanged(ref timerStr, value);
         }
-        public int TimeLimitSeconds {
-            get => gameManager.Data.TimeLimitSeconds;
+        public int TimeLimitMilliseconds {
+            get => gameManager.Data.TimeLimitMilliseconds;
             set {
-                gameManager.Data.TimeLimitSeconds = value;
+                gameManager.Data.TimeLimitMilliseconds = value;
                 RaisePropertyChanged();
             }
         }
