@@ -24,8 +24,8 @@ namespace GameInterface
         private MainWindowViewModel viewModel;
         private GameManager gameManager;
 
-        private PlayerControlPanel Player1Window;
-        private PlayerControlPanel Player2Window;
+        private Controls.PlayerControlPanel Player1Window;
+        private Controls.PlayerControlPanel Player2Window;
 
         public MainWindow()
         {
@@ -48,13 +48,13 @@ namespace GameInterface
             CreateCellOnCellGrid(gameManager.Data.BoardWidth, gameManager.Data.BoardHeight);
             if (settings.IsUser1P)
             {
-                Player1Window = new PlayerControlPanel(gameManager, viewModel.Players[0]);
+                Player1Window = new Controls.PlayerControlPanel(gameManager, viewModel.Players[0]);
                 Player1Window.Closed += (ss, ee) => Player1Window = null;
                 Player1Window.Show();
             }
             if (settings.IsUser2P)
             {
-                Player2Window = new PlayerControlPanel(gameManager, viewModel.Players[1]);
+                Player2Window = new Controls.PlayerControlPanel(gameManager, viewModel.Players[1]);
                 Player2Window.Closed += (ss, ee) => Player2Window = null;
                 Player2Window.Show();
             }
@@ -163,7 +163,7 @@ namespace GameInterface
         {
             if (Player1Window == null)
             {
-                Player1Window = new PlayerControlPanel(gameManager, viewModel.Players[0]);
+                Player1Window = new Controls.PlayerControlPanel(gameManager, viewModel.Players[0]);
                 Player1Window.Closed += (ss, ee) => Player1Window = null;
                 Player1Window.Show();
             }
@@ -178,7 +178,7 @@ namespace GameInterface
         {
             if (Player2Window == null)
             {
-                Player2Window = new PlayerControlPanel(gameManager, viewModel.Players[1]);
+                Player2Window = new Controls.PlayerControlPanel(gameManager, viewModel.Players[1]);
                 Player2Window.Closed += (ss, ee) => Player2Window = null;
                 Player2Window.Show();
             }

@@ -13,7 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
-namespace GameInterface
+namespace GameInterface.Controls
 {
     /// <summary>
     /// PlayerControlPanel.xaml の相互作用ロジック
