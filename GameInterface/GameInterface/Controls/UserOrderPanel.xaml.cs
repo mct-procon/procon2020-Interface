@@ -29,7 +29,7 @@ namespace GameInterface.Controls
         private void PlaceCancelClicked(object sender, RoutedEventArgs e)
         {
             if (this.DataContext is UserOrderPanelViewModel)
-                ((UserOrderPanelViewModel)this.DataContext).Data.State = GameManagement.AgentState.NonPlaced;
+                ((UserOrderPanelViewModel)this.DataContext).Data.State = MCTProcon31Protocol.AgentState.NonPlaced;
         }
     }
 }

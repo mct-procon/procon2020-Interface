@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using GameInterface.GameManagement;
+using AgentState = MCTProcon31Protocol.AgentState;
 
 namespace GameInterface.ViewModels
 {

@@ -176,11 +176,10 @@ namespace GameInterface.GameManagement
 
         public void PlaceAgent(int playerNum, Point point)
         {
-            if(Data.Players[playerNum].AgentsCount < Data.MaximumAgentsCount){
-                var agent = Data.Players[playerNum].Agents[Data.Players[playerNum].AgentsCount];
+            var agent = Data.Players[playerNum].Agents.FirstOrDefault(x => x.State == AgentState.NonPlaced);
+            if(!(agent is null)){
                 agent.State = AgentState.PlacePending;
                 agent.Point = point;
-                Data.Players[playerNum].AgentsCount++;
             }
         }
 
@@ -268,9 +267,6 @@ namespace GameInterface.GameManagement
                     Data.CellData[a.Point.X, a.Point.Y].AgentNum = a.AgentNum;
                     retVal[a.PlayerNum.ToPlayerNum() * Data.MaximumAgentsCount + a.AgentNum] = true;
                 }
-
-                foreach (var player in Data.Players)
-                    player.BeforeAgentsCount = player.AgentsCount;
 
                 foreach (var p in Data.Players)
                     foreach (var a in p.Agents)
@@ -468,13 +464,20 @@ namespace GameInterface.GameManagement
 
         public void SetDecision(int index, Decision decide)
         {
-            Console.WriteLine(decide.ToString());
-            Data.Players[index].AgentsCount = decide.AgentsCount;
             for (int i = 0; i < Data.MaximumAgentsCount; ++i)
             {
-                AgentDirection dir = DirectionExtensions.CastPointToDir(decide.Agents[i]);
-                viewModel.Players[index].AgentViewModels[i].Data.AgentDirection = dir;
-                viewModel.Players[index].AgentViewModels[i].Data.State = AgentState.Move;
+                if (viewModel.Players[index].AgentViewModels[i].Data.State == AgentState.NonPlaced)
+                {
+                    viewModel.Players[index].AgentViewModels[i].Data.Point = decide.Agents[i];
+                    viewModel.Players[index].AgentViewModels[i].Data.State = AgentState.PlacePending;
+                }
+                else
+                {
+                    sbyte x = (sbyte)(decide.Agents[i].X - Data.Players[index].Agents[i].Point.X);
+                    sbyte y = (sbyte)(decide.Agents[i].Y - Data.Players[index].Agents[i].Point.Y);
+                    viewModel.Players[index].AgentViewModels[i].Data.AgentDirection = DirectionExtensions.CastPointToDir((x, y));
+                    viewModel.Players[index].AgentViewModels[i].Data.State = decide.AgentsState[i];
+                }
             }
         }
 

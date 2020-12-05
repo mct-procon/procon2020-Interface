@@ -1,14 +1,8 @@
 ﻿using System;
-using System.ComponentModel;
-using System.Collections.Generic;
 using System.Windows;
-using GameInterface.Cells;
 using System.Windows.Threading;
-using MCTProcon31Protocol.Methods;
-using System.Linq;
+using GameInterface.Cells;
 using GameInterface.GameManagement;
-using MCTProcon31Protocol;
-using Point = MCTProcon31Protocol.Point;
 
 namespace GameInterface.ViewModels
 {

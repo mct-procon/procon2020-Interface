@@ -212,10 +212,7 @@ namespace GameInterface
                     board[i, j] = (sbyte)data.CellData[i, j].Score;
                 }
             }
-            managers[playerNum].Write(DataKind.GameInit, new GameInit((byte)data.BoardHeight, (byte)data.BoardWidth, board, (byte)data.MaximumAgentsCount,
-                Unsafe16Array<MCTProcon31Protocol.Point>.Create(data.Players[playerNum == 0 ? 0 : 1].Agents.Select(item => item.Point).ToArray()),
-                Unsafe16Array<MCTProcon31Protocol.Point>.Create(data.Players[playerNum == 0 ? 1 : 0].Agents.Select(item => item.Point).ToArray()),
-                data.FinishTurn));
+            managers[playerNum].Write(DataKind.GameInit, new GameInit((byte)data.BoardHeight, (byte)data.BoardWidth, board, (byte)data.MaximumAgentsCount, data.FinishTurn));
         }
 
         public void SendTurnStart(bool[] movable)
@@ -250,15 +247,15 @@ namespace GameInterface
 
             if (playerNum == 1) Swap(ref colorBoardMe, ref colorBoardEnemy);
             managers[playerNum].Write(DataKind.TurnStart, new TurnStart((byte)data.NowTurn, data.TimeLimitMilliseconds,
-                Unsafe16Array<MCTProcon31Protocol.Point>.Create(data.Players[playerNum == 0 ? 0 : 1].Agents.Select(item => item.Point).ToArray()),
-                Unsafe16Array<MCTProcon31Protocol.Point>.Create(data.Players[playerNum == 0 ? 1 : 0].Agents.Select(item => item.Point).ToArray()),
+                Unsafe16Array.Create(data.Players[playerNum == 0 ? 0 : 1].Agents.Select(item => item.Point).ToArray()),
+                Unsafe16Array.Create(data.Players[playerNum == 0 ? 1 : 0].Agents.Select(item => item.Point).ToArray()),
                 colorBoardMe,
                 colorBoardEnemy,
-                Unsafe16Array<bool>.Create(isAgentsMoved),
+                Unsafe16Array.Create(isAgentsMoved),
                 surroundedBoardMe,
                 surroundedBoardEnemy,
-                (byte)data.Players[playerNum == 0 ? 0 : 1].AgentsCount,
-                (byte)data.Players[playerNum == 0 ? 1 : 0].AgentsCount
+                Unsafe16Array.Create(data.Players[playerNum == 0 ? 0 : 1].Agents.Select(item => item.State == AgentState.Move ? AgentState.Move : AgentState.NonPlaced).ToArray()),
+                Unsafe16Array.Create(data.Players[playerNum == 0 ? 1 : 0].Agents.Select(item => item.State == AgentState.Move ? AgentState.Move : AgentState.NonPlaced).ToArray())
                 ));
         }
 

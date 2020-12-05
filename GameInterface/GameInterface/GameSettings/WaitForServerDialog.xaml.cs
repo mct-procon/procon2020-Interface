@@ -23,7 +23,7 @@ namespace GameInterface.GameSettings
     {
         DispatcherTimer timer { get; set; } = new DispatcherTimer();
         public APIResult<Match> Result { get; set; } = default;
-        public double CurrentRetryAfter { get; set; } = 0;
+        public DateTime StartTime { get; set; }
         public ProconAPIClient Client { get; set; }
         public MatchInformation SelectedMatch { get; set; }
         public WaitForServerDialog()
@@ -35,6 +35,7 @@ namespace GameInterface.GameSettings
             this.Result = previousResult;
             this.Client = client;
             this.SelectedMatch = selMatch;
+            this.StartTime = DateTime.Now + TimeSpan.FromSeconds(previousResult.RetryAfter);
         }
 
         public async static Task<APIResult<Match>> ShowDialogEx(ProconAPIClient client, MatchInformation match)
@@ -70,11 +71,11 @@ namespace GameInterface.GameSettings
                 timer.Stop();
                 return;
             }
-            this.CurrentRetryAfter -= 0.3;
-            if (this.CurrentRetryAfter < 0) this.CurrentRetryAfter = 0;
-            Progress.Value = this.Result.RetryAfter - this.CurrentRetryAfter;
-            ProgressText.Text = $"残り時間：{this.CurrentRetryAfter:F2}秒";
-            if (this.CurrentRetryAfter == 0)
+            int remaining = (int)((this.StartTime - DateTime.Now).TotalMilliseconds);
+            if (remaining < 0) remaining = 0;
+            Progress.Value = Progress.Maximum - remaining;
+            ProgressText.Text = $"ゲーム開始まで : {remaining / 1000.0:F2}秒";
+            if (remaining == 0)
             {
                 this.Result = await Client.Match(SelectedMatch);
                 if (Result.IsSuccess)
@@ -90,9 +91,9 @@ namespace GameInterface.GameSettings
                 }
                 else
                 {
-                    Progress.Maximum = this.Result.RetryAfter;
+                    Progress.Maximum = (this.StartTime - DateTime.Now).TotalMilliseconds;
                     Progress.Value = 0;
-                    ProgressText.Text = $"残り時間：{this.Result.RetryAfter:F2}秒";
+                    ProgressText.Text = $"ゲーム開始まで : {this.Result.RetryAfter/1000.0:F2}秒";
                 }
             }
         }
@@ -100,12 +101,11 @@ namespace GameInterface.GameSettings
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             if (this.Client == null || this.SelectedMatch == null || this.Result.RetryAfter <= 0) return;
-            Progress.Maximum = this.Result.RetryAfter;
-            this.CurrentRetryAfter = this.Result.RetryAfter;
+            Progress.Maximum = (this.StartTime - DateTime.Now).TotalMilliseconds;
             Progress.Value = 0;
-            ProgressText.Text = $"残り時間：{this.Result.RetryAfter:F2}秒";
+            ProgressText.Text = $"ゲーム開始まで : {Progress.Maximum / 1000.0:F2}秒";
             timer.Tick += (s, ee) => Update();
-            timer.Interval = TimeSpan.FromMilliseconds(300);
+            timer.Interval = TimeSpan.FromMilliseconds(33);
             timer.Start();
         }
     }
