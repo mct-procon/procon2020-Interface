@@ -372,9 +372,6 @@ namespace GameInterface.GameManagement
                 if (!CheckIsPointInBoard(nextP))
                     canAction[agent.AgentID] = false;
                 TeamColor nextAreaState = Data.CellData[nextP.X, nextP.Y].AreaState;
-                if(agent.State == AgentState.Move)
-                    if ((agent.PlayerNum == TeamColor.Player1 && nextAreaState == TeamColor.Player2) || (agent.PlayerNum == TeamColor.Player2 && nextAreaState == TeamColor.Player1))
-                        canAction[agent.AgentID] = false;
             }
 
             //次に、「指示先(agent.GetNextPoint()の位置)が被っているエージェントは行動不可」とする。
@@ -439,6 +436,8 @@ namespace GameInterface.GameManagement
 
                     if(nextAreaState != against)
                         agent.Point = nextP;
+                    else
+                        Data.CellData[nextP.X, nextP.Y].AreaState = TeamColor.Free;
                     break;
                 case AgentState.RemoveTile:
                     Data.CellData[nextP.X, nextP.Y].AreaState = TeamColor.Free;
