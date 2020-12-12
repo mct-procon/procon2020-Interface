@@ -166,12 +166,12 @@ namespace GameInterface
                     {
                         Shutdown(1);
                         isConnected[1] = false;
-                        managers[0] = new IPCManager(new ClientRennenend(this, gameManager, 0));
+                        managers[1] = new IPCManager(new ClientRennenend(this, gameManager, 0));
                         Task.Run(async () =>
                         {
-                            await managers[0].Connect(settings.Port1P);
-                            previousPort[0] = settings.Port1P;
-                            await managers[0].StartAsync();
+                            await managers[1].Connect(settings.Port2P);
+                            previousPort[1] = settings.Port2P;
+                            await managers[1].StartAsync();
                         });
                     }
                 }
