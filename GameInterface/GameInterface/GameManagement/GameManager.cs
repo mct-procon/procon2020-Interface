@@ -47,11 +47,7 @@ namespace GameInterface.GameManagement
 
         public void EndGame() => TimerStop();
         public void PauseGame() => Data.IsPause = true;
-
-        public void RerunGame()
-        {
-            Data.IsPause = false;
-        }
+        public void RerunGame() => Data.IsPause = false;
 
         public async Task<bool> InitGameData(GameSettings.SettingStructure settings)
         {

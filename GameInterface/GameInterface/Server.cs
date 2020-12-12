@@ -41,18 +41,7 @@ namespace GameInterface
             {
                 gameManager.SetDecisions(managerNum, decided);
             });
-            // _decided = decided[0];
-            //gameManager.viewModel.MainWindowDispatcher.Invoke(decidedMethod);
         }
-
-        //private void decidedMethod()
-        //{
-        //    var decided = _decided;
-        //    AgentDirection dir = DirectionExtensions.CastPointToDir(new VelocityPoint(decided.MeAgent1.X, decided.MeAgent1.Y));
-        //    gameManager.OrderToAgent(new Order(managerNum * 2, dir, AgentState.Move));
-        //    dir = DirectionExtensions.CastPointToDir(new VelocityPoint(decided.MeAgent2.X, decided.MeAgent2.Y));
-        //    gameManager.OrderToAgent(new Order(managerNum * 2 + 1, dir, AgentState.Move));
-        //}
 
         public void OnInterrupt(Interrupt interrupt)
         {
@@ -101,6 +90,7 @@ namespace GameInterface
         IPCManager[] managers = new IPCManager[2];
         GameData data;
         GameManager gameManager;
+        private int[] previousPort = new int[] { -1, -1 };
         private bool[] isConnected = new bool[] { false, false };
         public bool IsConnected1P
         {
@@ -142,7 +132,18 @@ namespace GameInterface
             {
                 if (isConnected[0])
                 {
-                    Shutdown(0);
+                    if (settings.Port1P != previousPort[0])
+                    {
+                        Shutdown(0);
+                        isConnected[0] = false;
+                        managers[0] = new IPCManager(new ClientRennenend(this, gameManager, 0));
+                        Task.Run(async () =>
+                        {
+                            await managers[0].Connect(settings.Port1P);
+                            previousPort[0] = settings.Port1P;
+                            await managers[0].StartAsync();
+                        });
+                    }
                 }
                 else
                 {
@@ -150,26 +151,43 @@ namespace GameInterface
                     Task.Run(async () =>
                     {
                         await managers[0].Connect(settings.Port1P);
+                        previousPort[0] = settings.Port1P;
                         await managers[0].StartAsync();
                     });
                 }
             }
+            else
+                Shutdown(0);
             if (!settings.IsUser2P)
             {
                 if (isConnected[1])
                 {
-                    Shutdown(1);
+                    if (settings.Port2P != previousPort[1])
+                    {
+                        Shutdown(1);
+                        isConnected[1] = false;
+                        managers[0] = new IPCManager(new ClientRennenend(this, gameManager, 0));
+                        Task.Run(async () =>
+                        {
+                            await managers[0].Connect(settings.Port1P);
+                            previousPort[0] = settings.Port1P;
+                            await managers[0].StartAsync();
+                        });
+                    }
                 }
                 else
                 {
                     managers[1] = new IPCManager(new ClientRennenend(this, gameManager, 1));
-                    Task.Run(async () => 
+                    Task.Run(async () =>
                     {
                         await managers[1].Connect(settings.Port2P);
+                        previousPort[1] = settings.Port2P;
                         await managers[1].StartAsync();
                     });
                 }
             }
+            else
+                Shutdown(1);
         }
 
         private void startListening(int playerNum, int portId)
@@ -296,12 +314,6 @@ namespace GameInterface
         public void Shutdown(int playerNum) {
             if (!isConnected[playerNum]) return;
             managers[playerNum]?.Shutdown();
-        }
-
-        public void Shutdown()
-        {
-            Shutdown(0);
-            Shutdown(1);
         }
 
         private void Swap<T>(ref T lhs, ref T rhs)
