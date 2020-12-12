@@ -251,7 +251,7 @@ namespace GameInterface.GameSettings
         /// </summary>
         public bool IsUseSameAI { get; set; } = false;
 
-        private BoardSymmetry creationSymmetry = BoardSymmetry.XY;
+        private BoardSymmetry creationSymmetry = BoardSymmetry.None;
         /// <summary>
         /// Board creation mode
         /// </summary>
@@ -325,6 +325,6 @@ namespace GameInterface.GameSettings
     [Flags]
     public enum BoardSymmetry : byte
     {
-        X = 1, Y = 2, XY = 3, Rotate = 4
+        None = 0, X = 1, Y = 2, XY = 3, Rotate = 4
     }
 }
