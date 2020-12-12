@@ -62,6 +62,16 @@ namespace GameInterface.GameSettings
             set => RaisePropertyChanged(ref port1P, value);
         }
 
+        private string hostname1P = "localhost";
+
+        /// <summary>
+        /// AI Hostname 1P.
+        /// </summary>
+        public string Hostname1P {
+            get => hostname1P;
+            set => RaisePropertyChanged(ref hostname1P, value);
+        }
+
         private ushort port2P = 0;
 
         /// <summary>
@@ -70,6 +80,16 @@ namespace GameInterface.GameSettings
         public ushort Port2P {
             get => port2P;
             set => RaisePropertyChanged(ref port2P, value);
+        }
+
+        private string hostname2P = "localhost";
+
+        /// <summary>
+        /// AI Hostname 2P.
+        /// </summary>
+        public string Hostname2P {
+            get => hostname2P;
+            set => RaisePropertyChanged(ref hostname2P, value);
         }
 
         /// <summary>
@@ -96,9 +116,6 @@ namespace GameInterface.GameSettings
         }
 
         internal BoardCreation BoardCreation => (BoardCreation)_BoardCreationState;
-
-        //internal Cells.Cell[,] JsonCell { get; set; }
-        //internal Agent[] JsonAgent { get; set; }
 
         private byte turns = 60;
 
@@ -193,6 +210,8 @@ namespace GameInterface.GameSettings
                     endPoint = value;
                 else
                     endPoint = "http://" + value;
+                if (!endPoint.EndsWith("/"))
+                    endPoint = endPoint + "/";
                 RaisePropertyChanged();
             }
         }
@@ -261,8 +280,7 @@ namespace GameInterface.GameSettings
                 }
                 else
                 {
-                    if ((creationSymmetry & ~BoardSymmetry.X) != 0)
-                        CreationSymmetry = creationSymmetry & ~BoardSymmetry.X;
+                    CreationSymmetry = creationSymmetry & ~BoardSymmetry.X;
                 }
             }
         }
@@ -282,8 +300,7 @@ namespace GameInterface.GameSettings
                 }
                 else
                 {
-                    if ((creationSymmetry & ~BoardSymmetry.Y) != 0)
-                        CreationSymmetry = creationSymmetry & ~BoardSymmetry.Y;
+                    CreationSymmetry = creationSymmetry & ~BoardSymmetry.Y;
                 }
             }
         }

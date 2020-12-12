@@ -118,6 +118,7 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
@@ -152,12 +153,17 @@
                 <RadioButton x:Name="P2UserToggle" Content="ユーザ" IsChecked="true" Checked="P2UserToggle_Checked"/>
                 <RadioButton x:Name="P2AIToggle" Content="AI" Grid.Column="1" Checked="P2AIToggle_Checked"/>
             </Grid>
-            <TextBlock Text="ポート番号" Grid.Row="2" Grid.Column="0" Margin="0,4,3,4" HorizontalAlignment="Right"/>
-            <TextBox x:Name="P1PortBox" Grid.Row="2" Grid.Column="1" Margin="2" IsEnabled="{Binding ElementName=P1AIToggle, Path=IsChecked}" Text="15000" TextChanged="P1PortBox_TextChanged"/>
-            <TextBlock Text="ポート番号" Grid.Row="2" Grid.Column="3" Margin="0,4,3,4" HorizontalAlignment="Right" Visibility="{Binding IsEnableGameConduct, Converter={StaticResource BooleanNotConverter}}"/>
-            <TextBox x:Name="P2PortBox" Grid.Row="2" Grid.Column="4" Margin="2" IsEnabled="{Binding ElementName=P2AIToggle, Path=IsChecked}" Text="15001" TextChanged="P2PortBox_TextChanged" Visibility="{Binding IsEnableGameConduct, Converter={StaticResource BooleanNotConverter}}"/>
-            <TextBlock x:Name="P1PortBoxErrorMessage" Visibility="Collapsed" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Foreground="Red" Margin="0,0,0,93"/>
-            <TextBlock x:Name="P2PortBoxErrorMessage" Visibility="Collapsed" Grid.Row="3" Grid.Column="3" Grid.ColumnSpan="2" Foreground="Red" Margin="0,0,0,93"/>
+
+            <TextBlock Text="Host or IP" Grid.Row="2" Grid.Column="0" Margin="0,4,3,4" HorizontalAlignment="Right"/>
+            <TextBox x:Name="P1HostBox" Grid.Row="2" Grid.Column="1" Margin="2" IsEnabled="{Binding ElementName=P1AIToggle, Path=IsChecked}" Text="{Binding Hostname1P}"/>
+            <TextBlock Text="Host or IP" Grid.Row="2" Grid.Column="3" Margin="0,4,3,4" HorizontalAlignment="Right" Visibility="{Binding IsEnableGameConduct, Converter={StaticResource BooleanNotConverter}}"/>
+            <TextBox x:Name="P2HostBox" Grid.Row="2" Grid.Column="4" Margin="2" IsEnabled="{Binding ElementName=P2AIToggle, Path=IsChecked}" Text="{Binding Hostname2P}" Visibility="{Binding IsEnableGameConduct, Converter={StaticResource BooleanNotConverter}}"/>
+            <TextBlock Text="ポート番号" Grid.Row="3" Grid.Column="0" Margin="0,4,3,4" HorizontalAlignment="Right"/>
+            <TextBox x:Name="P1PortBox" Grid.Row="3" Grid.Column="1" Margin="2" IsEnabled="{Binding ElementName=P1AIToggle, Path=IsChecked}" Text="15000" TextChanged="P1PortBox_TextChanged"/>
+            <TextBlock Text="ポート番号" Grid.Row="3" Grid.Column="3" Margin="0,4,3,4" HorizontalAlignment="Right" Visibility="{Binding IsEnableGameConduct, Converter={StaticResource BooleanNotConverter}}"/>
+            <TextBox x:Name="P2PortBox" Grid.Row="3" Grid.Column="4" Margin="2" IsEnabled="{Binding ElementName=P2AIToggle, Path=IsChecked}" Text="15001" TextChanged="P2PortBox_TextChanged" Visibility="{Binding IsEnableGameConduct, Converter={StaticResource BooleanNotConverter}}"/>
+            <TextBlock x:Name="P1PortBoxErrorMessage" Visibility="Collapsed" Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" Foreground="Red" Margin="0,0,0,93"/>
+            <TextBlock x:Name="P2PortBoxErrorMessage" Visibility="Collapsed" Grid.Row="4" Grid.Column="3" Grid.ColumnSpan="2" Foreground="Red" Margin="0,0,0,93"/>
         </Grid>
 
         <Button x:Name="OkButton" Grid.Row="11" Grid.Column="4" Content="OK" Margin="0,0,5,5" HorizontalAlignment="Right" VerticalAlignment="Bottom" Height="30" Width="80" Click="OkButton_Click" Grid.RowSpan="2"/>
