@@ -77,15 +77,12 @@ namespace GameInterface.GameSettings
             ProgressText.Text = $"ゲーム開始まで : {remaining / 1000.0:F2}秒";
             if (remaining == 0)
             {
+                timer.Stop();
                 this.Result = await Client.Match(SelectedMatch);
                 if (Result.IsSuccess)
-                {
-                    timer.Stop();
                     DialogResult = true;
-                }
                 else if (Result.HTTPReturnCode != 425)
                 {
-                    timer.Stop();
                     MessageBox.Show("HTTP Connection error.\nError Code: " + Result.HTTPReturnCode.ToString(), "Connection Failed", MessageBoxButton.OK, MessageBoxImage.Information);
                     DialogResult = false;
                 }
@@ -94,6 +91,7 @@ namespace GameInterface.GameSettings
                     Progress.Maximum = (this.StartTime - DateTime.Now).TotalMilliseconds;
                     Progress.Value = 0;
                     ProgressText.Text = $"ゲーム開始まで : {this.Result.RetryAfter/1000.0:F2}秒";
+                    timer.Start();
                 }
             }
         }

@@ -113,6 +113,8 @@ namespace GameInterface.GameManagement
                         if (res.IsSuccess && res.Value.Turn >= Data.NowTurn) // SUCCESS and turn is NOT past.
                         {
                             this.CurrentMatchState = res.Value;
+                            Array.Sort(this.CurrentMatchState.Teams[0].Agents);
+                            Array.Sort(this.CurrentMatchState.Teams[1].Agents);
                             goto end;
                         }
                         retries++;
@@ -136,7 +138,8 @@ namespace GameInterface.GameManagement
                     await mainWindow.Dispatcher.BeginInvoke(() =>
                     {
                         dispatcherTimer.Start();
-                        var movable = MoveAgents();
+                        var movable = CheckMoved();
+                        Data.UpdateData(CurrentMatchState, CurrentMatchInfo.Teams[0].Id);
                         GetScore();
                         Data.NowTurn++;
                         Server.SendTurnStart(movable);
@@ -243,45 +246,55 @@ namespace GameInterface.GameManagement
 
         private bool[] MoveAgents()
         {
+            System.Diagnostics.Contracts.Contract.Requires(Data.IsEnableGameConduct);
             var retVal = new bool[App.PlayersCount * Data.MaximumAgentsCount];
-            if (Data.IsEnableGameConduct)
-            {
-                List<Agent> ActionableAgents = GetActionableAgents();
+            List<Agent> ActionableAgents = GetActionableAgents();
 
-                foreach (var a in ActionableAgents)
+            foreach (var a in ActionableAgents)
+            {
+                Data.CellData[a.Point.X, a.Point.Y].AgentState = TeamColor.Free;
+                Data.CellData[a.Point.X, a.Point.Y].AgentNum = -1;
+                var nextP = a.GetNextPoint();
+
+                TeamColor nextAreaState = Data.CellData[nextP.X, nextP.Y].AreaState;
+                ActionAgentToNextP(a, nextP, nextAreaState);
+
+                Data.CellData[a.Point.X, a.Point.Y].AgentState = a.PlayerNum;
+                Data.CellData[a.Point.X, a.Point.Y].AreaState = a.PlayerNum;
+                Data.CellData[a.Point.X, a.Point.Y].SurroundedState = TeamColor.Free;
+                Data.CellData[a.Point.X, a.Point.Y].AgentNum = a.AgentNum;
+                retVal[a.PlayerNum.ToPlayerNum() * Data.MaximumAgentsCount + a.AgentNum] = true;
+                a.State = AgentState.Move;
+            }
+            return retVal;
+        }
+
+        private bool[] CheckMoved()
+        {
+            System.Diagnostics.Contracts.Contract.Requires(!Data.IsEnableGameConduct);
+            var retVal = new bool[App.PlayersCount * Data.MaximumAgentsCount];
+            for (int i = 0; i < App.PlayersCount; ++i)
+                for (int j = 0; j < Data.MaximumAgentsCount; ++j)
                 {
-                    Data.CellData[a.Point.X, a.Point.Y].AgentState = TeamColor.Free;
-                    Data.CellData[a.Point.X, a.Point.Y].AgentNum = -1;
-                    var nextP = a.GetNextPoint();
-
-                    TeamColor nextAreaState = Data.CellData[nextP.X, nextP.Y].AreaState;
-                    ActionAgentToNextP(a, nextP, nextAreaState);
-
-                    Data.CellData[a.Point.X, a.Point.Y].AgentState = a.PlayerNum;
-                    Data.CellData[a.Point.X, a.Point.Y].AreaState = a.PlayerNum;
-                    Data.CellData[a.Point.X, a.Point.Y].SurroundedState = TeamColor.Free;
-                    Data.CellData[a.Point.X, a.Point.Y].AgentNum = a.AgentNum;
-                    retVal[a.PlayerNum.ToPlayerNum() * Data.MaximumAgentsCount + a.AgentNum] = true;
-                }
-
-                foreach (var p in Data.Players)
-                    foreach (var a in p.Agents)
-                        if(a.State.HasFlag(AgentState.Move)) a.State = AgentState.Move;
-            }
-            else
-            {
-                for(int i = 0; i < App.PlayersCount; ++i)
-                    for(int j = 0; j < Data.MaximumAgentsCount; ++j)
+                    var nextPoint = new Point();
+                    switch (Data.Players[i].Agents[j].State)
                     {
-                        if (Data.Players[i].Agents[j].AgentDirection == AgentDirection.None)
-                        {
+                        case AgentState.NonPlaced:
                             retVal[i * Data.MaximumAgentsCount + j] = true;
-                            continue;
-                        }
-                        //TODO
-                        //retVal[i * Data.MaximumAgentsCount + j] = (Data.Players[i].Agents[j].GetNextPoint() == ToPoint(Network.ProconAPIClient.Instance.FieldState.Teams[i].Agents[j]));
+                            break;
+                        default:
+                            nextPoint = Data.Players[i].Agents[j].GetNextPoint();
+                            if (Data.CellData[nextPoint.X, nextPoint.Y].AreaState != (i == 0 ? TeamColor.Player2 : TeamColor.Player1)) // 相手の城壁でない場合，行ったり置いたりできるはず
+                                goto case AgentState.PlacePending;
+                            // 相手の城壁の場合，取り除けていれば成功．
+                            retVal[i * Data.MaximumAgentsCount + j] = CurrentMatchState.Walls[nextPoint.X, nextPoint.Y] == 0;
+                            break;
+                        case AgentState.PlacePending:
+                            var movedPoint = CurrentMatchState.Teams[i].Agents[j];
+                            retVal[i * Data.MaximumAgentsCount + j] = nextPoint.X == movedPoint.X-1 && nextPoint.Y == movedPoint.Y-1;
+                            break;
                     }
-            }
+                }
             return retVal;
         }
 

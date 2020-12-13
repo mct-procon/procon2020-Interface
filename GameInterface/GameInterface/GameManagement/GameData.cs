@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using MCTProcon31Protocol;
 using GameInterface.ViewModels;
 using static GameInterface.GameManagement.TeamColorUtil;
-using MCTProcon31Protocol.Json.Matches;
 
 namespace GameInterface.GameManagement
 {
@@ -96,7 +95,7 @@ namespace GameInterface.GameManagement
                 return false;
             var matchInfo = matchInfoResult.Value;
             settings.Turns = (byte)settings.Matches[settings.SelectedMatchIndex].Turns;
-            settings.LimitTime = settings.Matches[settings.SelectedMatchIndex].OperationMilliseconds; // TODO:Improve
+            settings.LimitTime = settings.Matches[settings.SelectedMatchIndex].OperationMilliseconds;
             settings.IsAutoSkip = true;
             settings.BoardHeight = (byte)matchInfo.Height;
             settings.BoardWidth = (byte)matchInfo.Width;
@@ -119,12 +118,52 @@ namespace GameInterface.GameManagement
             return true;
         }
 
-        void SetCellData(GameSettings.SettingStructure settings, Match matchInfo)
+        public void UpdateData(MCTProcon31Protocol.Json.Matches.Match matchState, int myTeamID)
+        {
+            void UpdateAgent(Agent agent, MCTProcon31Protocol.Json.Matches.Agent val)
+            {
+                agent.AgentDirection = AgentDirection.None;
+                if (val.X == 0)
+                {
+                    agent.State = AgentState.NonPlaced;
+                    return;
+                }
+                agent.State = AgentState.Move;
+                agent.Point = new Point((byte)(val.X - 1), (byte)(val.Y - 1));
+            }
+
+            var (myTeam, enemyTeam) = matchState.Teams[0].Id == myTeamID ?
+                (matchState.Teams[0], matchState.Teams[1]) : (matchState.Teams[1], matchState.Teams[0]);
+
+            for (int a = 0; a < MaximumAgentsCount; ++a)
+                UpdateAgent(Players[0].Agents[a], myTeam.Agents[a]);
+            for (int a = 0; a < MaximumAgentsCount; ++a)
+                UpdateAgent(Players[1].Agents[a], enemyTeam.Agents[a]);
+
+            for (int x = 0; x < CellData.GetLength(0); ++x)
+                for (int y = 0; y < CellData.GetLength(1); ++y)
+                {
+                    CellData[x, y].AreaState = matchState.Walls[x, y] == myTeamID ? TeamColor.Player1 : (matchState.Walls[x, y] == 0 ? TeamColor.Free : TeamColor.Player2);
+                    CellData[x, y].SurroundedState = matchState.Areas[x, y] == myTeamID ? TeamColor.Player1 : (matchState.Areas[x, y] == 0 ? TeamColor.Free : TeamColor.Player2);
+                    CellData[x, y].AgentState = TeamColor.Free;
+                    CellData[x, y].AgentNum = -1;
+                }
+
+            foreach (var p in Players)
+                foreach (var a in p.Agents)
+                    if (a.State != AgentState.NonPlaced)
+                    {
+                        CellData[a.Point.X, a.Point.Y].AgentState = a.PlayerNum;
+                        CellData[a.Point.X, a.Point.Y].AgentNum = a.AgentNum;
+                    }
+        }
+
+        void SetCellData(GameSettings.SettingStructure settings, MCTProcon31Protocol.Json.Matches.Match matchInfo)
         {
             CellData = new Cell[matchInfo.Width, matchInfo.Height];
             for (int i = 0; i < CellData.GetLength(0); ++i)
                 for (int j = 0; j < CellData.GetLength(1); ++j)
-                    CellData[i, j] = new Cell(matchInfo.Areas[j, i]);
+                    CellData[i, j] = new Cell(matchInfo.FieldPoint[j, i]);
         }
 
         void InitCellData(GameSettings.SettingStructure settings)
@@ -161,16 +200,6 @@ namespace GameInterface.GameManagement
                     }
                 }
             }
-        }
-
-        /// <summary>
-        /// Symmetric agent placing, not used on 2020 rule.
-        /// </summary>
-        Point GenerateSymmetryPosition(Point p, Point boardSize, GameSettings.BoardSymmetry symmetry)
-        {
-            if(symmetry == GameSettings.BoardSymmetry.Rotate)
-                return new Point( (byte)(boardSize.X - 1 - p.X), (byte)(boardSize.Y - 1 - p.Y));
-            return new Point((symmetry & GameSettings.BoardSymmetry.Y) != 0 ? (byte)(boardSize.X - 1 - p.X) : p.X, (symmetry & GameSettings.BoardSymmetry.X) != 0 ? (byte)(boardSize.Y - 1 - p.Y) : p.Y);
         }
 
         void InitAgents(GameSettings.SettingStructure settings)
