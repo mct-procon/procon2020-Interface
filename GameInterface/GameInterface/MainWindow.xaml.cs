@@ -106,6 +106,12 @@ namespace GameInterface
             gameManager.RequestAnswer();
         }
 
+        private void SendAPIServerButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (gameManager.Data.IsEnableGameConduct) return;
+            gameManager.SendActionToAPIServer();
+        }
+
         private void BreakMenu_Clicked(object sender, RoutedEventArgs e)
         {
             if (!System.Diagnostics.Debugger.IsAttached)
@@ -126,11 +132,13 @@ namespace GameInterface
             {
                 Player1Window?.Close();
                 Player2Window?.Close();
-                if (!(await InitGame(result)))
-                    return;
+                gameManager.StartAIListening(result);
                 if (!(result.IsUser1P & result.IsUser2P))
                     (new GameSettings.WaitForAIDialog(viewModel.gameManager.Server, result)).ShowDialog();
+                if (!(await InitGame(result)))
+                    return;
                 gameManager.StartGame();
+                SendAPIServerButton.IsEnabled = !gameManager.Data.IsEnableGameConduct;
             }
         }
 

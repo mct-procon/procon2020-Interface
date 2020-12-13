@@ -49,12 +49,13 @@ namespace GameInterface.GameManagement
         public void PauseGame() => Data.IsPause = true;
         public void RerunGame() => Data.IsPause = false;
 
+        public void StartAIListening(GameSettings.SettingStructure settings) => Server.StartListening(settings);
+
         public async Task<bool> InitGameData(GameSettings.SettingStructure settings)
         {
             if (!(await Data.InitGameData(settings)))
                 return false;
             Data.IsPause = false;
-            Server.StartListening(settings);
             return true;
         }
 
@@ -139,7 +140,12 @@ namespace GameInterface.GameManagement
                     {
                         dispatcherTimer.Start();
                         var movable = CheckMoved();
-                        Data.UpdateData(CurrentMatchState, CurrentMatchInfo.Teams[0].Id);
+                        System.Diagnostics.Debug.WriteLine("FUGAGGAGA=====");
+                        for (int i = 0; i < Data.MaximumAgentsCount; ++i)
+                        {
+                            System.Diagnostics.Debug.WriteLine($"{movable[i]}");
+                        }
+                        Data.UpdateData(CurrentMatchState, CurrentMatchInfo.Teams[0].Id, movable);
                         GetScore();
                         Data.NowTurn++;
                         Server.SendTurnStart(movable);
@@ -171,6 +177,36 @@ namespace GameInterface.GameManagement
                     StartGame();
                 }
             }
+        }
+
+        public void SendActionToAPIServer()
+        {
+            MCTProcon31Protocol.Json.Matches.ActionRequest convert(int i)
+            {
+                var agent = Data.Players[0].Agents[i];
+                if(agent.State == AgentState.NonPlaced)
+                    return new MCTProcon31Protocol.Json.Matches.ActionRequest(0, 0, MCTProcon31Protocol.Json.Matches.ActionType.Stay, CurrentMatchState.Teams[0].Agents[i].Id);
+                var nextP = agent.GetNextPoint();
+                var state = agent.State switch
+                {
+                    AgentState.Move => MCTProcon31Protocol.Json.Matches.ActionType.Move,
+                    AgentState.PlacePending => MCTProcon31Protocol.Json.Matches.ActionType.Put,
+                    AgentState.RemoveTile => MCTProcon31Protocol.Json.Matches.ActionType.Remove,
+                    _ => MCTProcon31Protocol.Json.Matches.ActionType.Stay
+                };
+                if (agent.State != AgentState.PlacePending && agent.AgentDirection == AgentDirection.None)
+                    state = MCTProcon31Protocol.Json.Matches.ActionType.Stay;
+                return new MCTProcon31Protocol.Json.Matches.ActionRequest(nextP.X+1, nextP.Y+1, state, CurrentMatchState.Teams[0].Agents[i].Id);
+            }
+            if (Data.IsEnableGameConduct) return;
+            MCTProcon31Protocol.Json.Matches.ActionRequest[] actions = new MCTProcon31Protocol.Json.Matches.ActionRequest[Data.MaximumAgentsCount];
+            System.Diagnostics.Debug.WriteLine("HOGEGEGEG=====");
+            for (int i = 0; i < Data.MaximumAgentsCount; ++i)
+            {
+                actions[i] = convert(i);
+                System.Diagnostics.Debug.WriteLine($"{actions[i].X} {actions[i].Y} {actions[i]._actionType}");
+            }
+            Data.CurrentGameSettings.ApiClient.SendAction(CurrentMatchInfo, new MCTProcon31Protocol.Json.Matches.ActionRequests(actions));
         }
 
         public void PlaceAgent(int playerNum, Point point)
@@ -287,7 +323,7 @@ namespace GameInterface.GameManagement
                             if (Data.CellData[nextPoint.X, nextPoint.Y].AreaState != (i == 0 ? TeamColor.Player2 : TeamColor.Player1)) // 相手の城壁でない場合，行ったり置いたりできるはず
                                 goto case AgentState.PlacePending;
                             // 相手の城壁の場合，取り除けていれば成功．
-                            retVal[i * Data.MaximumAgentsCount + j] = CurrentMatchState.Walls[nextPoint.X, nextPoint.Y] == 0;
+                            retVal[i * Data.MaximumAgentsCount + j] = CurrentMatchState.Walls[nextPoint.Y, nextPoint.X] == 0;
                             break;
                         case AgentState.PlacePending:
                             var movedPoint = CurrentMatchState.Teams[i].Agents[j];
@@ -485,6 +521,9 @@ namespace GameInterface.GameManagement
                     sbyte y = (sbyte)(decide.Agents[i].Y - Data.Players[index].Agents[i].Point.Y);
                     viewModel.Players[index].AgentViewModels[i].Data.AgentDirection = DirectionExtensions.CastPointToDir((x, y));
                     viewModel.Players[index].AgentViewModels[i].Data.State = decide.AgentsState[i];
+                    var against = TeamColorUtil.ToTeamColor(index) == TeamColor.Player1 ? TeamColor.Player2 : TeamColor.Player1;
+                    if (Data.CellData[decide.Agents[i].X, decide.Agents[i].Y].AreaState == against)
+                        viewModel.Players[index].AgentViewModels[i].Data.State = AgentState.RemoveTile;
                 }
             }
         }

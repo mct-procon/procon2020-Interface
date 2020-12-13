@@ -48,6 +48,7 @@
             <TextBox Text="{Binding TimeLimitMilliseconds}" DockPanel.Dock="Right" Width="50" Margin="2"/>
             <Button x:Name="SkipButton"   DockPanel.Dock="Right" Content="SKIP" Click="SkipButton_Click" Width="80" Margin="2"/>
             <Button x:Name="RequestButton"  DockPanel.Dock="Right" HorizontalAlignment="Right" Content="REQUEST" Click="RequestButton_Click" Width="80" Margin="2"/>
+            <Button x:Name="SendAPIServerButton"   DockPanel.Dock="Right"  HorizontalAlignment="Right" Content="SendAPIServer" Click="SendAPIServerButton_Click" IsEnabled="False" Width="80" Margin="2"/>
         </DockPanel>
         <Grid x:Name="cellGrid" Grid.Row="2"/>
     </Grid>

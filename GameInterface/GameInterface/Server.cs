@@ -41,6 +41,7 @@ namespace GameInterface
             {
                 gameManager.SetDecisions(managerNum, decided);
             });
+            gameManager.SendActionToAPIServer();
         }
 
         public void OnInterrupt(Interrupt interrupt)

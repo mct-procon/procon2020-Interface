@@ -118,17 +118,20 @@ namespace GameInterface.GameManagement
             return true;
         }
 
-        public void UpdateData(MCTProcon31Protocol.Json.Matches.Match matchState, int myTeamID)
+        public void UpdateData(MCTProcon31Protocol.Json.Matches.Match matchState, int myTeamID, bool[] moved)
         {
-            void UpdateAgent(Agent agent, MCTProcon31Protocol.Json.Matches.Agent val)
+            void UpdateAgent(Agent agent, MCTProcon31Protocol.Json.Matches.Agent val, bool success)
             {
-                agent.AgentDirection = AgentDirection.None;
                 if (val.X == 0)
                 {
                     agent.State = AgentState.NonPlaced;
                     return;
                 }
-                agent.State = AgentState.Move;
+                if (success)
+                {
+                    agent.State = AgentState.Move;
+                    agent.AgentDirection = AgentDirection.None;
+                }
                 agent.Point = new Point((byte)(val.X - 1), (byte)(val.Y - 1));
             }
 
@@ -136,15 +139,15 @@ namespace GameInterface.GameManagement
                 (matchState.Teams[0], matchState.Teams[1]) : (matchState.Teams[1], matchState.Teams[0]);
 
             for (int a = 0; a < MaximumAgentsCount; ++a)
-                UpdateAgent(Players[0].Agents[a], myTeam.Agents[a]);
+                UpdateAgent(Players[0].Agents[a], myTeam.Agents[a], moved[a]);
             for (int a = 0; a < MaximumAgentsCount; ++a)
-                UpdateAgent(Players[1].Agents[a], enemyTeam.Agents[a]);
+                UpdateAgent(Players[1].Agents[a], enemyTeam.Agents[a], moved[MaximumAgentsCount + a]);
 
             for (int x = 0; x < CellData.GetLength(0); ++x)
                 for (int y = 0; y < CellData.GetLength(1); ++y)
                 {
-                    CellData[x, y].AreaState = matchState.Walls[x, y] == myTeamID ? TeamColor.Player1 : (matchState.Walls[x, y] == 0 ? TeamColor.Free : TeamColor.Player2);
-                    CellData[x, y].SurroundedState = matchState.Areas[x, y] == myTeamID ? TeamColor.Player1 : (matchState.Areas[x, y] == 0 ? TeamColor.Free : TeamColor.Player2);
+                    CellData[x, y].AreaState = matchState.Walls[y, x] == myTeamID ? TeamColor.Player1 : (matchState.Walls[y, x] == 0 ? TeamColor.Free : TeamColor.Player2);
+                    CellData[x, y].SurroundedState = matchState.Areas[y, x] == myTeamID ? TeamColor.Player1 : (matchState.Areas[y, x] == 0 ? TeamColor.Free : TeamColor.Player2);
                     CellData[x, y].AgentState = TeamColor.Free;
                     CellData[x, y].AgentNum = -1;
                 }
