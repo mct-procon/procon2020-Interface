@@ -50,6 +50,16 @@ namespace GameInterface.Controls
                 MainGrid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(1, GridUnitType.Star) });
                 this.Height = this.Height * 3 / 2;
             }
+            if (viewModel.AgentViewModels.Length >= 9)
+            {
+                MainGrid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(1, GridUnitType.Star) });
+                this.Height = this.Height * 4 / 3;
+            }
+            if (viewModel.AgentViewModels.Length >= 12)
+            {
+                MainGrid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(1, GridUnitType.Star) });
+                this.Height = this.Height * 5 / 4;
+            }
             int i = 0;
             for (; i < viewModel.AgentViewModels.Length; ++i)
             {
