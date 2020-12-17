@@ -159,6 +159,8 @@ namespace GameInterface.GameManagement
                         CellData[a.Point.X, a.Point.Y].AgentState = a.PlayerNum;
                         CellData[a.Point.X, a.Point.Y].AgentNum = a.AgentNum;
                     }
+            Players[0].Score = myTeam.WallPoint + myTeam.AreaPoint;
+            Players[1].Score = enemyTeam.WallPoint + enemyTeam.AreaPoint;
         }
 
         void SetCellData(GameSettings.SettingStructure settings, MCTProcon31Protocol.Json.Matches.Match matchInfo)
@@ -178,8 +180,8 @@ namespace GameInterface.GameManagement
                 for (int i = 0; i < BoardWidth; i++)
                     for (int j = 0; j < BoardHeight; j++)
                         if (i < randWidth)
-                            //40%の確率で値を0未満にする
-                            CellData[i, j] = new Cell(rand.Next(1, 100) > 40 ? rand.Next(1, 16) : rand.Next(-16, 0));
+                            //20%の確率で値を0未満にする
+                            CellData[i, j] = new Cell(rand.Next(1, 100) > 20 ? rand.Next(1, 16) : rand.Next(-16, 0));
                         else
                             //対称
                             CellData[i, j] = new Cell(CellData[i >= randWidth ? BoardWidth - 1 - i : i, BoardHeight - 1 - j].Score);

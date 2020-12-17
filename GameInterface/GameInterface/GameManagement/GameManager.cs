@@ -146,7 +146,7 @@ namespace GameInterface.GameManagement
                             System.Diagnostics.Debug.WriteLine($"{movable[i]}");
                         }
                         Data.UpdateData(CurrentMatchState, CurrentMatchInfo.Teams[0].Id, movable);
-                        GetScore();
+                        //GetScore();
                         Data.NowTurn++;
                         Server.SendTurnStart(movable);
                     });
