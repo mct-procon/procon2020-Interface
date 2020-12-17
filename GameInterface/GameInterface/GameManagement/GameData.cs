@@ -159,8 +159,8 @@ namespace GameInterface.GameManagement
                         CellData[a.Point.X, a.Point.Y].AgentState = a.PlayerNum;
                         CellData[a.Point.X, a.Point.Y].AgentNum = a.AgentNum;
                     }
-            Players[0].Score = myTeam.WallPoint + myTeam.AreaPoint;
-            Players[1].Score = enemyTeam.WallPoint + enemyTeam.AreaPoint;
+            viewModel.Players[0].Score = myTeam.WallPoint + myTeam.AreaPoint;
+            viewModel.Players[1].Score = enemyTeam.WallPoint + enemyTeam.AreaPoint;
         }
 
         void SetCellData(GameSettings.SettingStructure settings, MCTProcon31Protocol.Json.Matches.Match matchInfo)
