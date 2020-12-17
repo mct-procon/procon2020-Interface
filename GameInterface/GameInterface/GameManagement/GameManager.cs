@@ -313,16 +313,17 @@ namespace GameInterface.GameManagement
                         case AgentState.NonPlaced:
                             retVal[i * Data.MaximumAgentsCount + j] = true;
                             break;
+                        case AgentState.PlacePending:
+                            nextPoint = Data.Players[i].Agents[j].GetNextPoint();
+                            var movedPoint = CurrentMatchState.Teams[i].Agents[j];
+                            retVal[i * Data.MaximumAgentsCount + j] = nextPoint.X == movedPoint.X - 1 && nextPoint.Y == movedPoint.Y - 1;
+                            break;
                         default:
                             nextPoint = Data.Players[i].Agents[j].GetNextPoint();
                             if (Data.CellData[nextPoint.X, nextPoint.Y].AreaState != (i == 0 ? TeamColor.Player2 : TeamColor.Player1)) // 相手の城壁でない場合，行ったり置いたりできるはず
                                 goto case AgentState.PlacePending;
                             // 相手の城壁の場合，取り除けていれば成功．
                             retVal[i * Data.MaximumAgentsCount + j] = CurrentMatchState.Walls[nextPoint.Y, nextPoint.X] == 0;
-                            break;
-                        case AgentState.PlacePending:
-                            var movedPoint = CurrentMatchState.Teams[i].Agents[j];
-                            retVal[i * Data.MaximumAgentsCount + j] = nextPoint.X == movedPoint.X-1 && nextPoint.Y == movedPoint.Y-1;
                             break;
                     }
                 }
