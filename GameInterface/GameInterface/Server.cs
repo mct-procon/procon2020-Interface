@@ -92,7 +92,6 @@ namespace GameInterface
         GameData data;
         GameManager gameManager;
         private int[] previousPort = new int[] { -1, -1 };
-        private string[] previousHostname = new string[] { string.Empty, string.Empty };
         private bool[] isConnected = new bool[] { false, false };
         public bool IsConnected1P
         {
@@ -134,16 +133,15 @@ namespace GameInterface
             {
                 if (isConnected[0])
                 {
-                    if (settings.Port1P != previousPort[0] || settings.Hostname1P != previousHostname[0])
+                    if (settings.Port1P != previousPort[0])
                     {
                         Shutdown(0);
                         isConnected[0] = false;
                         managers[0] = new IPCManager(new ClientRennenend(this, gameManager, 0));
                         Task.Run(async () =>
                         {
-                            await managers[0].Connect(settings.Port1P, settings.Hostname1P);
+                            await managers[0].Connect(settings.Port1P);
                             previousPort[0] = settings.Port1P;
-                            previousHostname[0] = settings.Hostname1P;
                             await managers[0].StartAsync();
                         });
                     }
@@ -153,9 +151,8 @@ namespace GameInterface
                     managers[0] = new IPCManager(new ClientRennenend(this, gameManager, 0));
                     Task.Run(async () =>
                     {
-                        await managers[0].Connect(settings.Port1P, settings.Hostname1P);
+                        await managers[0].Connect(settings.Port1P);
                         previousPort[0] = settings.Port1P;
-                        previousHostname[0] = settings.Hostname1P;
                         await managers[0].StartAsync();
                     });
                 }
@@ -166,16 +163,15 @@ namespace GameInterface
             {
                 if (isConnected[1])
                 {
-                    if (settings.Port2P != previousPort[1] || settings.Hostname2P != previousHostname[1])
+                    if (settings.Port2P != previousPort[1])
                     {
                         Shutdown(1);
                         isConnected[1] = false;
                         managers[1] = new IPCManager(new ClientRennenend(this, gameManager, 0));
                         Task.Run(async () =>
                         {
-                            await managers[1].Connect(settings.Port2P, settings.Hostname2P);
+                            await managers[1].Connect(settings.Port2P);
                             previousPort[1] = settings.Port2P;
-                            previousHostname[1] = settings.Hostname2P;
                             await managers[1].StartAsync();
                         });
                     }
@@ -185,9 +181,8 @@ namespace GameInterface
                     managers[1] = new IPCManager(new ClientRennenend(this, gameManager, 1));
                     Task.Run(async () =>
                     {
-                        await managers[1].Connect(settings.Port2P, settings.Hostname2P);
+                        await managers[1].Connect(settings.Port2P);
                         previousPort[1] = settings.Port2P;
-                        previousHostname[1] = settings.Hostname2P;
                         await managers[1].StartAsync();
                     });
                 }

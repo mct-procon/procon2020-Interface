@@ -62,16 +62,6 @@ namespace GameInterface.GameSettings
             set => RaisePropertyChanged(ref port1P, value);
         }
 
-        private string hostname1P = "localhost";
-
-        /// <summary>
-        /// AI Hostname 1P.
-        /// </summary>
-        public string Hostname1P {
-            get => hostname1P;
-            set => RaisePropertyChanged(ref hostname1P, value);
-        }
-
         private ushort port2P = 0;
 
         /// <summary>
@@ -80,16 +70,6 @@ namespace GameInterface.GameSettings
         public ushort Port2P {
             get => port2P;
             set => RaisePropertyChanged(ref port2P, value);
-        }
-
-        private string hostname2P = "localhost";
-
-        /// <summary>
-        /// AI Hostname 2P.
-        /// </summary>
-        public string Hostname2P {
-            get => hostname2P;
-            set => RaisePropertyChanged(ref hostname2P, value);
         }
 
         /// <summary>
