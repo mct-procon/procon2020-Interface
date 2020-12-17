@@ -15,7 +15,7 @@ namespace GameInterface.GameManagement
     {
         public byte FinishTurn { get; set; } = 60;
         public int TimeLimitMilliseconds { get; set; } = 5000;
-        public DateTime LastTime { get; set; }
+        public DateTime NextTime { get; set; }
 
         private MainWindowViewModel viewModel;
         private System.Random rand = new System.Random();

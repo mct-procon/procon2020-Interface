@@ -41,7 +41,6 @@ namespace GameInterface.GameManagement
                     viewModel.Players[p].AgentViewModels[i].Data.State = AgentState.NonPlaced;
                 }
             StartTurn();
-            GetScore();
             Data.IsGameStarted = true;
         }
 
@@ -67,7 +66,6 @@ namespace GameInterface.GameManagement
             dispatcherTimer = new DispatcherTimer(DispatcherPriority.Normal);
             dispatcherTimer.Interval = TimeSpan.FromMilliseconds(60);
             dispatcherTimer.Tick += new EventHandler(DispatcherTimer_Tick);
-            Data.LastTime = DateTime.Now - TimeSpan.FromMilliseconds(500);
             dispatcherTimer.Start();
             viewModel.TurnStr = $"TURN:{Data.NowTurn}/{Data.FinishTurn}";
             viewModel.TimerStr = $"TIME:0.00/{Data.TimeLimitMilliseconds/1000.0:F2}";
@@ -77,13 +75,13 @@ namespace GameInterface.GameManagement
         private void DispatcherTimer_Tick(object sender, EventArgs e)
         {
             Update();
-            Draw((int)(DateTime.Now - Data.LastTime).TotalMilliseconds);
+            Draw(Data.TimeLimitMilliseconds - (int)(Data.NextTime - DateTime.UtcNow).TotalMilliseconds);
         }
 
         private void Update()
         {
             if (!Data.IsNextTurnStart) return;
-            if ((DateTime.Now - Data.LastTime).TotalMilliseconds >= Data.TimeLimitMilliseconds || Server.IsDecidedReceived.All(b => b))
+            if ((Data.NextTime - DateTime.UtcNow).TotalMilliseconds <= 66 || Server.IsDecidedReceived.All(b => b))
             {
                 Data.IsNextTurnStart = false;
                 EndTurn();
@@ -97,9 +95,9 @@ namespace GameInterface.GameManagement
                 Data.IsNextTurnStart = true;
                 var movable = MoveAgents();
                 GetScore();
-                Data.LastTime = DateTime.Now;
+                Data.NextTime = DateTime.UtcNow + TimeSpan.FromMilliseconds(Data.TimeLimitMilliseconds);
                 Data.NowTurn++;
-                Server.SendTurnStart(movable);
+                Server.SendTurnStart(movable, Data.TimeLimitMilliseconds);
             }
             else
             {
@@ -114,8 +112,6 @@ namespace GameInterface.GameManagement
                         if (res.IsSuccess && res.Value.Turn >= Data.NowTurn) // SUCCESS and turn is NOT past.
                         {
                             this.CurrentMatchState = res.Value;
-                            Array.Sort(this.CurrentMatchState.Teams[0].Agents);
-                            Array.Sort(this.CurrentMatchState.Teams[1].Agents);
                             goto end;
                         }
                         retries++;
@@ -134,21 +130,19 @@ namespace GameInterface.GameManagement
                         goto retry;
                     }
                 end:
-                    Data.LastTime = DateTime.Now;
+                    Array.Sort(this.CurrentMatchState.Teams[0].Agents);
+                    Array.Sort(this.CurrentMatchState.Teams[1].Agents);
+                    var nextend = (Data.NowTurn + 1) * Data.CurrentGameSettings.Matches[Data.CurrentGameSettings.SelectedMatchIndex].OperationMilliseconds + Data.NowTurn * Data.CurrentGameSettings.Matches[Data.CurrentGameSettings.SelectedMatchIndex].TransitionMilliseconds;
+                    Data.NextTime = CurrentMatchState.StartAt + TimeSpan.FromMilliseconds(nextend);
                     Data.IsNextTurnStart = true;
                     await mainWindow.Dispatcher.BeginInvoke(() =>
                     {
                         dispatcherTimer.Start();
                         var movable = CheckMoved();
-                        System.Diagnostics.Debug.WriteLine("FUGAGGAGA=====");
-                        for (int i = 0; i < Data.MaximumAgentsCount; ++i)
-                        {
-                            System.Diagnostics.Debug.WriteLine($"{movable[i]}");
-                        }
                         Data.UpdateData(CurrentMatchState, CurrentMatchInfo.Teams[0].Id, movable);
                         //GetScore();
                         Data.NowTurn++;
-                        Server.SendTurnStart(movable);
+                        Server.SendTurnStart(movable, (int)((Data.NextTime - DateTime.UtcNow).TotalMilliseconds));
                     });
                 });
                 CommunicationThread = new Thread(ts);
@@ -175,6 +169,7 @@ namespace GameInterface.GameManagement
                     mainWindow.ShotAndSave();
                     mainWindow.InitGame(Data.CurrentGameSettings).Wait();
                     StartGame();
+                    mainWindow.InitGameAfterStart(Data.CurrentGameSettings);
                 }
             }
         }

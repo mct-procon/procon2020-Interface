@@ -72,7 +72,7 @@ namespace GameInterface.GameSettings
                 return;
             }
             int remaining = (int)((this.StartTime - DateTime.Now).TotalMilliseconds);
-            if (remaining < 0) remaining = 0;
+            if (remaining < 120) remaining = 0;
             Progress.Value = Progress.Maximum - remaining;
             ProgressText.Text = $"ゲーム開始まで : {remaining / 1000.0:F2}秒";
             if (remaining == 0)
@@ -88,7 +88,8 @@ namespace GameInterface.GameSettings
                 }
                 else
                 {
-                    Progress.Maximum = (this.StartTime - DateTime.Now).TotalMilliseconds;
+                    var val = (this.StartTime - DateTime.Now).TotalMilliseconds;
+                    Progress.Maximum = val > 0 ? val : 0.1;
                     Progress.Value = 0;
                     ProgressText.Text = $"ゲーム開始まで : {this.Result.RetryAfter/1000.0:F2}秒";
                     timer.Start();
@@ -103,7 +104,7 @@ namespace GameInterface.GameSettings
             Progress.Value = 0;
             ProgressText.Text = $"ゲーム開始まで : {Progress.Maximum / 1000.0:F2}秒";
             timer.Tick += (s, ee) => Update();
-            timer.Interval = TimeSpan.FromMilliseconds(33);
+            timer.Interval = TimeSpan.FromMilliseconds(60);
             timer.Start();
         }
     }

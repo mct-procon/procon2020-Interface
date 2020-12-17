@@ -76,7 +76,8 @@ namespace GameInterface
                 dig.ShowDialog();
                 server.SendConnect(managerNum);
                 server.SendGameInit(managerNum);
-                server.SendTurnStart(managerNum, Enumerable.Range(0, gameManager.Data.MaximumAgentsCount).Select(x => true).ToArray());
+                int remaining = (int)(gameManager.Data.NextTime - DateTime.UtcNow).TotalMilliseconds;
+                server.SendTurnStart(managerNum, Enumerable.Range(0, gameManager.Data.MaximumAgentsCount).Select(x => true).ToArray(), remaining > 0 ? remaining : 1000);
             }
             else
             {
@@ -234,13 +235,13 @@ namespace GameInterface
             managers[playerNum].Write(DataKind.GameInit, new GameInit((byte)data.BoardHeight, (byte)data.BoardWidth, board, (byte)data.MaximumAgentsCount, data.FinishTurn));
         }
 
-        public void SendTurnStart(bool[] movable)
+        public void SendTurnStart(bool[] movable, int remainingMilliseconds)
         {
-            SendTurnStart(0, movable.Take(movable.Length / 2).ToArray());
-            SendTurnStart(1, movable.Skip(movable.Length / 2).ToArray());
+            SendTurnStart(0, movable.Take(movable.Length / 2).ToArray(), remainingMilliseconds);
+            SendTurnStart(1, movable.Skip(movable.Length / 2).ToArray(), remainingMilliseconds);
         }
 
-        public void SendTurnStart(int playerNum, bool[] isAgentsMoved)
+        public void SendTurnStart(int playerNum, bool[] isAgentsMoved, int remainingMilliseconds)
         {
             IsDecidedReceived[playerNum] = false;
             if (!isConnected[playerNum]) return;
@@ -265,7 +266,7 @@ namespace GameInterface
                 }
 
             if (playerNum == 1) Swap(ref colorBoardMe, ref colorBoardEnemy);
-            managers[playerNum].Write(DataKind.TurnStart, new TurnStart((byte)data.NowTurn, data.TimeLimitMilliseconds,
+            managers[playerNum].Write(DataKind.TurnStart, new TurnStart((byte)data.NowTurn, remainingMilliseconds,
                 Unsafe16Array.Create(data.Players[playerNum == 0 ? 0 : 1].Agents.Select(item => item.Point).ToArray()),
                 Unsafe16Array.Create(data.Players[playerNum == 0 ? 1 : 0].Agents.Select(item => item.Point).ToArray()),
                 colorBoardMe,

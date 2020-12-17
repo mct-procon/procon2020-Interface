@@ -45,21 +45,28 @@ namespace GameInterface
                 this.IsEnabled = true;
                 return false;
             }
-            CreateCellOnCellGrid(gameManager.Data.BoardWidth, gameManager.Data.BoardHeight);
-            if (settings.IsUser1P)
-            {
-                Player1Window = new Controls.PlayerControlPanel(gameManager, viewModel.Players[0]);
-                Player1Window.Closed += (ss, ee) => Player1Window = null;
-                Player1Window.Show();
-            }
-            if (settings.IsUser2P)
-            {
-                Player2Window = new Controls.PlayerControlPanel(gameManager, viewModel.Players[1]);
-                Player2Window.Closed += (ss, ee) => Player2Window = null;
-                Player2Window.Show();
-            }
             this.IsEnabled = true;
             return true;
+        }
+
+        public void InitGameAfterStart(GameSettings.SettingStructure settings)
+        {
+            CreateCellOnCellGrid(gameManager.Data.BoardWidth, gameManager.Data.BoardHeight);
+            if (settings.IsEnableGameConduct)
+            {
+                if (settings.IsUser1P)
+                {
+                    Player1Window = new Controls.PlayerControlPanel(gameManager, viewModel.Players[0]);
+                    Player1Window.Closed += (ss, ee) => Player1Window = null;
+                    Player1Window.Show();
+                }
+                if (settings.IsUser2P)
+                {
+                    Player2Window = new Controls.PlayerControlPanel(gameManager, viewModel.Players[1]);
+                    Player2Window.Closed += (ss, ee) => Player2Window = null;
+                    Player2Window.Show();
+                }
+            }
         }
 
         void CreateCellOnCellGrid(int boardWidth, int boardHeight)
@@ -135,9 +142,11 @@ namespace GameInterface
                 gameManager.StartAIListening(result);
                 if (!(result.IsUser1P & result.IsUser2P))
                     (new GameSettings.WaitForAIDialog(viewModel.gameManager.Server, result)).ShowDialog();
-                if (!(await InitGame(result)))
+                if (!await InitGame(result))
                     return;
+                InitGameAfterStart(result);
                 gameManager.StartGame();
+
                 SendAPIServerButton.IsEnabled = !gameManager.Data.IsEnableGameConduct;
             }
         }
