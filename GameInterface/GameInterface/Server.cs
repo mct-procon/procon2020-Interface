@@ -141,7 +141,7 @@ namespace GameInterface
                         managers[0] = new IPCManager(new ClientRennenend(this, gameManager, 0));
                         Task.Run(async () =>
                         {
-                            await managers[0].Connect(settings.Port1P);
+                            await managers[0].Connect(settings.Port1P, false);
                             previousPort[0] = settings.Port1P;
                             await managers[0].StartAsync();
                         });
@@ -152,7 +152,7 @@ namespace GameInterface
                     managers[0] = new IPCManager(new ClientRennenend(this, gameManager, 0));
                     Task.Run(async () =>
                     {
-                        await managers[0].Connect(settings.Port1P);
+                        await managers[0].Connect(settings.Port1P, false);
                         previousPort[0] = settings.Port1P;
                         await managers[0].StartAsync();
                     });
@@ -171,7 +171,7 @@ namespace GameInterface
                         managers[1] = new IPCManager(new ClientRennenend(this, gameManager, 0));
                         Task.Run(async () =>
                         {
-                            await managers[1].Connect(settings.Port2P);
+                            await managers[1].Connect(settings.Port2P, false);
                             previousPort[1] = settings.Port2P;
                             await managers[1].StartAsync();
                         });
@@ -182,7 +182,7 @@ namespace GameInterface
                     managers[1] = new IPCManager(new ClientRennenend(this, gameManager, 1));
                     Task.Run(async () =>
                     {
-                        await managers[1].Connect(settings.Port2P);
+                        await managers[1].Connect(settings.Port2P, false);
                         previousPort[1] = settings.Port2P;
                         await managers[1].StartAsync();
                     });
@@ -197,7 +197,7 @@ namespace GameInterface
             managers[playerNum] = new IPCManager(new ClientRennenend(this, gameManager, playerNum));
             Task.Run(async () =>
             {
-                await managers[playerNum].Connect(portId);
+                await managers[playerNum].Connect(portId, false);
                 await managers[playerNum].StartAsync();
             });
         }
