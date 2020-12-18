@@ -285,6 +285,9 @@ namespace GameInterface.GameManagement
             {
                 Data.CellData[a.Point.X, a.Point.Y].AgentState = TeamColor.Free;
                 Data.CellData[a.Point.X, a.Point.Y].AgentNum = -1;
+            }
+            foreach (var a in ActionableAgents)
+            { 
                 var nextP = a.GetNextPoint();
 
                 TeamColor nextAreaState = Data.CellData[nextP.X, nextP.Y].AreaState;
